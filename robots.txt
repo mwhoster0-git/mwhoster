@@ -1,0 +1,10 @@
+User-agent: *
+Disallow: /clientarea
+Allow: /wp-content/uploads
+Disallow: /index.php/
+Disallow: /index.html/
+Disallow: /?page_id
+Disallow: /icon-18/
+
+
+Sitemap: https://mwhoster.com/sitemap_index.xml

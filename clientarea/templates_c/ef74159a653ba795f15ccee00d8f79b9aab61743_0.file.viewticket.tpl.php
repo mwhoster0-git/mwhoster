@@ -1,0 +1,280 @@
+<?php
+/* Smarty version 3.1.36, created on 2022-11-04 03:35:12
+  from '/home/sites/9a/b/b8e4fafe72/public_html/clientarea/templates/six/viewticket.tpl' */
+
+/* @var Smarty_Internal_Template $_smarty_tpl */
+if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
+  'version' => '3.1.36',
+  'unifunc' => 'content_63648870ca4cb7_40076943',
+  'has_nocache_code' => false,
+  'file_dependency' => 
+  array (
+    'ef74159a653ba795f15ccee00d8f79b9aab61743' => 
+    array (
+      0 => '/home/sites/9a/b/b8e4fafe72/public_html/clientarea/templates/six/viewticket.tpl',
+      1 => 1655211752,
+      2 => 'file',
+    ),
+  ),
+  'includes' => 
+  array (
+  ),
+),false)) {
+function content_63648870ca4cb7_40076943 (Smarty_Internal_Template $_smarty_tpl) {
+if ($_smarty_tpl->tpl_vars['invalidTicketId']->value) {?>
+    <?php $_smarty_tpl->_subTemplateRender(((string)$_smarty_tpl->tpl_vars['template']->value)."/includes/alert.tpl", $_smarty_tpl->cache_id, $_smarty_tpl->compile_id, 0, $_smarty_tpl->cache_lifetime, array('type'=>"danger",'title'=>$_smarty_tpl->tpl_vars['LANG']->value['thereisaproblem'],'msg'=>$_smarty_tpl->tpl_vars['LANG']->value['supportticketinvalid'],'textcenter'=>true), 0, true);
+} else { ?>
+    <?php if ($_smarty_tpl->tpl_vars['closedticket']->value) {?>
+        <?php $_smarty_tpl->_subTemplateRender(((string)$_smarty_tpl->tpl_vars['template']->value)."/includes/alert.tpl", $_smarty_tpl->cache_id, $_smarty_tpl->compile_id, 0, $_smarty_tpl->cache_lifetime, array('type'=>"warning",'msg'=>$_smarty_tpl->tpl_vars['LANG']->value['supportticketclosedmsg'],'textcenter'=>true), 0, true);
+?>
+    <?php }?>
+
+    <?php if ($_smarty_tpl->tpl_vars['errormessage']->value) {?>
+        <?php $_smarty_tpl->_subTemplateRender(((string)$_smarty_tpl->tpl_vars['template']->value)."/includes/alert.tpl", $_smarty_tpl->cache_id, $_smarty_tpl->compile_id, 0, $_smarty_tpl->cache_lifetime, array('type'=>"error",'errorshtml'=>$_smarty_tpl->tpl_vars['errormessage']->value), 0, true);
+?>
+    <?php }
+}?>
+
+<?php if (!$_smarty_tpl->tpl_vars['invalidTicketId']->value) {?>
+    <div class="panel panel-info panel-collapsable<?php if (!$_smarty_tpl->tpl_vars['postingReply']->value) {?> panel-collapsed<?php }?> hidden-print">
+        <div class="panel-heading" id="ticketReply">
+            <div class="collapse-icon pull-right">
+                <i class="fas fa-<?php if (!$_smarty_tpl->tpl_vars['postingreply']->value) {?>plus<?php } else { ?>minus<?php }?>"></i>
+            </div>
+            <h3 class="panel-title">
+                <i class="fas fa-pencil-alt"></i> &nbsp; <?php echo $_smarty_tpl->tpl_vars['LANG']->value['supportticketsreply'];?>
+
+            </h3>
+        </div>
+        <div class="panel-body<?php if (!$_smarty_tpl->tpl_vars['postingReply']->value) {?> panel-body-collapsed<?php }?>">
+
+            <form method="post" action="<?php echo $_SERVER['PHP_SELF'];?>
+?tid=<?php echo $_smarty_tpl->tpl_vars['tid']->value;?>
+&amp;c=<?php echo $_smarty_tpl->tpl_vars['c']->value;?>
+&amp;postreply=true" enctype="multipart/form-data" role="form" id="frmReply">
+
+                <div class="row">
+                    <div class="form-group col-sm-4">
+                        <label for="inputName"><?php echo $_smarty_tpl->tpl_vars['LANG']->value['supportticketsclientname'];?>
+</label>
+                        <input class="form-control" type="text" name="replyname" id="inputName" value="<?php echo $_smarty_tpl->tpl_vars['replyname']->value;?>
+"<?php if ($_smarty_tpl->tpl_vars['loggedin']->value) {?> disabled="disabled"<?php }?>>
+                    </div>
+                    <div class="form-group col-sm-5">
+                        <label for="inputEmail"><?php echo $_smarty_tpl->tpl_vars['LANG']->value['supportticketsclientemail'];?>
+</label>
+                        <input class="form-control" type="text" name="replyemail" id="inputEmail" value="<?php echo $_smarty_tpl->tpl_vars['replyemail']->value;?>
+"<?php if ($_smarty_tpl->tpl_vars['loggedin']->value) {?> disabled="disabled"<?php }?>>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="inputMessage"><?php echo $_smarty_tpl->tpl_vars['LANG']->value['contactmessage'];?>
+</label>
+                    <textarea name="replymessage" id="inputMessage" rows="12" class="form-control markdown-editor" data-auto-save-name="ctr<?php echo $_smarty_tpl->tpl_vars['tid']->value;?>
+"><?php echo $_smarty_tpl->tpl_vars['replymessage']->value;?>
+</textarea>
+                </div>
+
+                <div class="row form-group">
+                    <div class="col-sm-12">
+                        <label for="inputAttachments"><?php echo $_smarty_tpl->tpl_vars['LANG']->value['supportticketsticketattachments'];?>
+</label>
+                    </div>
+                    <div class="col-sm-9">
+                        <input type="file" name="attachments[]" id="inputAttachments" class="form-control" />
+                        <div id="fileUploadsContainer"></div>
+                    </div>
+                    <div class="col-sm-3">
+                        <button type="button" class="btn btn-default btn-block" onclick="extraTicketAttachment()">
+                            <i class="fas fa-plus"></i> <?php echo $_smarty_tpl->tpl_vars['LANG']->value['addmore'];?>
+
+                        </button>
+                    </div>
+                    <div class="col-xs-12 ticket-attachments-message text-muted">
+                        <?php echo $_smarty_tpl->tpl_vars['LANG']->value['supportticketsallowedextensions'];?>
+: <?php echo $_smarty_tpl->tpl_vars['allowedfiletypes']->value;?>
+ (<?php echo call_user_func_array( $_smarty_tpl->smarty->registered_plugins[Smarty::PLUGIN_FUNCTION]['lang'][0], array( array('key'=>"maxFileSize",'fileSize'=>((string)$_smarty_tpl->tpl_vars['uploadMaxFileSize']->value)),$_smarty_tpl ) );?>
+)
+                    </div>
+                </div>
+
+                <div class="form-group text-center">
+                    <input class="btn btn-primary" type="submit" name="save" value="<?php echo $_smarty_tpl->tpl_vars['LANG']->value['supportticketsticketsubmit'];?>
+" />
+                    <input class="btn btn-default" type="reset" value="<?php echo $_smarty_tpl->tpl_vars['LANG']->value['cancel'];?>
+" onclick="jQuery('#ticketReply').click()" />
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+    <div class="panel panel-info visible-print-block">
+        <div class="panel-heading">
+            <h3 class="panel-title">
+                <?php echo $_smarty_tpl->tpl_vars['LANG']->value['ticketinfo'];?>
+
+            </h3>
+        </div>
+        <div class="panel-body container-fluid">
+            <div class="row">
+                <div class="col-md-2 col-xs-6">
+                    <b><?php echo $_smarty_tpl->tpl_vars['LANG']->value['supportticketsticketid'];?>
+</b><br /><?php echo $_smarty_tpl->tpl_vars['tid']->value;?>
+
+                </div>
+                <div class="col-md-4 col-xs-6">
+                    <b><?php echo $_smarty_tpl->tpl_vars['LANG']->value['supportticketsticketsubject'];?>
+</b><br /><?php echo $_smarty_tpl->tpl_vars['subject']->value;?>
+
+                </div>
+                <div class="col-md-2 col-xs-6">
+                    <b><?php echo $_smarty_tpl->tpl_vars['LANG']->value['supportticketspriority'];?>
+</b><br /><?php echo $_smarty_tpl->tpl_vars['urgency']->value;?>
+
+                </div>
+                <div class="col-md-4 col-xs-6">
+                    <b><?php echo $_smarty_tpl->tpl_vars['LANG']->value['supportticketsdepartment'];?>
+</b><br /><?php echo $_smarty_tpl->tpl_vars['department']->value;?>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <?php
+$_from = $_smarty_tpl->smarty->ext->_foreach->init($_smarty_tpl, $_smarty_tpl->tpl_vars['descreplies']->value, 'reply');
+$_smarty_tpl->tpl_vars['reply']->do_else = true;
+if ($_from !== null) foreach ($_from as $_smarty_tpl->tpl_vars['reply']->value) {
+$_smarty_tpl->tpl_vars['reply']->do_else = false;
+?>
+        <div class="ticket-reply markdown-content<?php if ($_smarty_tpl->tpl_vars['reply']->value['admin']) {?> staff<?php }?>">
+            <div class="date">
+                <?php echo $_smarty_tpl->tpl_vars['reply']->value['date'];?>
+
+            </div>
+            <div class="user">
+                <i class="fas fa-user"></i>
+                <span class="name">
+                    <?php echo $_smarty_tpl->tpl_vars['reply']->value['requestor']['name'];?>
+
+                    <span class="label requestor-type-<?php echo $_smarty_tpl->tpl_vars['reply']->value['requestor']['type_normalised'];?>
+">
+                        <?php if ($_smarty_tpl->tpl_vars['reply']->value['requestor']['type_normalised'] == 'operator') {?>
+                            <?php echo call_user_func_array( $_smarty_tpl->smarty->registered_plugins[Smarty::PLUGIN_FUNCTION]['lang'][0], array( array('key'=>'support.requestor.operator'),$_smarty_tpl ) );?>
+
+                        <?php } elseif ($_smarty_tpl->tpl_vars['reply']->value['requestor']['type_normalised'] == 'owner') {?>
+                            <?php echo call_user_func_array( $_smarty_tpl->smarty->registered_plugins[Smarty::PLUGIN_FUNCTION]['lang'][0], array( array('key'=>'support.requestor.owner'),$_smarty_tpl ) );?>
+
+                        <?php } elseif ($_smarty_tpl->tpl_vars['reply']->value['requestor']['type_normalised'] == 'authorizeduser') {?>
+                            <?php echo call_user_func_array( $_smarty_tpl->smarty->registered_plugins[Smarty::PLUGIN_FUNCTION]['lang'][0], array( array('key'=>'support.requestor.authorizeduser'),$_smarty_tpl ) );?>
+
+                        <?php } elseif ($_smarty_tpl->tpl_vars['reply']->value['requestor']['type_normalised'] == 'registereduser') {?>
+                            <?php echo call_user_func_array( $_smarty_tpl->smarty->registered_plugins[Smarty::PLUGIN_FUNCTION]['lang'][0], array( array('key'=>'support.requestor.registereduser'),$_smarty_tpl ) );?>
+
+                        <?php } elseif ($_smarty_tpl->tpl_vars['reply']->value['requestor']['type_normalised'] == 'subaccount') {?>
+                            <?php echo call_user_func_array( $_smarty_tpl->smarty->registered_plugins[Smarty::PLUGIN_FUNCTION]['lang'][0], array( array('key'=>'support.requestor.subaccount'),$_smarty_tpl ) );?>
+
+                        <?php } elseif ($_smarty_tpl->tpl_vars['reply']->value['requestor']['type_normalised'] == 'guest') {?>
+                            <?php echo call_user_func_array( $_smarty_tpl->smarty->registered_plugins[Smarty::PLUGIN_FUNCTION]['lang'][0], array( array('key'=>'support.requestor.guest'),$_smarty_tpl ) );?>
+
+                        <?php }?>
+                    </span>
+                </span>
+                <span class="type">
+                    <?php if ($_smarty_tpl->tpl_vars['reply']->value['admin']) {?>
+                        <?php echo $_smarty_tpl->tpl_vars['LANG']->value['supportticketsstaff'];?>
+
+                    <?php } else { ?>
+                        <?php echo $_smarty_tpl->tpl_vars['reply']->value['requestor']['email'];?>
+
+                    <?php }?>
+                </span>
+            </div>
+            <div class="message">
+                <?php echo $_smarty_tpl->tpl_vars['reply']->value['message'];?>
+
+                <?php if ($_smarty_tpl->tpl_vars['reply']->value['ipaddress']) {?>
+                    <hr>
+                    <?php echo call_user_func_array( $_smarty_tpl->smarty->registered_plugins[Smarty::PLUGIN_FUNCTION]['lang'][0], array( array('key'=>'support.ipAddress'),$_smarty_tpl ) );?>
+: <?php echo $_smarty_tpl->tpl_vars['reply']->value['ipaddress'];?>
+
+                <?php }?>
+                <?php if ($_smarty_tpl->tpl_vars['reply']->value['id'] && $_smarty_tpl->tpl_vars['reply']->value['admin'] && $_smarty_tpl->tpl_vars['ratingenabled']->value) {?>
+                    <div class="clearfix">
+                        <?php if ($_smarty_tpl->tpl_vars['reply']->value['rating']) {?>
+                            <div class="rating-done">
+                                <?php
+$_smarty_tpl->tpl_vars['rating'] = new Smarty_Variable(null, $_smarty_tpl->isRenderingCache);$_smarty_tpl->tpl_vars['rating']->step = 1;$_smarty_tpl->tpl_vars['rating']->total = (int) ceil(($_smarty_tpl->tpl_vars['rating']->step > 0 ? 5+1 - (1) : 1-(5)+1)/abs($_smarty_tpl->tpl_vars['rating']->step));
+if ($_smarty_tpl->tpl_vars['rating']->total > 0) {
+for ($_smarty_tpl->tpl_vars['rating']->value = 1, $_smarty_tpl->tpl_vars['rating']->iteration = 1;$_smarty_tpl->tpl_vars['rating']->iteration <= $_smarty_tpl->tpl_vars['rating']->total;$_smarty_tpl->tpl_vars['rating']->value += $_smarty_tpl->tpl_vars['rating']->step, $_smarty_tpl->tpl_vars['rating']->iteration++) {
+$_smarty_tpl->tpl_vars['rating']->first = $_smarty_tpl->tpl_vars['rating']->iteration === 1;$_smarty_tpl->tpl_vars['rating']->last = $_smarty_tpl->tpl_vars['rating']->iteration === $_smarty_tpl->tpl_vars['rating']->total;?>
+                                    <span class="star<?php if ((5-$_smarty_tpl->tpl_vars['reply']->value['rating']) < $_smarty_tpl->tpl_vars['rating']->value) {?> active<?php }?>"></span>
+                                <?php }
+}
+?>
+                                <div class="rated"><?php echo $_smarty_tpl->tpl_vars['LANG']->value['ticketreatinggiven'];?>
+</div>
+                            </div>
+                        <?php } else { ?>
+                            <div class="rating" ticketid="<?php echo $_smarty_tpl->tpl_vars['tid']->value;?>
+" ticketkey="<?php echo $_smarty_tpl->tpl_vars['c']->value;?>
+" ticketreplyid="<?php echo $_smarty_tpl->tpl_vars['reply']->value['id'];?>
+">
+                                <span class="star" rate="5"></span>
+                                <span class="star" rate="4"></span>
+                                <span class="star" rate="3"></span>
+                                <span class="star" rate="2"></span>
+                                <span class="star" rate="1"></span>
+                            </div>
+                        <?php }?>
+                    </div>
+                <?php }?>
+            </div>
+            <?php if ($_smarty_tpl->tpl_vars['reply']->value['attachments']) {?>
+                <div class="attachments">
+                    <strong><?php echo $_smarty_tpl->tpl_vars['LANG']->value['supportticketsticketattachments'];?>
+ (<?php echo count($_smarty_tpl->tpl_vars['reply']->value['attachments']);?>
+)</strong>
+                    <?php if ($_smarty_tpl->tpl_vars['reply']->value['attachments_removed']) {?>(<?php echo call_user_func_array( $_smarty_tpl->smarty->registered_plugins[Smarty::PLUGIN_FUNCTION]['lang'][0], array( array('key'=>'support.attachmentsRemoved'),$_smarty_tpl ) );?>
+)<?php }?>
+                    <ul>
+                        <?php
+$_from = $_smarty_tpl->smarty->ext->_foreach->init($_smarty_tpl, $_smarty_tpl->tpl_vars['reply']->value['attachments'], 'attachment', false, 'num');
+$_smarty_tpl->tpl_vars['attachment']->do_else = true;
+if ($_from !== null) foreach ($_from as $_smarty_tpl->tpl_vars['num']->value => $_smarty_tpl->tpl_vars['attachment']->value) {
+$_smarty_tpl->tpl_vars['attachment']->do_else = false;
+?>
+                            <?php if ($_smarty_tpl->tpl_vars['reply']->value['attachments_removed']) {?>
+                                <li>
+                                    <i class="far fa-file-minus"></i>
+                                    <?php echo $_smarty_tpl->tpl_vars['attachment']->value;?>
+
+                                </li>
+                            <?php } else { ?>
+                                <li>
+                                    <i class="far fa-file"></i>
+                                    <a href="dl.php?type=<?php if ($_smarty_tpl->tpl_vars['reply']->value['id']) {?>ar&id=<?php echo $_smarty_tpl->tpl_vars['reply']->value['id'];
+} else { ?>a&id=<?php echo $_smarty_tpl->tpl_vars['id']->value;
+}?>&i=<?php echo $_smarty_tpl->tpl_vars['num']->value;?>
+">
+                                        <?php echo $_smarty_tpl->tpl_vars['attachment']->value;?>
+
+                                    </a>
+                                </li>
+                            <?php }?>
+
+                        <?php
+}
+$_smarty_tpl->smarty->ext->_foreach->restore($_smarty_tpl, 1);?>
+                    </ul>
+                </div>
+            <?php }?>
+        </div>
+    <?php
+}
+$_smarty_tpl->smarty->ext->_foreach->restore($_smarty_tpl, 1);
+}
+}
+}

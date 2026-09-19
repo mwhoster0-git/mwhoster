@@ -1,0 +1,106 @@
+.popular-price{
+padding:40px 15px;
+}
+.domain-list-wrap h3 {
+font-size:20px;
+margin-bottom:3px;
+}
+.domain-list-wrap li{
+padding:5px 20px;
+}
+.hero-slider-content ul{
+font-size:18px;
+margin-bottom:10px;
+}
+.hero-slider-content ul li i{
+color:#f67a3c;
+margin-right:5px;
+}
+.domain-list-wrap p {
+font-size: 20px;
+margin-bottom: 0px;
+font-weight:800;
+color: rgb(54, 54, 54);
+}
+.footer-1 .mw-logo img{
+filter: contrast(0%) brightness(300%);
+}
+.cta-content-wrap i.fas.fa-circle {
+font-size:13px;
+padding-right:5px;
+}
+.page-id-82 .elementor-posts .elementor-post {
+border: 0;
+}
+.scroll-top.open {
+top: 85%;
+background: #ea7439 !important;
+}
+.mw-logo img{
+width:230px !important;
+height:86px;
+}
+.header-main .mw-logo {
+padding:0px !important;
+}
+.main-header-menu-wrap{
+padding:10px 0px;
+}
+.main-header-menu-wrap a.nav-link.custom-nav-link {
+font-size: 17px;
+color: #363636;
+}
+.main-header-menu-wrap.affix{
+display:none !important;
+} @media only screen and (max-width: 767px) {
+.mw-logo img{
+width:170px;
+height:60px
+}
+.cta-content-wrap i.fas.fa-circle {
+font-size:10px;
+padding-right:5px;
+}
+.cta-content-wrap ul{
+margin-bottom:30px;
+}
+.payment .copyright-wrap.small-text {
+text-align: center;
+margin-bottom: 10px;
+}
+.payment .text-start {
+text-align: center !important;
+}
+.mob-hide{
+display:none !important;
+}
+.mob-botom{
+margin-bottom:50px;
+}	
+.domain-checker-wrap form {
+width: 100% !important;
+}	
+a.nav-link.custom-nav-link {
+font-size: 13.2px;
+}	
+.mw-logo img {
+width: 140px !important;
+height: 52px;
+}	
+.main-header-menu-wrap {
+padding: 0px;
+}	
+} @media screen and (min-device-width: 768px) and (max-device-width: 991px) { 
+.mw-logo img{
+width:200px;
+height:70px
+}
+.main-header-menu-wrap a.nav-link.custom-nav-link {
+font-size: 15px;
+color: #363636;
+}
+.mw-logo img {
+width: 155px !important;
+height: 60px;
+}	
+}

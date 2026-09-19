@@ -1,0 +1,33 @@
+/*
+	Theme Name: MWhoster
+	Theme URI: https://mwhoster.com/
+	Description: We're a web hosting provider committed to empowering individuals and businesses online. With cutting-edge server technology with expert cutomer support.
+	Author: MWhoster
+	Author URI: https://mwhoster.com/
+	License: GNU General Public License v3 or later.
+	License URI: https://www.gnu.org/licenses/gpl-3.0.html
+	Text Domain: MWhoster
+*/
+/**
+ * Loading first in the style.scss & classic-editor.scss
+ */
+/**
+* Document basic styling
+* Inspired by Normalize.css, HTML5 Boilerplate & Bootstrap Reboot Projects under MIT License
+ */
+/**
+ * 1. Correct the line height in all browsers.
+ * 2. Prevent adjustments of font size after orientation changes in iOS.
+ * 3. Change from `box-sizing: content-box` so that `width` is not affected by `padding` or `border`.
+ */
+html {
+  line-height: 1.15; /* 1 */
+  -webkit-text-size-adjust: 100%; /* 2 */
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box; /* 3 */
+}
+

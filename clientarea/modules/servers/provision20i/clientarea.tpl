@@ -1,0 +1,1 @@
+<a class='btn btn-default' href='?action=productdetails&amp;id={$serviceid}&amp;dosinglesignon=1' target='_blank'>Log in to Control Panel</a>
