@@ -18,7 +18,7 @@
                                 <p class="mb-0"><i class="fas fa-bell rounded-circle mr-2"></i> <span class="fw-bold">30% Discount
                         </span> first annual purchase</p>
                             </div> -->
-                            <h1 class="text-white">Get Unconventional Web Hosting in Pakistan</h1>
+                            <h1 class="text-white">Get Unconventional Web Hosting in Pakistan Git testing</h1>
 							<ul>
 								<li><i class="fas fa-check"></i> Unlimited Web Space & Data</li>
 								<li><i class="fas fa-check"></i> 99.99% Uptime Guarantee</li>
