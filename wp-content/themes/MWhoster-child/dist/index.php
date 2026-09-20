@@ -20,14 +20,13 @@
                             </div> -->
                             <h1 class="text-white">Fast, Secure & Scalable Cloud Hosting</h1>
 							<ul>
-								<li><i class="fas fa-check"></i> Unlimited Web Space & Data</li>
-								<li><i class="fas fa-check"></i> 99.99% Uptime Guarantee</li>
+								<li><i class="fas fa-check"></i> Premium Grade NVMe SSD Storage</li>
 								<li><i class="fas fa-check"></i> FREE SSL Certificate Included</li>
 								<li><i class="fas fa-check"></i> One Click Wordpress Installation</li>
-								<li><i class="fas fa-check"></i> Free Tech Support</li>
-								<li><i class="fas fa-check"></i> Affordable Web Hosting and Domains</li>
+								<li><i class="fas fa-check"></i> 99.99% Uptime Guarantee</li>
+								<li><i class="fas fa-check"></i> Affordable & Premium Web Hosting and Domains</li>
 							</ul>
-                            <p class="lead">Ready to uplift your website? Seize the perks of the best web hosting in Pakistan. Secure a free domain name with our ultimate hosting plan!</p>
+                            <p class="lead">Power your website with NVMe SSD performance, effortless WordPress setup, and hosting that grows with you. Start with the resources you need and upgrade as your traffic and business expand.</p>
 
                             <div class="action-btns mt-4">
                                 <a href="#pricing" class="btn btn-tertiary btn-lg">Get started now </a>
@@ -72,7 +71,7 @@
                             </div>
                             <div class="pricing-content">
                                 <ul class="list-unstyled pricing-feature-list-2 mt-4 mb-3">
-                                    <li> <i class="far fa-hdd me-2"></i> <p><strong>5GB</strong> SSD Disk Space</p> </li>
+                                    <li> <i class="far fa-hdd me-2"></i> <p><strong>5GB</strong> NVMe SSD Storage</p> </li>
                                     <li> <i class="fas fa-route me-2"></i> <p><strong>20GB</strong> Brandwidth</p> </li>
                                     <li> <i class="fas fa-cloud me-2"></i> <p> <strong>2</strong> Websites Host</p> </li>
                                     <li> <i class="fas fa-mail-bulk me-2"> </i> <p><strong>5</strong> Emails Accounts </p> </li>
@@ -104,7 +103,7 @@
                             </div>
                             <div class="pricing-content">
                                 <ul class="list-unstyled pricing-feature-list-2 mt-4 mb-3">
-                                    <li> <i class="far fa-hdd me-2"></i> <p><strong>20GB</strong> SSD Disk Space</p> </li>
+                                    <li> <i class="far fa-hdd me-2"></i> <p><strong>20GB</strong> NVMe SSD Storage</p> </li>
                                     <li> <i class="fas fa-route me-2"></i> <p><strong>50GB</strong> Brandwidth</p> </li>
                                     <li> <i class="fas fa-cloud me-2"></i> <p> <strong>5</strong> Websites Host</p> </li>
                                     <li> <i class="fas fa-mail-bulk me-2"> </i> <p><strong>20</strong> Emails Accounts </p> </li>
@@ -136,7 +135,7 @@
                             </div>
                             <div class="pricing-content">
                                 <ul class="list-unstyled pricing-feature-list-2 mt-4 mb-3">
-                                    <li> <i class="far fa-hdd me-2"></i> <p><strong>30GB</strong> SSD Disk Space</p> </li>
+                                    <li> <i class="far fa-hdd me-2"></i> <p><strong>30GB</strong> NVMe SSD Storage</p> </li>
                                     <li> <i class="fas fa-route me-2"></i> <p><strong>Unlimited</strong> Brandwidth</p> </li>
                                     <li> <i class="fas fa-cloud me-2"></i> <p> <strong>10</strong> Websites Host</p> </li>
                                     <li> <i class="fas fa-mail-bulk me-2"> </i> <p><strong>Unlimited</strong> Emails Accounts </p> </li>
