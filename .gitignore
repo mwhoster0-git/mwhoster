@@ -1,3 +1,5 @@
 .htaccess
 wp-config.php
 wp-stack-cache.php
+clientarea
+configuration.php
