@@ -3,3 +3,4 @@ wp-config.php
 wp-stack-cache.php
 clientarea
 configuration.php
+wp-content/mu-plugins/
