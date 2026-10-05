@@ -2,7 +2,6 @@
 
 #jcadminbar {
   position: relative;
-  min-height: 50px;
   background: #fff;
   filter: drop-shadow(0 0px 2px #0003);
 }
@@ -19,11 +18,18 @@
 }
 
 .joinchat-header {
-  padding-top: 5px;
-  padding-bottom: 1px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  min-height: 40px;
+  padding: 5px 20px 5px 0;
+  overflow: auto;
 }
 
 #jcadminbar h1 {
+  display: flex;
+  align-items: center;
+  gap: 9px;
   margin: 0;
 }
 
@@ -46,6 +52,9 @@
   }
 }
 
+.joinchat-coupon {
+  display: none;
+}
 
 /* Onboard */
 
@@ -322,6 +331,10 @@
   font-size: 18px;
 }
 
+.joinchat__message textarea {
+  field-sizing: content;
+}
+
 .joinchat__optin {
   margin: 20px 0 10px 2px;
   font-size: 13px;
@@ -410,4 +423,13 @@
 
 .joinchat__optin input[readonly]+label {
   cursor: default;
+}
+
+.iti .iti__search-input {
+  width: 100%;
+  border-width: 0;
+  border-radius: 3px;
+  padding-left: 30px;
+  padding-right: 28px;
+  margin: 0;
 }

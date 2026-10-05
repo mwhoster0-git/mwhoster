@@ -5,6 +5,8 @@
  * @package    Joinchat
  */
 
+defined( 'WPINC' ) || exit;
+
 /**
  * Front and Back Common class.
  *
@@ -20,7 +22,7 @@ class Joinchat_Common {
 	 *
 	 * @since    4.5.10
 	 */
-	const INTL_TEL_INPUT_VERSION = '18.1.8';
+	const INTL_TEL_INPUT_VERSION = '29.5.2';
 
 	/**
 	 * Singleton instance.
@@ -96,6 +98,7 @@ class Joinchat_Common {
 		$defaults = array(
 			'telephone'     => '',
 			'mobile_only'   => 'no',
+			'button_ico'    => 'app',
 			'button_image'  => '',
 			'button_tip'    => '',
 			'button_delay'  => 3,
@@ -107,17 +110,19 @@ class Joinchat_Common {
 			'message_delay' => 10, // Disabled on negative values.
 			'message_badge' => 'no',
 			'message_send'  => '',
-			'message_start' => __( 'Open chat', 'creame-whatsapp-me' ),
+			'message_start' => __( 'Open Chat', 'creame-whatsapp-me' ),
 			'position'      => 'right',
 			'visibility'    => array( 'all' => 'yes' ),
-			'color'         => '#25d366/100', // hexcolor/0|100 (black or white text).
+			'color'         => '#25d366/1', // hexcolor/0|1 (black or white text).
 			'dark_mode'     => 'no',     // values: 'no', 'yes' or 'auto'.
-			'header'        => '__jc__', // values: '__jc__', '__wa__' or other custom text.
+			'header'        => '__wa__', // values: '__wa__' or other custom text.
 			'optin_text'    => '',
 			'optin_check'   => 'no',
 			'gads'          => '',
+			'tracking'      => 'yes',
 			'custom_css'    => '',
 			'clear'         => 'no',
+			'show_brand'    => 'yes',
 		);
 
 		$defaults = array_merge( $defaults, apply_filters( 'joinchat_extra_settings', array() ) );
@@ -144,24 +149,66 @@ class Joinchat_Common {
 			return $this->settings;
 		}
 
-		$default_settings = $this->defaults();
+		$defaults = $this->defaults();
 
 		// Can hook 'option_joinchat' and 'default_option_joinchat' filters.
-		$settings = array_merge( $default_settings, (array) get_option( 'joinchat', $default_settings ) );
+		$settings = (array) get_option( JOINCHAT_SLUG, $defaults );
 
-		// Migrate addons 'remove_brand' setting to 'header' (v. < 4.1).
-		if ( isset( $settings['remove_brand'] ) ) {
-			$remove             = $settings['remove_brand'];
-			$settings['header'] = 'wa' === $remove ? '__wa__' : ( 'no' === $remove ? '__jc__' : '' );
+		// Since v6.2.0 use "show_brand" setting.
+		if ( ! isset( $settings['show_brand'] ) && isset( $settings['header'] ) ) {
+			if ( '__jc__' === $settings['header'] ) {
+				$settings['header']     = '__wa__';
+				$settings['show_brand'] = 'yes';
+			} else {
+				$settings['show_brand'] = 'no';
+			}
 		}
+
+		$settings = array_merge( $defaults, $settings );
 
 		// Since v5.1 use negative values for disabled.
 		if ( 0 === $settings['message_delay'] ) {
 			$settings['message_delay'] = -1;
 		}
 
+		if ( ! $settings['button_ico'] ) {
+			$settings['button_ico'] = 'app';
+		}
+
+		$settings['color'] = str_replace( '/100', '/1', $settings['color'] );
+
+		// Since 6.4 migrate visibility settings.
+		$visibility = isset( $settings['visibility'] ) ? $settings['visibility'] : $defaults['visibility'];
+
+		if ( isset( $visibility['blog_page'] ) ) {
+			$visibility['blog'] = $visibility['blog_page'];
+			unset( $visibility['blog_page'] );
+		}
+
+		if ( isset( $visibility['singular'] ) ) {
+			if ( ! isset( $visibility['page'] ) ) {
+				$visibility['page'] = $visibility['singular'];
+			}
+			if ( ! isset( $visibility['post'] ) ) {
+				$visibility['post'] = $visibility['singular'];
+			}
+			unset( $visibility['singular'] );
+		}
+
+		if ( isset( $visibility['archive'] ) ) {
+			if ( ! isset( $visibility['date'] ) ) {
+				$visibility['date'] = $visibility['archive'];
+			}
+			if ( ! isset( $visibility['author'] ) ) {
+				$visibility['author'] = $visibility['archive'];
+			}
+			unset( $visibility['archive'] );
+		}
+
+		$settings['visibility'] = $visibility;
+
 		// Clean unused saved settings.
-		$settings = array_intersect_key( $settings, $default_settings );
+		$settings = array_intersect_key( $settings, $defaults );
 
 		$this->settings = apply_filters( 'joinchat_settings', $settings );
 
@@ -175,25 +222,12 @@ class Joinchat_Common {
 	 * Return IntlTelInput library version or false to disable.
 	 *
 	 * @since    4.5.10
+	 * @since    6.3.0 renamed from get_intltel() to get_iti_version()
 	 * @return string|false
 	 */
-	public function get_intltel() {
+	public function get_iti_version() {
 
 		return apply_filters( 'joinchat_enhanced_phone', self::INTL_TEL_INPUT_VERSION );
-
-	}
-
-	/**
-	 * Get public custom post types
-	 *
-	 * Custom post types with public url.
-	 *
-	 * @since    4.5.17
-	 * @return array
-	 */
-	public function get_custom_post_types() {
-
-		return apply_filters( 'joinchat_custom_post_types', array_keys( get_post_types( array( 'has_archive' => true ), 'names' ) ) );
 
 	}
 
@@ -201,15 +235,33 @@ class Joinchat_Common {
 	 * Get public post_types
 	 *
 	 * @since    4.5.0
+	 * @since    6.4.0 Deprecated `joinchat_post_types_meta_box`; use `joinchat_custom_post_types`.
 	 * @return array
 	 */
 	public function get_public_post_types() {
 
-		$builtin_post_types = array( 'post', 'page' );        // Built-in post types.
-		$custom_post_types  = $this->get_custom_post_types(); // Custom post types with public url.
+		$post_types = array_keys( get_post_types( array( 'public' => true ) ) );
+		$post_types = array_diff( $post_types, array( 'attachment' ) );
 
-		// Add/remove posts types for "Joinchat" meta box.
-		return apply_filters( 'joinchat_post_types_meta_box', array_merge( $builtin_post_types, $custom_post_types ) );
+		// Legacy filter kept only as deprecated alias.
+		$post_types = (array) apply_filters_deprecated(
+			'joinchat_post_types_meta_box',
+			array( $post_types ),
+			'6.4.0',
+			'joinchat_post_types'
+		);
+
+		// Legacy filter kept only as deprecated alias.
+		$post_types = (array) apply_filters_deprecated(
+			'joinchat_custom_post_types',
+			array( $post_types ),
+			'6.4.0',
+			'joinchat_post_types'
+		);
+
+		$post_types = (array) apply_filters( 'joinchat_post_types', $post_types );
+
+		return array_unique( $post_types );
 
 	}
 
@@ -217,24 +269,38 @@ class Joinchat_Common {
 	 * Get taxonomies to include Joinchat meta box
 	 *
 	 * @since    5.0.9
+	 * @since    6.4.0 renamed from get_taxonomies_meta_box() to get_public_taxonomies()
 	 * @return array
 	 */
-	public function get_taxonomies_meta_box() {
+	public function get_public_taxonomies() {
 
-		return apply_filters( 'joinchat_taxonomies_meta_box', array( 'category', 'post_tag' ) );
+		$taxonomies = array_keys( get_taxonomies( array( 'publicly_queryable' => true ) ) );
+		$taxonomies = array_diff( $taxonomies, array( 'post_format' ) );
+
+		// Legacy filter kept only as deprecated alias.
+		$taxonomies = (array) apply_filters_deprecated(
+			'joinchat_taxonomies_meta_box',
+			array( $taxonomies ),
+			'6.4.0',
+			'joinchat_taxonomies'
+		);
+
+		$taxonomies = (array) apply_filters( 'joinchat_taxonomies', $taxonomies );
+
+		return array_unique( $taxonomies );
 
 	}
 
 	/**
-	 * Get post/term form placeholders
+	 * Get object form placeholders
 	 *
 	 * @since 4.5.0
-	 * @param  WP_Post|WP_Term $obj  Current post or term.
+	 * @param  WP_Post|WP_Term|WP_User $obj  Current post, term or user.
 	 * @return array
 	 */
 	public function get_obj_placeholders( $obj ) {
 
-		return apply_filters(
+		return (array) apply_filters(
 			'joinchat_metabox_placeholders',
 			array(
 				'telephone'    => $this->settings['telephone'],
@@ -248,15 +314,61 @@ class Joinchat_Common {
 	}
 
 	/**
-	 * Get post/term dynamic variables for form help text
+	 * Get object dynamic variables for form help text
 	 *
 	 * @since 4.5.0
-	 * @param  WP_Post|WP_Term $obj  Current post or term.
+	 * @param  WP_Post|WP_Term|WP_User $obj  Current post, term or user.
 	 * @return array
 	 */
 	public function get_obj_vars( $obj ) {
 
-		return apply_filters( 'joinchat_metabox_vars', array( 'SITE', 'TITLE', 'URL', 'HREF' ), $obj );
+		return (array) apply_filters( 'joinchat_metabox_vars', array( 'SITE', 'TITLE', 'HOME', 'URL', 'HREF' ), $obj );
+
+	}
+
+	/**
+	 * Get button alternate icons
+	 *
+	 * Return an array of ico_key => value with the SVG code or svg value if $value is passed.
+	 *
+	 * @since 6.0.0
+	 * @param string $value Icon name.
+	 * @return array|string|false
+	 */
+	public function get_icons( $value = '' ) {
+
+		$icons = array(
+			'v1' => file_get_contents( JOINCHAT_DIR . 'admin/img/ico-logo.svg' ),
+			'v2' => file_get_contents( JOINCHAT_DIR . 'admin/img/ico-contact.svg' ),
+		);
+
+		$icons = (array) apply_filters( 'joinchat_icons', $icons, $value );
+
+		if ( $value ) {
+			return array_key_exists( $value, $icons ) ? $icons[ $value ] : false;
+		} else {
+			return $icons;
+		}
+	}
+
+	/**
+	 * Get theme color values (H, S, L, text)
+	 *
+	 * Return values Hue, Saturation, Lightness and text color (0 black|1 white).
+	 *
+	 * @since 6.0.0
+	 * @param string $color Hex color code.
+	 * @return array (H, S, L, 0|1)
+	 */
+	public function get_color_values( $color = '' ) {
+
+		$color = empty( $color ) ? $this->settings['color'] : $color;
+
+		list($color, $text) = explode( '/', $color . '/1' );
+		list($r, $g, $b)    = sscanf( $color, '#%02x%02x%02x' );
+		list($h, $s, $l)    = Joinchat_Util::rgb2hsl( $r, $g, $b );
+
+		return array( $h, $s, $l, (int) $text );
 
 	}
 }

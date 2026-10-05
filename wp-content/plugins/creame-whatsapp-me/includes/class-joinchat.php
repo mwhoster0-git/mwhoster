@@ -5,6 +5,8 @@
  * @package    Joinchat
  */
 
+defined( 'WPINC' ) || exit;
+
 /**
  * The core plugin class.
  *
@@ -46,6 +48,7 @@ class Joinchat {
 		$this->set_locale();
 		$this->load_integrations();
 
+		$this->define_tracking_hooks();
 		$this->define_admin_hooks();
 		$this->define_public_hooks();
 		$this->define_premium_hooks();
@@ -63,9 +66,11 @@ class Joinchat {
 	 * Include the following files that make up the plugin:
 	 *
 	 * - Joinchat_Loader. Orchestrates the hooks of the plugin.
+	 * - Joinchat_Common. Defines all common functionality for the plugin.
 	 * - Joinchat_i18n. Defines internationalization functionality.
 	 * - Joinchat_Integrations. Defines thrid party integrations.
 	 * - Joinchat_Util. Defines common utilities.
+	 * - Joinchat_Abilities. Manages plugin abilities API.
 	 *
 	 * Create an instance of the loader which will be used to register the hooks
 	 * with WordPress.
@@ -81,10 +86,11 @@ class Joinchat {
 		require_once JOINCHAT_DIR . 'includes/class-joinchat-i18n.php';
 		require_once JOINCHAT_DIR . 'includes/class-joinchat-integrations.php';
 		require_once JOINCHAT_DIR . 'includes/class-joinchat-util.php';
-		require_once JOINCHAT_DIR . 'includes/class-joinchat-util-deprecated.php'; // TODO: deprecation to be deleted.
+		require_once JOINCHAT_DIR . 'includes/class-joinchat-abilities.php';
 
 		$this->loader = new Joinchat_Loader();
 		jc_common(); // Instance Joinchat_Common.
+		Joinchat_Abilities::init(); // Initialize Abilities API registration.
 
 	}
 
@@ -100,7 +106,9 @@ class Joinchat {
 	 */
 	private function set_locale() {
 
-		$plugin_i18n = new Joinchat_I18n( $this->loader );
+		$plugin_i18n = new Joinchat_I18n();
+
+		$this->loader->add_action( 'init', $plugin_i18n, 'init', 11 );
 
 	}
 
@@ -118,6 +126,28 @@ class Joinchat {
 		// No delegate to $this->loader, use WordPress add_action.
 		// At 'plugins_loaded' hook can determine if other plugins are present.
 		add_action( 'plugins_loaded', array( $plugin_integrations, 'load_integrations' ) );
+
+	}
+
+	/**
+	 * Register all hooks related to click tracking.
+	 *
+	 * @since    6.2.0
+	 * @access   private
+	 * @return   void
+	 */
+	private function define_tracking_hooks() {
+
+		require_once JOINCHAT_DIR . 'includes/class-joinchat-tracking.php';
+
+		$plugin_tracking = new Joinchat_Tracking();
+
+		if ( ! $plugin_tracking->is_enabled() ) {
+			return;
+		}
+
+		$this->loader->add_action( 'rest_api_init', $plugin_tracking, 'register_rest_routes' );
+		$this->loader->add_action( 'wp_dashboard_setup', $plugin_tracking, 'register_dashboard_widget' );
 
 	}
 
@@ -176,32 +206,40 @@ class Joinchat {
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'register_scripts' );
 		$this->loader->add_action( 'admin_notices', $plugin_admin, 'notices' );
 		$this->loader->add_action( 'wp_ajax_joinchat_notice_dismiss', $plugin_admin, 'ajax_notice_dismiss' );
+		$this->loader->add_action( 'in_admin_header', $plugin_admin, 'admin_header' );
 		// Post meta.
 		$this->loader->add_action( 'add_meta_boxes', $plugin_admin, 'add_meta_boxes' );
 		$this->loader->add_action( 'save_post', $plugin_admin, 'save_meta', 10, 2 );
 		// Term meta.
 		$this->loader->add_action( 'load-term.php', $plugin_admin, 'add_term_meta_boxes' );
-		$this->loader->add_action( 'load-edit-tags.php', $plugin_admin, 'add_term_save_meta' );
+		$this->loader->add_action( 'load-edit-tags.php', $plugin_admin, 'save_term_meta' );
+		// User meta.
+		$this->loader->add_action( 'show_user_profile', $plugin_admin, 'user_meta_box' );
+		$this->loader->add_action( 'edit_user_profile', $plugin_admin, 'user_meta_box' );
+		$this->loader->add_action( 'personal_options_update', $plugin_admin, 'save_user_meta' );
+		$this->loader->add_action( 'edit_user_profile_update', $plugin_admin, 'save_user_meta' );
+
 		$this->loader->add_action( 'update_option_joinchat', $plugin_admin, 'clear_cache', 100 );
 		// Plugins page.
 		$this->loader->add_filter( 'plugin_action_links_' . JOINCHAT_BASENAME, $plugin_admin, 'settings_link' );
 		$this->loader->add_filter( 'plugin_row_meta', $plugin_admin, 'plugin_links', 10, 2 );
 		// Privacy Policy Guide.
 		$this->loader->add_action( 'admin_init', $plugin_admin, 'add_privacy_message' );
+		// Compatibility for legacy Joinchat Premium versions.
+		$this->loader->add_filter( 'joinchat_enhanced_phone', $plugin_admin, 'compat_enhanced_phone', 5 );
+		$this->loader->add_action( 'admin_notices', $plugin_admin, 'notice_enhanced_phone' );
 
 		$plugin_page = new Joinchat_Admin_Page();
 
 		$this->loader->add_action( 'admin_menu', $plugin_page, 'add_menu' );
 		$this->loader->add_action( 'admin_init', $plugin_page, 'setting_fields' );
-		$this->loader->add_action( 'load-settings_page_joinchat', $plugin_page, 'page_hooks' ); // Settings submenu.
-		$this->loader->add_action( 'load-toplevel_page_joinchat', $plugin_page, 'page_hooks' ); // Joinchat menu.
+		$this->loader->add_action( 'load_joinchat_settings_page', $plugin_page, 'page_hooks' );
 
 		$plugin_onboard = new Joinchat_Admin_Onboard();
 
 		$this->loader->add_action( 'admin_menu', $plugin_onboard, 'add_menu' );
 		$this->loader->add_action( 'admin_head', $plugin_onboard, 'remove_menu' );
-		$this->loader->add_action( 'load-settings_page_joinchat-onboard', $plugin_onboard, 'page_hooks' ); // Settings submenu.
-		$this->loader->add_action( 'load-joinchat_page_joinchat-onboard', $plugin_onboard, 'page_hooks' ); // Joinchat submenu.
+		$this->loader->add_action( 'load_joinchat_onboard_page', $plugin_onboard, 'page_hooks' );
 		$this->loader->add_action( 'wp_ajax_joinchat_onboard', $plugin_onboard, 'save' );
 
 	}
@@ -216,21 +254,26 @@ class Joinchat {
 	 */
 	private function define_public_hooks() {
 
-		global $pagenow;
-
-		if ( is_admin() || 'wp-login.php' === $pagenow ) {
+		if ( is_admin() || $this->is_login() || wp_doing_ajax() || wp_doing_cron() ) {
 			return;
 		}
+
+		require_once JOINCHAT_DIR . 'includes/class-joinchat-formatter.php';
+		Joinchat_Formatter::init();
 
 		require_once JOINCHAT_DIR . 'public/class-joinchat-public.php';
 
 		$plugin_public = new Joinchat_Public();
 
 		$this->loader->add_filter( 'joinchat_settings', $plugin_public, 'get_settings' );
-		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_styles' );
+		$this->loader->add_action( 'wp', $plugin_public, 'set_chatbox_content', 100 );
+		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'register_styles' );
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_scripts' );
+		$this->loader->add_action( 'wp_print_styles', $plugin_public, 'above_the_fold_styles' );
 		$this->loader->add_action( 'wp_footer', $plugin_public, 'footer_html' );
-		$this->loader->add_action( 'wp_footer', $plugin_public, 'enqueue_qr_script', 5 );
+		$this->loader->add_action( 'wp_footer', $plugin_public, 'enqueue_styles' );
+		$this->loader->add_action( 'wp_footer', $plugin_public, 'late_enqueue_styles', 30 );
+		$this->loader->add_action( 'wp_footer', $plugin_public, 'enqueue_qr_script' );
 
 		// Actions (only) for preview.
 		$this->loader->add_action( 'joinchat_preview_footer', $plugin_public, 'footer_html' );
@@ -266,7 +309,6 @@ class Joinchat {
 		$this->loader->add_filter( 'show_admin_bar', $plugin_preview, 'hide_admin_bar', 1000 );
 		$this->loader->add_filter( 'joinchat_show', $plugin_preview, 'always_show', 1000 );
 		$this->loader->add_filter( 'joinchat_classes', $plugin_preview, 'preview_classes', 10, 2 );
-		$this->loader->add_filter( 'joinchat_content', $plugin_preview, 'preview_content' );
 		$this->loader->add_filter( 'joinchat_template', $plugin_preview, 'preview_template' );
 		$this->loader->add_filter( 'joinchat_inline_style', $plugin_preview, 'inline_style' );
 
@@ -297,6 +339,7 @@ class Joinchat {
 		$this->loader->add_filter( 'joinchat_admin_tabs', $plugin_premium, 'admin_tab', 1000 );
 		$this->loader->add_filter( 'joinchat_tab_premium_sections', $plugin_premium, 'tab_sections' );
 		$this->loader->add_filter( 'joinchat_section_output', $plugin_premium, 'section_ouput', 10, 2 );
+		$this->loader->add_filter( 'joinchat_field_output', $plugin_premium, 'field_ads', 10, 3 );
 
 		$this->loader->add_action( 'joinchat_admin_header', $plugin_premium, 'header_coupon' );
 
@@ -327,5 +370,20 @@ class Joinchat {
 	 */
 	public function get_loader() {
 		return $this->loader;
+	}
+
+	/**
+	 * Check if the current request is for the login page.
+	 *
+	 * @since    6.0.9
+	 * @access   private
+	 * @return   bool    True if is login page, false otherwise.
+	 */
+	private function is_login() {
+		if ( function_exists( 'is_login' ) ) {
+			return is_login();
+		}
+
+		return false !== stripos( wp_login_url(), sanitize_text_field( wp_unslash( $_SERVER['SCRIPT_NAME'] ?? '' ) ) );
 	}
 }

@@ -1,19 +1,10 @@
-(function ($, window, document) {
+(function ($, window) {
   'use strict';
 
   // Random number
   function rand(min, max) { return Math.round(Math.random() * (max - min) + min); }
 
-  // Country code for IntTelInput
-  var country_request = JSON.parse(localStorage.joinchat_country_code || '{}');
-  var country_code = (country_request.code && country_request.date == new Date().toDateString()) ? country_request.code : false;
-  if (!country_code) {
-    $.getJSON('https://ipinfo.io').always(function (resp) {
-      country_code = (resp && resp.country) ? resp.country : '';
-      localStorage.joinchat_country_code = JSON.stringify({ code: country_code, date: new Date().toDateString() });
-    });
-  }
-
+  var has_iti = window.joinchat_iti?.hasITI();
   var joinchat_obj = {
     $div: null,
     $: function (sel) { return $(sel || this.$div, this.$div); },
@@ -149,7 +140,7 @@
 
     doOptionPhone: function (option) {
       var input = $('#joinchat_phone').get(0);
-      this.saved['telephone'] = intlTelInputGlobals.getInstance(input).getNumber();
+      this.saved['telephone'] = has_iti ? window.joinchat_iti.getNumber(input) : $(input).val();
       input.readOnly = true;
       this.doOptionGoto(option);
     },
@@ -181,34 +172,16 @@
       if (!msg.includes('{INPUT')) return;
 
       if (msg.includes('{INPUT phone}')) {
-        $msg.html(msg.replace('{INPUT phone}', '<input id="joinchat_phone" data-name="joinchat[telephone]" value="" type="text">'));
+        $msg.html(msg.replace('{INPUT phone}', '<input id="joinchat_phone" value="" type="text">'));
         $msg.css('z-index', 1); // Flag dropdown over option buttons.
 
-        if (typeof intlTelInput === 'function') {
-          var $phone = $('#joinchat_phone');
-          intlTelInput($phone[0], {
-            hiddenInput: $phone.data('name') || 'joinchat[telephone]',
-            separateDialCode: true,
-            initialCountry: 'auto',
-            preferredCountries: [country_code || ''],
-            geoIpLookup: function (callback) { if (country_code) callback(country_code); },
-            customPlaceholder: function (placeholder) { return intlTelConf.placeholder + ' ' + placeholder; },
-            utilsScript: intlTelConf.utils_js,
-          });
-
-          $phone.on('input countrychange', function () {
-            var $this = $(this);
-            var is_valid = intlTelInputGlobals.getInstance(this).isValidNumber();
-
-            $this.css('color', $this.val().trim() && !is_valid ? '#ca4a1f' : '');
-            joinchat_obj.$('.joinchat__option--phone').toggleClass('joinchat__option--disabled', !is_valid);
-          }).on('blur', function () {
-            var iti = intlTelInputGlobals.getInstance(this);
-            iti.setNumber(iti.getNumber());
+        if (has_iti) {
+          window.joinchat_iti.init($('#joinchat_phone')[0], null, {
+            onChange: function (_, is_valid) { joinchat_obj.$('.joinchat__option--phone').toggleClass('joinchat__option--disabled', !is_valid); },
           });
         }
       } else if (msg.includes('{INPUT message}')) {
-        $msg.html(msg.replace('{INPUT message}', '<textarea id="joinchat_message_send" name="joinchat[message_send]" rows="3" class="regular-text">' + joinchat_l10n.step_msg_value + '</textarea>'));
+        $msg.html(msg.replace('{INPUT message}', '<textarea id="joinchat_message_send" name="joinchat[message_send]" rows="4" class="regular-text">' + joinchat_l10n.step_msg_value + '</textarea>'));
       } else if (msg.includes('{INPUT cta}')) {
         $msg.html(msg.replace('{INPUT cta}', '<textarea id="joinchat_message_text" name="joinchat[message_text]" rows="4" class="regular-text">' + joinchat_l10n.step_cta_value + '</textarea>'));
       } else if (msg.includes('{INPUT newsletter}')) {
@@ -230,7 +203,7 @@
     {
       'content': [
         joinchat_l10n.step_hi,
-        '<img src="' + joinchat_settings.img_base + 'onboard-01.png" alt="">'
+        '<img src="' + joinchat_settings.img_base + 'onboard-01.webp" alt="">'
       ],
       'options': [
         {
@@ -254,7 +227,7 @@
     {
       'content': [
         joinchat_l10n.step_msg,
-        '<img src="' + joinchat_settings.img_base + 'onboard-02.png" alt="">',
+        '<img src="' + joinchat_settings.img_base + 'onboard-02.webp" alt="">',
         joinchat_l10n.step_msg_field + ':<br>{INPUT message}'
       ],
       'options': [
@@ -276,7 +249,7 @@
     {
       'content': [
         joinchat_l10n.step_cta,
-        '<img src="' + joinchat_settings.img_base + 'onboard-03.png" alt="">',
+        '<img src="' + joinchat_settings.img_base + 'onboard-03.webp" alt="">',
         joinchat_l10n.step_cta_field + ':<br>{INPUT cta}',
       ],
       'options': [
@@ -297,7 +270,7 @@
     },
     {
       'content': [
-        '<img src="' + joinchat_settings.img_base + 'onboard-04.png" alt="">',
+        '<img src="' + joinchat_settings.img_base + 'onboard-04.webp" alt="">',
         joinchat_l10n.step_news + '<br>{INPUT newsletter}'
       ],
       'options': [
@@ -331,7 +304,7 @@
     {
       'content': [
         joinchat_l10n.step_success,
-        '<img src="' + joinchat_settings.img_base + 'onboard-05.png" alt="">',
+        '<img src="' + joinchat_settings.img_base + 'onboard-05.webp" alt="">',
       ],
       'options': [
         {
@@ -362,4 +335,4 @@
     setTimeout(function () { joinchat_dialog.startDialog(); }, 700);
   });
 
-}(jQuery, window, document));
+}(jQuery, window));
