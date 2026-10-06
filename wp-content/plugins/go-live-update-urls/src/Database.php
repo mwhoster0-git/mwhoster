@@ -14,36 +14,41 @@ class Database {
 	use Singleton;
 
 	/**
-	 * Get list of tables we treat as serialized when updating
+	 * Get the list of tables we treat as serialized when updating
 	 *
 	 * @since   5.0.0
 	 *
 	 * @return array<string, string> - array( %table_name% => %table_column% )
 	 */
-	public function get_serialized_tables() {
-		global $wpdb;
+	public function get_serialized_tables(): array {
+		$wpdb = $this->get_wpdb();
 		// Default tables with serialized data.
 		$serialized_tables = [
 			$wpdb->options     => 'option_value',
 			$wpdb->postmeta    => 'meta_value',
 			$wpdb->commentmeta => 'meta_value',
-			$wpdb->signups     => 'meta',
 			$wpdb->termmeta    => 'meta_value',
 			$wpdb->usermeta    => 'meta_value',
 		];
 
-		// We are not going to update site meta if we are not on the main blog.
 		if ( is_multisite() ) {
-			$serialized_tables[ $wpdb->sitemeta ] = 'meta_value';
-			$serialized_tables[ $wpdb->blogmeta ] = 'meta_value';
+			if ( isset( $wpdb->signups ) ) {
+				$serialized_tables[ $wpdb->signups ] = 'meta';
+			}
+			if ( isset( $wpdb->sitemeta ) ) {
+				$serialized_tables[ $wpdb->sitemeta ] = 'meta_value';
+			}
+			if ( isset( $wpdb->blogmeta ) ) {
+				$serialized_tables[ $wpdb->blogmeta ] = 'meta_value';
+			}
 		}
 
-		return apply_filters( 'go-live-update-urls/database/serialized-tables', $serialized_tables );
+		return (array) apply_filters( 'go-live-update-urls/database/serialized-tables', $serialized_tables );
 	}
 
 
 	/**
-	 * Get the list of tables that were not create by WP core
+	 * Get the list of tables that were not created by WP core
 	 *
 	 * @return string[]
 	 */
@@ -66,8 +71,8 @@ class Database {
 	 *
 	 * @return string[]
 	 */
-	public function get_core_tables() {
-		global $wpdb;
+	public function get_core_tables(): array {
+		$wpdb = $this->get_wpdb();
 
 		$tables = [
 			$wpdb->posts,
@@ -94,11 +99,10 @@ class Database {
 			$tables[] = $wpdb->sitemeta;
 			$tables[] = $wpdb->sitecategories;
 			$tables[] = $wpdb->registration_log;
-			// WP 5.0.0+.
-			if ( isset( $wpdb->blogmeta ) ) {
-				$tables[] = $wpdb->blogmeta;
-			}
+			$tables[] = $wpdb->blogmeta;
 		}
+
+		$tables = \array_filter( $tables, '\is_string' );
 
 		return (array) apply_filters( 'go-live-update-urls/database/core-tables', $tables );
 	}
@@ -133,10 +137,10 @@ class Database {
 	 *
 	 * @since 5.0.1
 	 *
-	 * @return string[]
+	 * @return list<string>
 	 */
-	public function get_all_table_names() {
-		global $wpdb;
+	public function get_all_table_names(): array {
+		$wpdb = $this->get_wpdb();
 		$query = "SELECT TABLE_NAME as TableName FROM information_schema.TABLES WHERE TABLE_SCHEMA='" . $wpdb->dbname . "' AND TABLE_NAME LIKE '" . $wpdb->esc_like( $wpdb->prefix ) . "%'";
 
 		// Site 1's 'LIKE wp_%' will return all tables in the database,
@@ -148,7 +152,8 @@ class Database {
 			}
 			$query .= ' AND SUBSTRING(TABLE_NAME,1,4) NOT IN (' . substr( $not_like, 0, - 1 ) . ')';
 		}
-		return $wpdb->get_col( $query );
+		$tables = $wpdb->get_col( $query );
+		return \array_values( \array_filter( $tables, fn( $val ) => \is_string( $val ) ) );
 	}
 
 
@@ -226,7 +231,7 @@ class Database {
 	 * @return int
 	 */
 	public function update_column( $table, $column, $old_url, $new_url ): int {
-		global $wpdb;
+		$wpdb = $this->get_wpdb();
 
 		$count = $this->count_column_urls( $table, $column, $old_url );
 		$update_query = 'UPDATE ' . $table . ' SET `' . $column . '` = replace(`' . $column . '`, %s, %s)';
@@ -243,7 +248,7 @@ class Database {
 
 
 	/**
-	 * Count of number of rows in a table which contain the old URL.
+	 * Count of the number of rows in a table which contain the old URL.
 	 *
 	 * When updating, the serialized data is updated first and this
 	 * counts the leftovers.
@@ -260,11 +265,21 @@ class Database {
 	 * @return int
 	 */
 	public function count_column_urls( $table, $column, $old_url ): int {
-		global $wpdb;
+		$wpdb = $this->get_wpdb();
 
 		$query = "SELECT SUM( ROUND( ( LENGTH( `{$column}` ) - LENGTH( REPLACE( `{$column}`, %s, '' ) ) ) / LENGTH( %s ) ) ) from `{$table}`";
 
 		return (int) $wpdb->get_var( $wpdb->prepare( $query, [ $old_url, $old_url ] ) );
+	}
+
+
+	/**
+	 * Access the wpdb object safely.
+	 *
+	 * @return \wpdb
+	 */
+	public function get_wpdb(): \wpdb {
+		return $GLOBALS['wpdb'];
 	}
 
 

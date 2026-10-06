@@ -38,6 +38,8 @@ window.ShortPixelProcessor =
 		debugIsActive : false, // indicating is SPIO is in debug mode. Don't report certain things if not.
 		hasStartQuota: false, // if we start without quota, don't notice too much, don't run.
 		workerErrors: 0, // times worker encoutered an error.
+    broadcaster: null, 
+    is_disabled: false, 
     qStatus: { // The Queue returns
        1:  'QUEUE_ITEMS',
        4:  'QUEUE_WAITING',
@@ -60,7 +62,7 @@ window.ShortPixelProcessor =
        11: 'RESPONSE_WARNING', // *not used*
        12: 'RESPONSE_ERROR_DELAY', // when an error is serious enough to delay things.*not used*
     },
-    aStatusError: {  // AjaxController / optimizeController - when an error occured
+    aStatusError: {  // AjaxController / QueueController - when an error occured
         '-1': 'PROCESSOR_ACTIVE', // active in another window
         '-2': 'NONCE_FAILED',
         '-3': 'NO_STATUS',
@@ -70,23 +72,32 @@ window.ShortPixelProcessor =
 				'-903': 'TIMEOUT', // SPIO shortQ retry limit reached.
      },
 
+    ShouldLog: function()
+    {
+        return this.showConsoleLog;
+    },
+
     Load: function(hasQuota)
     {
 
 			window.addEventListener('error', this.ScriptError.bind(this));
 
-        this.isBulkPage = ShortPixelProcessorData.isBulkPage;
+        this.isBulkPage = Boolean(ShortPixelProcessorData.isBulkPage);
         this.localSecret = localStorage.getItem('bulkSecret');
 
         this.remoteSecret = ShortPixelProcessorData.bulkSecret;
-				this.debugIsActive = ShortPixelProcessorData.debugIsActive;
+          this.debugIsActive = (ShortPixelProcessorData.debugIsActive == 'true') ? true : false;
+        this.showConsoleLog = (ShortPixelProcessorData.showConsoleLog == 'true') ? true : false; 
+        this.is_disabled = Boolean(ShortPixelProcessorData.disable_processor); 
 
         this.nonce['process'] = ShortPixelProcessorData.nonce_process;
         this.nonce['exit'] = ShortPixelProcessorData.nonce_exit;
-        this.nonce['itemview'] = ShortPixelProcessorData.nonce_itemview;
         this.nonce['ajaxRequest'] = ShortPixelProcessorData.nonce_ajaxrequest;
+				this.nonce['settingsRequest'] = ShortPixelProcessorData.nonce_settingsrequest;
 
 				this.autoMediaLibrary = (ShortPixelProcessorData.autoMediaLibrary == 'true') ? true : false;
+
+        this.AddBroadCastListener();
 
 				if (hasQuota == 1)
 					this.hasStartQuota = true;
@@ -97,9 +108,9 @@ window.ShortPixelProcessor =
 				if (ShortPixelProcessorData.interval && ShortPixelProcessorData.interval > 100)
 				this.deferInterval = ShortPixelProcessorData.deferInterval;
 
-        console.log('Start Data from Server', ShortPixelProcessorData.startData, this.interval, this.deferInterval);
-        console.log('remoteSecret ' + this.remoteSecret + ', localsecret: ' + this.localSecret);
-
+        if (this.ShouldLog()) {
+          console.log('Start Data from Server', ShortPixelProcessorData.startData, this.interval, this.deferInterval);
+        }
 
         this.tooltip = new ShortPixelToolTip({}, this);
 
@@ -112,6 +123,10 @@ window.ShortPixelProcessor =
 				{
           this.screen = new ShortPixelScreen({}, this);
 					this.screen.Init();
+
+          var event = new CustomEvent('shortpixel.screen.loaded', { detail : this});
+          window.dispatchEvent(event);
+      
 				}
 
 				// Load the Startup Data (needs screen)
@@ -126,6 +141,31 @@ window.ShortPixelProcessor =
             	 this.RunProcess();
         }
 
+    },
+    AddBroadCastListener : function() // Sync between tabs :O 
+    {
+        var self = this; 
+        var window_origin = window.location.origin; 
+        this.broadcaster = new BroadcastChannel('spio_processor');
+        this.broadcaster.onmessage = function (event) {
+
+        if (window_origin !== event.origin)
+        {
+          console.warn('Broadcast - wrong origin');
+           return false; 
+        }
+
+          var data = event.data; 
+
+          if (data.reason === 'handleImage')
+          {
+             self.screen.HandleImage(data.imageItem, data.type); 
+          }
+          if (data.reason == 'handleItemError')
+          {
+             self.HandleItemError(data.imageItem, data.type);
+          }
+        };
     },
     CheckActive: function()
     {
@@ -152,7 +192,9 @@ window.ShortPixelProcessor =
       }
       else
       {
-         console.log('Check Active: Processor not active - ' + this.remoteSecret + ' - ' + this.localSecret);
+if (this.ShouldLog()) {
+           console.log('Check Active: Processor not active - ' + this.remoteSecret + ' - ' + this.localSecret);
+         }
 
          this.tooltip.ProcessEnd();
          this.StopProcess();
@@ -161,7 +203,9 @@ window.ShortPixelProcessor =
          {
            var threemin = 180000; // TTL for a processorkey is 2 minutes now, so wait a broad 3 and check again
            this.timer_recheckactive = window.setTimeout(this.RecheckProcessor.bind(this), threemin );
-           console.log('Waiting for recheckActive ', this.timer_recheckactive);
+             if (this.ShouldLog()) {
+               console.log('Waiting for recheckActive ', this.timer_recheckactive);
+             }
          }
 
       }
@@ -230,7 +274,9 @@ window.ShortPixelProcessor =
         {
             var ajaxURL = ShortPixel.AJAX_URL;
             var nonce = '';
-            console.log('Starting Worker');
+if (this.ShouldLog()) {
+              console.log('Starting Worker');
+            }
 
             this.worker = new Worker(ShortPixelProcessorData.workerURL);
 
@@ -253,7 +299,9 @@ window.ShortPixelProcessor =
         if (this.worker === null) // worker already shut / not loaded
           return false;
 
-        console.log('Shutting down Worker');
+        if (this.ShouldLog()) {
+          console.log('Shutting down Worker');
+        }
         this.worker.postMessage({'action' : 'shutdown', 'nonce': this.nonce['exit'] });
         this.worker = null;
         window.removeEventListener('beforeunload', this.ShutDownWorker.bind(this));
@@ -281,13 +329,23 @@ window.ShortPixelProcessor =
             return;
         }
 
+        if (true == this.is_disabled && false === this.isBulkPage)
+        {
+             if (this.ShouldLog()) {
+               console.log('Processor disabled by config'); 
+             }
+           return;
+        }
+
         if (this.timer_recheckactive)
         {
            window.clearTimeout(this.timer_recheckactive);
            this.timer_recheckactive = null;
         }
 
-        console.log('Processor: Run Process in ' + this.interval);
+if (this.ShouldLog()) {
+          console.log('Processor: Run Process in ' + this.interval);
+        }
 
         this.timer = window.setTimeout(this.Process.bind(this), this.interval);
     },
@@ -300,15 +358,15 @@ window.ShortPixelProcessor =
       this.isManualPaused = true;
       var event = new CustomEvent('shortpixel.processor.paused', { detail : {paused: this.isManualPaused }});
       window.dispatchEvent(event);
-      console.log('Processor: Process Paused');
+      if (this.ShouldLog()) {
+        console.log('Processor: Process Paused');
+      }
       window.clearTimeout(this.timer);
       this.timer = null;
 
     },
     StopProcess: function(args)
     {
-        console.log('Stop Processing Signal #' + this.timer);
-
 				// @todo this can probably go? Why would StopProcess cancel Manual pauses?
         if (this.isManualPaused == true) /// processor ends on status paused.
         {
@@ -324,14 +382,18 @@ window.ShortPixelProcessor =
            if (typeof args.defer !== 'undefined' && args.defer)
            {
                 this.timesEmpty++;
-                console.log('Stop, defer wait :' + (this.deferInterval * this.timesEmpty), this.timesEmpty);
+                if (this.ShouldLog()) {
+                  console.log('Stop, defer wait :' + (this.deferInterval * this.timesEmpty), this.timesEmpty);
+                }
                 this.SetInterval( (this.deferInterval * this.timesEmpty) ); //set a long interval
                 this.RunProcess(); // queue a run once
                 this.SetInterval(-1); // restore interval
            }
            else if (typeof args.waiting !== 'undefined')
            {
-             console.log('Stop Process: Waiting for action');
+             if (this.ShouldLog()) {
+               console.log('Stop Process: Waiting for action');
+             }
              this.waitingForAction = args.waiting;
            }
         }
@@ -368,9 +430,9 @@ window.ShortPixelProcessor =
 					var handledError = false; // prevent passing to regular queueHandler is some action is taken.
 					this.workerErrors = 0;
 
-          if ( response.callback)
+          if (response.callback)
           {
-              console.log('Running callback : ' + response.callback);
+              if (this.ShouldLog()) console.log('Running callback : ' + response.callback);
               var event = new CustomEvent(response.callback, {detail: response, cancelable: true});
               var checkPrevent = window.dispatchEvent(event);
 
@@ -390,6 +452,7 @@ window.ShortPixelProcessor =
              else if (error == 'NONCE_FAILED')
              {
                this.Debug('Nonce Failed', 'error');
+               window.location.reload();  // This is 99% due to timeout
              }
              else if (error == 'NOQUOTA')
              {
@@ -463,14 +526,14 @@ window.ShortPixelProcessor =
 						if (this.workerErrors >= 3)
 						{
 							this.screen.HandleErrorStop();
-							console.log('Shutting down . Num errors: ' + this.workerErrors);
-							this.StopProcess();
-							this.ShutDownWorker();
+                            if (this.ShouldLog()) console.log('Shutting down . Num errors: ' + this.workerErrors);
+                            this.StopProcess();
+                            this.ShutDownWorker();
 						}
 						else
 						{
 							this.StopProcess({ defer: true });
-								console.log('Stop / defer');
+                                if (this.ShouldLog()) console.log('Stop / defer');
 						}
       }
 
@@ -499,39 +562,71 @@ window.ShortPixelProcessor =
          // If there are items, give them to the screen for display of optimization, waiting status etc.
 				 var imageHandled = false;  // Only post one image per result-set to the ImageHandler (on bulk), to prevent flooding.
 
-				 // @todo Make sure that .result and .results can be iterated the same.
+         // @todo Make sure that .result and .results can be iterated the same.
+
+         /* Structure ::
+              json -> [media/custom] -> results array -> all results of item. New simplification!
+         */
+
          if (typeof response.results !== 'undefined' && response.results !== null)
          {
+            if (this.ShouldLog()) console.log('Response: Results', response.results, type);
              for (var i = 0; i < response.results.length; i++)
              {
                 var imageItem = response.results[i];
-								if (imageItem == null || ! imageItem.result)
+								if (imageItem == null)
 								{
 									 console.error('Expecting ImageItem Object with result ', imageItem);
 									 continue;
 								}
-                if (imageItem.result.is_error)
+                if (imageItem.is_error)
 								{
                   this.HandleItemError(imageItem, type);
+                  this.broadcaster.postMessage({
+                    'reason' : 'handleItemError', 
+                    'imageItem': imageItem, 
+                    'type' : type, 
+                });
 								}
 
-								if (! imageHandled)
+                // Bulk page should deliver only one item for previewing not to flood the browser.
+								if (this.isBulkPage && imageHandled)
 								{
+                }
+                else
+                {
                 	imageHandled = this.screen.HandleImage(imageItem, type);
+                  this.broadcaster.postMessage({
+                      'reason' : 'handleImage', 
+                      'imageItem': imageItem, 
+                      'type' : type, 
+                  });
 								}
              }
          }
-         if (typeof response.result !== 'undefined' && response.result !== null)
+         else if (typeof response.result !== 'undefined' && response.result !== null)
          {
+              console.warn('This response going trough deprecated single handler - ', response);
               if (response.result.is_error)
 							{
 									this.HandleItemError(response.result, type);
+                  this.broadcaster.postMessage({
+                    'reason' : 'handleItemError', 
+                    'imageItem': imageItem, 
+                    'type' : type, 
+                });
 							}
 							else if (! imageHandled)
 							{
               	imageHandled = this.screen.HandleImage(response, type); // whole response here is single item. (final!)
+                this.broadcaster.postMessage({
+                  'reason' : 'handleImage', 
+                  'imageItem': imageItem, 
+                  'type' : type, 
+              });
 							}
          }
+
 
          // Queue status?
          if (response.stats)
@@ -582,25 +677,28 @@ window.ShortPixelProcessor =
          var qstatus = this.qStatus[combinedStatus];
           if (qstatus == 'QUEUE_ITEMS' || qstatus == "PREPARING" || qstatus == 'PREPARING_OVERLIMIT')
           {
-            console.log('Qstatus Preparing or items returns');
+            if (this.ShouldLog()) console.log('Qstatus Preparing or items returns');
              this.timesEmpty = 0;
+             this.SetInterval(-1); // restore interval
              this.RunProcess();
           }
           if (qstatus == 'QUEUE_WAITING')
           {
-             console.log('Item in Queue, but waiting');
+             if (this.ShouldLog()) console.log('Item in Queue, but waiting');
              this.timesEmpty++;
              this.RunProcess(); // run another queue with timeout
           }
           else if (qstatus == 'QUEUE_EMPTY')
           {
+             if (this.ShouldLog())
+             {
               console.debug('Processor: Empty Queue');
-              //this.tooltip.ProcessEnd();
+             }
               this.StopProcess({ defer: true });
           }
           else if (qstatus == "PREPARING_DONE")
           {
-              console.log('Processor: Preparing is done');
+              if (this.ShouldLog()) console.log('Processor: Preparing is done');
               this.StopProcess();
           }
 
@@ -614,7 +712,8 @@ window.ShortPixelProcessor =
 
     HandleItemError : function(result, type)
     {
-        console.log('Handle Item Error', result, type);
+
+        if (this.ShouldLog()) console.log('Handle Item Error', result, type);
         var error = this.aStatusError[result.error];
 
         if (error == 'NOQUOTA' )
@@ -623,7 +722,6 @@ window.ShortPixelProcessor =
         }
 
         this.screen.HandleItemError(result, type);
-
 
     },
     LoadItemView: function(data)
@@ -636,7 +734,7 @@ window.ShortPixelProcessor =
         {
            data.callback = 'shortpixel.RenderItemView';
         }
-      	this.worker.postMessage({action: 'getItemView', 'nonce' : this.nonce['itemview'], 'data': { 'id' : data.id, 'type' : data.type, 'callback' : data.callback }});
+				this.worker.postMessage({action: 'ajaxRequest', 'nonce' : this.nonce['ajaxRequest'], 'data': { 'id' : data.id, 'type' : data.type, 'callback' : data.callback, 'screen_action' : 'getItemView' }});
 			}
     },
 
@@ -650,10 +748,25 @@ window.ShortPixelProcessor =
        var localWorker = false;
        this.worker.postMessage({action: 'ajaxRequest', 'nonce' : this.nonce['ajaxRequest'], 'data': data });
     },
+		SettingsRequest: function(data)
+		{
+			if (this.worker === null)
+			{
+				 this.LoadWorker(); // JIT worker loading
+			}
+
+			 var localWorker = false;
+			 this.worker.postMessage({action: 'settingsRequest', 'nonce' : this.nonce['settingsRequest'], 'data': data });
+		},
+
 		GetPluginUrl: function()
 		{
 			 return ShortPixelConstants[0].WP_PLUGIN_URL;
 		},
+    GetScreen: function()
+    {
+       return this.screen;
+    },
     Debug: function (message, messageType)
     {
       if (typeof messageType == 'undefined')

@@ -2,6 +2,10 @@
 
 namespace WP_Statistics\Service\Admin\Geographic;
 
+if (!defined('ABSPATH')) exit; // Exit if accessed directly
+
+use WP_STATISTICS\Helper;
+
 class GeographicManager
 {
 
@@ -18,17 +22,13 @@ class GeographicManager
      */
     public function addMenuItem($items)
     {
-        $newItem = [
-            'geographic' => [
-                'require'  => ['geoip' => true, 'visitors' => true],
-                'sub'      => 'overview',
-                'title'    => esc_html__('Geographic', 'wp-statistics'),
-                'page_url' => 'geographic',
-                'callback' => GeographicPage::class,
-            ]
+        $items['geographic'] = [
+            'sub'      => 'overview',
+            'title'    => esc_html__('Geographic', 'wp-statistics'),
+            'page_url' => 'geographic',
+            'callback' => GeographicPage::class,
+            'priority'  => 74,
         ];
-
-        array_splice($items, 10, 0, $newItem);
 
         return $items;
     }

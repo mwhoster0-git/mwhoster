@@ -9,6 +9,11 @@ class WordCountService
 {
     const WORDS_COUNT_META_KEY = 'wp_statistics_words_count';
 
+    public static function isActive()
+    {
+        return Option::get('word_count_analytics', true);
+    }
+
     /**
      * Calculate the number of words in a given text.
      *
@@ -21,7 +26,9 @@ class WordCountService
         $text = wp_strip_all_tags($text);
 
         // Split the text into words and count them
-        return str_word_count($text);
+        $words = explode(' ', $text);
+        $words = array_filter($words);
+        return count($words);
     }
 
     /**
@@ -64,7 +71,7 @@ class WordCountService
      */
     public function handleSavePost($postId, $post)
     {
-        if ($post && $post->post_status == 'publish') {
+        if ($post && $post->post_status == 'publish' && in_array($post->post_type, Helper::get_list_post_type())) {
             $wordCount = $this->calculate($post->post_content);
             $this->saveWordsCount($postId, $wordCount);
         }
@@ -80,26 +87,5 @@ class WordCountService
             'meta_compare' => 'NOT EXISTS',
             'fields'       => 'ids'
         ]);
-    }
-
-    /**
-     * Processes posts to calculate and update word count metadata.
-     *
-     * @return void
-     */
-    public function processWordCountForPosts()
-    {
-        // Initialize and dispatch the CalculatePostWordsCount class
-        $remoteRequestAsync      = WP_Statistics()->getBackgroundProcess();
-        $calculatePostWordsCount = $remoteRequestAsync['calculate_post_words_count'];
-
-        foreach ($this->getPostsWithoutWordCountMeta() as $postId) {
-            $calculatePostWordsCount->push_to_queue(['post_id' => $postId]);
-        }
-
-        // Mark as processed
-        Option::saveOptionGroup('word_count_process_started', true, 'jobs');
-
-        $calculatePostWordsCount->save()->dispatch();
     }
 }

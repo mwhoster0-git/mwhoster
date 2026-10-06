@@ -5,7 +5,7 @@
  * Description: Updates every URL on your site when going live or changing domains.
  * Author: OnPoint Plugins
  * Author URI: https://onpointplugins.com
- * Version: 7.0.5
+ * Version: 7.1.0
  * Text Domain: go-live-update-urls
  * Domain Path: /languages/
  * Network: false
@@ -15,14 +15,15 @@
  * @package go-live-update-urls
  */
 
-define( 'GO_LIVE_UPDATE_URLS_VERSION', '7.0.5' );
-define( 'GO_LIVE_UPDATE_URLS_REQUIRED_PRO_VERSION', '7.0.4' );
+define( 'GO_LIVE_UPDATE_URLS_VERSION', '7.1.0' );
+define( 'GO_LIVE_UPDATE_URLS_REQUIRED_PRO_VERSION', '7.1.4' );
 define( 'GO_LIVE_UPDATE_URLS_URL', plugin_dir_url( __FILE__ ) );
 
 use Go_Live_Update_Urls\Admin;
 use Go_Live_Update_Urls\Core;
 use Go_Live_Update_Urls\Database;
 use Go_Live_Update_Urls\Serialized;
+use Go_Live_Update_Urls\Serialized_Parser;
 use Go_Live_Update_Urls\Skip_Rows;
 use Go_Live_Update_Urls\Traits\Singleton;
 use Go_Live_Update_Urls\Updaters\Repo;
@@ -66,6 +67,7 @@ function go_live_update_urls_autoload( $class_name ) {
 		Database::class          => 'Database.php',
 		Repo::class              => 'Updaters/Repo.php',
 		Serialized::class        => 'Serialized.php',
+		Serialized_Parser::class => 'Serialized_Parser.php',
 		Singleton::class         => 'Traits/Singleton.php',
 		Skip_Rows::class         => 'Skip_Rows.php',
 		Updates::class           => 'Updates.php',

@@ -5,15 +5,33 @@ if ( ! defined( 'ABSPATH' ) ) {
  exit; // Exit if accessed directly.
 }
 
+/**
+ * Admin notice prompting the user to migrate legacy (pre-5.0) optimization metadata.
+ *
+ * @package ShortPixel\Model\AdminNotices
+ */
 class LegacyNotice extends \ShortPixel\Model\AdminNoticeModel
 {
+	/** @var string Unique notice key. */
 	protected $key = 'MSG_CONVERT_LEGACY';
 
+	/**
+	 * Checks whether this notice should be automatically triggered.
+	 * Currently disabled; must be triggered manually.
+	 *
+	 * @return bool Always false.
+	 */
 	protected function checkTrigger()
 	{
 		 return false;
 	}
 
+	/**
+	 * Builds the HTML message explaining the legacy data format and providing
+	 * a link to the bulk migration tool.
+	 *
+	 * @return string HTML message string.
+	 */
 	protected function getMessage()
 	{
 		$message = '<p><strong>' .  __('ShortPixel has found items in the media library with an outdated optimization format!', 'shortpixel-image-optimiser') . '</strong></p>';
@@ -23,7 +41,7 @@ class LegacyNotice extends \ShortPixel\Model\AdminNoticeModel
 		$message .=  '<p>' . __('It is recommended to migrate all items to the modern format by clicking the button below.', 'shortpixel-image-optimser') . '</p>';
 		$message .= '<p><a href="%s" class="button button-primary">%s</a></p>';
 
-		$read_link = esc_url('https://shortpixel.com/knowledge-base/article/539-spio-5-tells-me-to-convert-legacy-data-what-is-this');
+		$read_link = esc_url('https://shortpixel.com/knowledge-base/article/spio-5-tells-me-to-convert-legacy-data-what-is-this/');
 		$action_link = esc_url(admin_url('upload.php?page=wp-short-pixel-bulk&panel=bulk-migrate'));
 		$action_name = __('Migrate optimization data', 'shortpixel-image-optimiser');
 

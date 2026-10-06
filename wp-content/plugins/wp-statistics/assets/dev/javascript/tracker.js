@@ -1,100 +1,68 @@
-let WP_Statistics_CheckTime = 60000;
+document.addEventListener('DOMContentLoaded', function handler() {
+    // Defer until a prerendered document is activated by user navigation.
+    // The server drops prerender hits via Sec-Purpose, and activation does
+    // not re-run scripts — without this gate the real pageview is lost.
+    if (document.prerendering) {
+        document.addEventListener('prerenderingchange', handler, { once: true });
+        return;
+    }
 
-// Check DoNotTrack Settings on User Browser
-let WP_Statistics_Dnd_Active = parseInt(navigator.msDoNotTrack || window.doNotTrack || navigator.doNotTrack, 10);
+    const consentIntegration = WP_Statistics_Tracker_Object.option.consentIntegration.name;
 
-// Prevent init() from running more than once
-let hasTrackerInitializedOnce = false;
+    // If there's no consent integration, or borlabs cookie integration is enabled
+    if (!consentIntegration || consentIntegration === 'borlabs_cookie') {
+        WpStatisticsUserTracker.init();
+        WpStatisticsEventTracker.init();
+    }
 
-const referred = encodeURIComponent(document.referrer);
+    // If WP Consent API integration is enabled
+    if (consentIntegration === 'wp_consent_api') {
+        handleWpConsentApiIntegration();
+    }
 
-let wpStatisticsUserOnline = {
-    init: function () {
-        if (hasTrackerInitializedOnce) {
-            return;
-        }
-        hasTrackerInitializedOnce = true;
+    // If Real Cookie Banner integration is enabled
+    if (consentIntegration === 'real_cookie_banner') {
+        handleRealCookieBannerIntegration();
+    }
+});
 
-        if (typeof WP_Statistics_Tracker_Object == "undefined") {
-            console.log('Variable WP_Statistics_Tracker_Object not found on the page source. Please ensure that you have excluded the /wp-content/plugins/wp-statistics/assets/js/tracker.js file from your cache and then clear your cache.');
-        } else {
-            this.checkHitRequestConditions();
-            this.keepUserOnline();
-        }
-    },
 
-    // Check Conditions for Sending Hit Request
-    checkHitRequestConditions: function () {
-        if (WP_Statistics_Tracker_Object.option.cacheCompatibility) {
-            if (WP_Statistics_Tracker_Object.option.dntEnabled) {
-                if (WP_Statistics_Dnd_Active !== 1) {
-                    this.sendHitRequest();
-                }
-            } else {
-                this.sendHitRequest();
-            }
-        }
-    },
-
-    //Sending Hit Request
-    sendHitRequest: async function () {
-        try {
-            const timestamp = Date.now();
-            const requestUrl = `${WP_Statistics_Tracker_Object.hitRequestUrl}&referred=${referred}&_=${timestamp}`;
-
-            const response = await fetch(requestUrl, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json;charset=UTF-8',
-                },
-            });
-            if (!response.ok) {
-                console.error('Hit request failed!');
-            }
-        } catch (error) {
-            console.error('An error occurred on sending hit request:', error);
-        }
-    },
-
-    // Send Request to REST API to Show User Is Online
-    sendOnlineUserRequest: function () {
-        try {
-            const timestamp = Date.now();
-            const requestUrl = `${WP_Statistics_Tracker_Object.keepOnlineRequestUrl}&referred=${referred}&_=${timestamp}`;
-
-            var WP_Statistics_http = new XMLHttpRequest();
-            WP_Statistics_http.open("GET", requestUrl);
-            WP_Statistics_http.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-            WP_Statistics_http.send(null);
-        } catch (error) { }
-    },
-
-    // Execute Send Online User Request Function Every n Sec
-    keepUserOnline: function () {
-        setInterval(
-            function () {
-                if (!WP_Statistics_Tracker_Object.option.dntEnabled ||
-                    (WP_Statistics_Tracker_Object.option.dntEnabled && WP_Statistics_Dnd_Active !== 1)) {
-                    this.sendOnlineUserRequest();
-                }
-            }.bind(this), WP_Statistics_CheckTime
-        );
-    },
-};
-
-document.addEventListener('DOMContentLoaded', function () {
-    if (WP_Statistics_Tracker_Object.option.consentLevel == 'disabled' || !WP_Statistics_Tracker_Object.isWpConsentApiActive || wp_has_consent(WP_Statistics_Tracker_Object.option.consentLevel)) {
-        wpStatisticsUserOnline.init();
+function handleWpConsentApiIntegration() {
+    if (wp_has_consent('statistics') || wp_has_consent('statistics-anonymous')) {
+        WpStatisticsUserTracker.init();
+        WpStatisticsEventTracker.init();
     }
 
     document.addEventListener("wp_listen_for_consent_change", function (e) {
         const changedConsentCategory = e.detail;
         for (let key in changedConsentCategory) {
             if (changedConsentCategory.hasOwnProperty(key)) {
-                if (key === WP_Statistics_Tracker_Object.option.consentLevel && changedConsentCategory[key] === 'allow') {
-                    wpStatisticsUserOnline.init();
+                if ((key === 'statistics' || key === 'statistics-anonymous') && changedConsentCategory[key] === 'allow') {
+                    WpStatisticsUserTracker.init();
+                    WpStatisticsEventTracker.init();
                 }
             }
         }
     });
-});
+}
+
+function handleRealCookieBannerIntegration() {
+    (window.consentApi?.consent("wp-statistics") || Promise.resolve())
+        .then(() => {
+            // In case the user has given consent
+            WpStatisticsUserTracker.init();
+            WpStatisticsEventTracker.init();
+        })
+        .catch(() => {
+            // In case the user has not given base consent,
+            // check if they have given consent for data processing service
+            const dataProcessing = window.consentApi?.consentSync("wp-statistics-with-data-processing");
+
+            if (dataProcessing.cookie != null && dataProcessing.cookieOptIn) {
+                WpStatisticsUserTracker.init();
+                WpStatisticsEventTracker.init();
+            } else {
+                console.log("WP Statistics: Real Cookie Banner consent is not given to track visitor information.");
+            }
+        });
+}

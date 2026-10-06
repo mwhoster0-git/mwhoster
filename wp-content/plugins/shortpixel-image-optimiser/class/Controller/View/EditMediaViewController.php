@@ -1,6 +1,11 @@
 <?php
 namespace ShortPixel\Controller\View;
 
+use ShortPixel\Controller\Backup\BackupController;
+use ShortPixel\Controller\Front\CDNController;
+use ShortPixel\Controller\Optimizer\OptimizeAiController;
+use ShortPixel\Controller\QueueController;
+
 if ( ! defined( 'ABSPATH' ) ) {
  exit; // Exit if accessed directly.
 }
@@ -8,13 +13,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 use ShortPixel\ShortPixelLogger\ShortPixelLogger as Log;
 
 use ShortPixel\Helper\UiHelper as UiHelper;
-use ShortPixel\Helper\UtilHelper as UtilHelper;
-use ShortPixel\Controller\OptimizeController as OptimizeController;
-use ShortPixel\Controller\ErrorController as ErrorController;
 
+use ShortPixel\Controller\Queue\QueueItems as QueueItems;
+use ShortPixel\Model\AiDataModel;
+use ShortPixel\Model\Converter\Converter;
+use ShortPixel\Model\File\DirectoryModel;
 use ShortPixel\Model\File\FileModel as FileModel;
-
-use ShortPixel\Helper\DownloadHelper as DownloadHelper;
 
 
 // Future contoller for the edit media metabox view.
@@ -31,15 +35,10 @@ class EditMediaViewController extends \ShortPixel\ViewController
 
 			protected static $instance;
 
-
-      public function __construct()
-      {
-        parent::__construct();
-      }
-
       protected function loadHooks()
       {
             add_action( 'add_meta_boxes_attachment', array( $this, 'addMetaBox') );
+          //  add_action( 'attachment_fields_to_edit', [ $this, 'addAIAlter'], 10, 2);
             $this->hooked = true;
       }
 
@@ -50,6 +49,7 @@ class EditMediaViewController extends \ShortPixel\ViewController
 
 					$fs = \wpSPIO()->filesystem();
 					$fs->startTrustedMode();
+
       }
 
       public function addMetaBox()
@@ -64,7 +64,27 @@ class EditMediaViewController extends \ShortPixel\ViewController
           );
       }
 
-      public function dometaBox($post)
+      /** Wordpress Filter to ( temp ) add a alt button for AI to the interface.
+       * 
+       * @param array $fields 
+       * @param object $post 
+       * @return array 
+       */
+      public function addAIAlter($fields, $post)
+      { 
+          $post_id = intval($post->ID);
+          $fields['aibutton'] = [
+              'label' => __('ShortPixel AI Data', 'shortpixel-image-optimiser'), 
+              'input' => 'html', 
+              'html' => "<a href='javascript:window.ShortPixelProcessor.screen.RequestAlt($post_id)' class='button button-secondary'>" . __('Generate', 'shortpixel-image-optimiser') . "</a>
+                 <div class='shortpixel-alt-messagebox' id='shortpixel-ai-messagebox-$post_id'>&nbsp;</div>
+               ",
+          ];
+         
+          return $fields;
+      }
+
+       public function dometaBox($post)
       {
           $this->post_id = $post->ID;
 					$this->view->debugInfo = array();
@@ -87,6 +107,7 @@ class EditMediaViewController extends \ShortPixel\ViewController
 
          	$this->view->text = UiHelper::getStatusText($this->imageModel);
           $this->view->list_actions = UiHelper::getListActions($this->imageModel);
+          $this->view->image = [ 'width' => $this->imageModel->get('width'), 'height' => $this->imageModel->get('height'), 'extension' => $this->imageModel->getExtension() ];
 
           if ( count($this->view->list_actions) > 0)
             $this->view->list_actions = UiHelper::renderBurgerList($this->view->list_actions, $this->imageModel);
@@ -117,8 +138,7 @@ class EditMediaViewController extends \ShortPixel\ViewController
 
       protected function getStatistics()
       {
-        //$data = $this->data;
-        $stats = array();
+        $stats = [];
         $imageObj = $this->imageModel;
         $did_keepExif = $imageObj->getMeta('did_keepExif');
 
@@ -129,11 +149,14 @@ class EditMediaViewController extends \ShortPixel\ViewController
 				if (! $imageObj->isOptimized())
 					return array();
 
-        if ($did_keepExif)
-          $stats[] = array(__('EXIF kept', 'shortpixel-image-optimiser'), '');
-        elseif ( $did_keepExif === false) {
-          $stats[] = array(__('EXIF removed', 'shortpixel-image-optimiser'), '');
+
+        $exifData = UIHelper::getExifDisplayValues($did_keepExif);
+
+        if (is_array($exifData) && isset($exifData['line']))
+        {
+           $stats[] = [$exifData['line'], ''];
         }
+
 
         if (true === $did_convert )
         {
@@ -143,7 +166,7 @@ class EditMediaViewController extends \ShortPixel\ViewController
 				elseif (false !== $imageObj->getMeta()->convertMeta()->didTry()) {
 					$ext = $imageObj->getMeta()->convertMeta()->getFileFormat();
 					$error = $imageObj->getMeta()->convertMeta()->getError(); // error code.
-					$stats[] = array(UiHelper::getConvertErrorReason($error, $ext), '');
+					$stats[] = array(UiHelper::getConvertErrorReason($error), '');
 				}
 
         if ($resize == true)
@@ -161,7 +184,7 @@ class EditMediaViewController extends \ShortPixel\ViewController
 				if ($imageObj->isOptimized())
 				{
 					$stats[] = array( sprintf(__('%s %s Read more about theses stats %s ', 'shortpixel-image-optimiser'), '
-					<p><img alt=' . esc_html('Info Icon', 'shortpixel-image-optimiser')  . ' src=' . esc_url( wpSPIO()->plugin_url('res/img/info-icon.png' )) . ' style="margin-bottom: -4px;"/>', '<a href="https://shortpixel.com/knowledge-base/article/553-the-stats-from-the-shortpixel-column-in-the-media-library-explained" target="_blank">', '</a></p>'), '');
+					<p><img alt=' . esc_html('Info Icon', 'shortpixel-image-optimiser')  . ' src=' . esc_url( wpSPIO()->plugin_url('res/img/info-icon.png' )) . ' style="margin-bottom: -4px;"/>', '<a href="https://shortpixel.com/knowledge-base/article/the-stats-from-the-shortpixel-column-in-the-media-library-explained/" target="_blank">', '</a></p>'), '');
 				}
 
         return $stats;
@@ -171,7 +194,7 @@ class EditMediaViewController extends \ShortPixel\ViewController
       {
           if(! \wpSPIO()->env()->is_debug )
           {
-            return array();
+            return [];
           }
 
           $meta = \wp_get_attachment_metadata($this->post_id);
@@ -184,17 +207,20 @@ class EditMediaViewController extends \ShortPixel\ViewController
 					{
 						 $optimizeData = $imageObj->getOptimizeData();
 						 $urls = $optimizeData['urls'];
-
 					}
+
+          $optimizeAiController = OptimizeAiController::getInstance();
 
 					$thumbnails = $imageObj->get('thumbnails');
 					$processable = ($imageObj->isProcessable()) ? '<span class="green">Yes</span>' : '<span class="red">No</span> (' . $imageObj->getReason('processable') . ')';
+          $optimized = ($imageObj->isOptimized()) ? '<span class="green">Yes</span>' : '<span class="red">No</span>';
+
 					$anyFileType = ($imageObj->isProcessableAnyFileType()) ? '<span class="green">Yes</span>' : '<span class="red">No</span>';
 					$restorable = ($imageObj->isRestorable()) ? '<span class="green">Yes</span>' : '<span class="red">No</span> (' . $imageObj->getReason('restorable') . ')';
 
 					$hasrecord = ($imageObj->hasDBRecord()) ? '<span class="green">Yes</span>' : '<span class="red">No</span> ';
 
-          $debugInfo = array();
+          $debugInfo = [];
           $debugInfo[] = array(__('URL (get attachment URL)', 'shortpixel_image_optiser'), wp_get_attachment_url($this->post_id));
           $debugInfo[] = array(__('File (get attached)'), get_attached_file($this->post_id));
 
@@ -215,6 +241,7 @@ class EditMediaViewController extends \ShortPixel\ViewController
           $debugInfo[] = array(__('Status (ShortPixel)'), $imageObj->getMeta('status') . ' '   );
 
 					$debugInfo[] = array(__('Processable'), $processable);
+          $debugInfo[] = array(__('Optimized'), $optimized);
 					$debugInfo[] = array(__('Avif/Webp needed'), $anyFileType);
 					$debugInfo[] = array(__('Restorable'), $restorable);
 					$debugInfo[] = array(__('Record'), $hasrecord);
@@ -237,15 +264,56 @@ class EditMediaViewController extends \ShortPixel\ViewController
 					{
 						 $debugInfo[] = array(__('To Optimize URLS'),  $urls);
 					}
-					if (isset($optimizeData))
+
+          $item = QueueItems::getImageItem($imageObj);
+
+          if ($imageObj->isProcessable())
 					{
-						 $debugInfo[] = array(__('Optimize Data'), $optimizeData);
+             $item->setDebug();
+             $item->newOptimizeAction();
 
-						 $optControl = new optimizeController();
-						 $q = $optControl->getQueue($imageObj->get('type'));
+             $counts = $item->data()->counts;
 
-						 $debugInfo[] = array(__('Image to Queue'), $q->_debug_imageModelToQueue($imageObj) );
+						 $returnEnqueue = $item->returnEnqueue();
+
+						 $debugInfo[] = array(__('Image to Queue'), $returnEnqueue );
+             $debugInfo[] = [__('Counts'), $counts];
+
 					}
+
+          if ( $optimizeAiController->isAIEnabled())
+          {
+            $aiDataModel = AiDataModel::getModelByAttachment($this->post_id);
+
+            $aiProcessable = ($aiDataModel->isProcessable()) ? '<span class="green">Yes</span>' : '<span class="red">No</span> ';
+
+            $debugInfo[] = ['AI - is Processable', $aiProcessable]; 
+
+            if (true === $aiDataModel->isProcessable())
+            {
+              $debugInfo[] = ['Ai - Paramlist ', $aiDataModel->getOptimizeData() ];            
+            }
+            else
+            {
+               $debugInfo[] = ['Ai - Reason', $aiDataModel->getProcessableReason()];
+            }
+            if (true === $aiDataModel->isSomeThingGenerated())
+            {
+              $debugInfo[] = ['Ai -Generated ', $aiDataModel->getGeneratedData()];
+            }
+
+          }
+
+          $backupController = BackupController::getBackupController(); 
+          
+          $backupModel = $backupController->getModel($imageObj);
+          $backupData = $backupModel->getBackupData(); 
+
+          $needs_regen = ($backupModel->needsRegenerate()) ? '<span class="green">Yes</span>' : '<span class="red">No</span> ';
+
+          $debugInfo[] = ['Backup thumbnails needs regenerate', $needs_regen]; 
+          $debugInfo['backupData'] = ['BackupData', $backupData]; 
+
 
           $debugInfo['imagemetadata'] = array(__('ImageModel Metadata (ShortPixel)'), $imageObj);
 					$debugInfo[] = array('', '<hr>');
@@ -254,43 +322,60 @@ class EditMediaViewController extends \ShortPixel\ViewController
 					$debugInfo[] = array('', '<hr>');
 
 
-
-						if ($imageObj->hasBackup())
-            	$backupFile = $imageObj->getBackupFile();
+						if ($backupModel->hasBackup($imageObj) )
+            {
+            	$backupFile = $backupModel->getBackupFile($imageObj);
+              if (false === is_object($backupFile))
+              {
+                 $backupFile = $backupModel->getMainBackupFile();
+              }
+            }
 						else {
-							 $backupFile = $fs->getFile($fs->getBackupDirectory($imageObj) . $imageObj->getBackupFileName());
+							 $backupFile = $fs->getFile($fs->getBackupDirectory($imageObj) . $backupModel->getBackupFileName($imageObj));
 						}
 
             $debugInfo[] = array(__('Backup Folder'), (string) $backupFile->getFileDir() );
-						if ($imageObj->hasBackup())
+						if ($backupModel->hasBackup($imageObj))
+            {
 							$backupText = __('Backup File :');
-						else {
+              $debugInfo[] = array( $backupText, (string) $backupFile . '(' . UiHelper::formatBytes($backupFile->getFileSize()) . ')' );
+
+              $debugInfo[] = ['Main Backup:', (string) $backupModel->getMainBackupFile()];
+            }
+              else {
 							$backupText = __('Target Backup File after optimization (no backup) ');
+              $debugInfo[] = [$backupText, (string) $backupFile];
 						}
-            $debugInfo[] = array( $backupText, (string) $backupFile . '(' . UiHelper::formatBytes($backupFile->getFileSize()) . ')' );
 
             $debugInfo[] =  array(__("No Main File Backup Available"), '');
 
-
-
 					if ($imageObj->getMeta()->convertMeta()->isConverted())
 					{
-							$convertedBackup = ($imageObj->hasBackup(array('forceConverted' => true))) ? '<span class="green">Yes</span>' : '<span class="red">No</span>';
-							$backup = $imageObj->getBackupFile(array('forceConverted' => true));
+							//$convertedBackup = ($imageObj->hasBackup(array('forceConverted' => true))) ? '<span class="green">Yes</span>' : '<span class="red">No</span>';
+              $convertedBackup = ($backupModel->hasBackup($imageObj)) ? '<span class="green">Yes</span>' : '<span class="red">No</span>';
+							$backup = $backupModel->getBackupFile($imageObj);
 						 $debugInfo[] = array('Has converted backup', $convertedBackup);
 						 if (is_object($backup))
 						 	$debugInfo[] = array('Backup: ', $backup->getFullPath() );
 				}
 
-          if ($or = $imageObj->hasOriginal())
+          if (true === $imageObj->hasOriginal())
           {
              $original = $imageObj->getOriginalFile();
              $debugInfo[] = array(__('Has Original File: '), $original->getFullPath()  . '(' . UiHelper::formatBytes($original->getFileSize()) . ')');
-             $orbackup = $original->getBackupFile();
-             if ($orbackup)
+             $orbackup = $backupModel->getBackupFile($original);
+
+             $processable = ($original->isProcessable()) ? '<span class="green">Yes</span>' : '<span class="red">No</span> (' . $original->getReason('processable') . ')';
+             
+             $restorable = ($original->isRestorable()) ? '<span class="green">Yes</span>' : '<span class="red">No</span> (' . 		$original->getReason('restorable') . ')';
+
+             $debugInfo[] = ['Original Processable:', $processable];
+             $debugInfo[] = ['Original Restorable:', $restorable];
+
+
+          if ($orbackup)
               $debugInfo[] = array(__('Has Backup Original Image'), $orbackup->getFullPath() . '(' . UiHelper::formatBytes($orbackup->getFileSize()) . ')');
 						$debugInfo[] = array('', '<hr>');
-
           }
 
 
@@ -305,7 +390,6 @@ class EditMediaViewController extends \ShortPixel\ViewController
 							$size = $thumbObj->get('size');
 
               $display_size = ucfirst(str_replace("_", " ", $size));
-              //$thumbObj = $imageObj->getThumbnail($size);
 
               if ($thumbObj === false)
               {
@@ -313,18 +397,19 @@ class EditMediaViewController extends \ShortPixel\ViewController
                 continue;
               }
 
-              $url = $thumbObj->getURL(); //$fs->pathToURL($thumbObj); //wp_get_attachment_image_src($this->post_id, $size);
+            //  $url = $thumbObj->getURL(); 
+              $url = $fs->pathToUrl($thumbObj);
               $filename = $thumbObj->getFullPath();
               $fileDir = $thumbObj->getFileDir();
 
-							$backupFile = $thumbObj->getBackupFile();
-							if ($thumbObj->hasBackup())
+							$backupFile = $backupModel->getBackupFile($thumbObj);
+							if ($backupModel->hasBackup($thumbObj) && is_object($backupFile))
 							{
 								$backup = $backupFile->getFullPath();
 								$backupText = __('Backup File :');
 							}
 							else {
-								$backupFile = $fs->getFile($fs->getBackupDirectory($thumbObj) . $thumbObj->getBackupFileName());
+								$backupFile = $fs->getFile($fs->getBackupDirectory($thumbObj) . $backupModel->getBackupFileName($thumbObj));
 								$backup = $backupFile->getFullPath();
 								$backupText = __('Target Backup File after optimization (no backup) ');
 							}

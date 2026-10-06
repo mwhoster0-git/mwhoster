@@ -2,7 +2,7 @@
  * Short Pixel WordPress Plugin javascript
  */
 // init checks bulkProcess on each page. initSettings is when the settings View is being loaded.
-jQuery(document).ready(function(){ShortPixel.init(); });
+jQuery(function(){ShortPixel.init(); });
 
 function delayedInit() {
     if(typeof ShortPixel !== 'undefined' && ShortPixel.didInit == false) {
@@ -33,8 +33,9 @@ var ShortPixel = function() {
                 + '</option><option value="shortpixel-glossy"> → ' + _spTr.redoGlossy
                 + '</option><option value="shortpixel-lossless"> → ' + _spTr.redoLossless
                 + '</option><option value="shortpixel-restore"> → ' + _spTr.restoreOriginal
-								+ '</option><option value="shortpixel-smartcrop"> → ' + _spTr.redoSmartcrop
-								+ '</option><option value="shortpixel-smartcropless"> → ' + _spTr.redoSmartcropless
+				+ '</option><option value="shortpixel-smartcrop"> → ' + _spTr.redoSmartcrop
+				+ '</option><option value="shortpixel-smartcropless"> → ' + _spTr.redoSmartcropless
+                + '</option><option value="shortpixel-generateai"> → ' + _spTr.generateAI 
                 + '</option><option value="shortpixel-mark-completed"> → ' + _spTr.markCompleted
                 + '</option>');
         }
@@ -42,12 +43,12 @@ var ShortPixel = function() {
         // Extracting the protected Array from within the 0 element of the parent array
         ShortPixel.setOptions(ShortPixelConstants[0]);
 
-				if (jQuery('#shortpixel-form-request-key').length > 0)
+				/*if (jQuery('#shortpixel-form-request-key').length > 0)
 				{
 					  jQuery('#pluginemail').on('change, keyup', jQuery.proxy(this.updateSignupEmail, this));
 						jQuery('#request_key').on('mouseenter', jQuery.proxy(this.updateSignupEmail, this));
 						jQuery('#request_key').on('click', jQuery.proxy(this.newApiKey, this));
-				}
+				} */
 
         if (window.ShortPixelProcessor)
 				{
@@ -57,7 +58,8 @@ var ShortPixel = function() {
 
 				// Move footer notices to the top, where it should be.
 				$headerEnd = jQuery( '.wp-header-end' );
-				jQuery( 'div.shortpixel-notice' ).not( '.inline, .below-h2' ).insertAfter( $headerEnd );
+
+      	jQuery( 'div.shortpixel-notice' ).not( '.inline, .below-h2' ).insertAfter( $headerEnd );
 
 				var settingsPage = document.querySelector('.is-shortpixel-settings-page');
 				if (settingsPage !== null)
@@ -69,13 +71,6 @@ var ShortPixel = function() {
         for(var opt in options) {
             ShortPixel[opt] = options[opt];
         }
-    }
-
-    function isEmailValid(email) {
-      //  return /^\w+([\.+-]?\w+)*@\w+([\.-]?\w+)*(\.\w{1,63})+$/.test(email);
-
-				var regex = /^\S+@\S+\.\S+$/;
-					return regex.test(email);
     }
 
     function updateSignupEmail() {
@@ -101,6 +96,7 @@ var ShortPixel = function() {
 			}, 1000);
     }
 
+    // Settings part-general
     function validateKey(button){
         jQuery('#valid').val('validate');
 
@@ -113,6 +109,8 @@ var ShortPixel = function() {
         }
     });
 
+
+    // Settings part-general
     function enableResize(elm) {
         if(jQuery(elm).is(':checked')) {
             jQuery("#width,#height").prop("disabled", false);
@@ -126,69 +124,13 @@ var ShortPixel = function() {
     }
 
 
-    function checkExifWarning()
-    {
-      if (! jQuery('input[name="removeExif"]').is(':checked') && jQuery('input[name="png2jpg"]').is(':checked') )
-        jQuery('.exif_warning').fadeIn();
-      else
-        jQuery('.exif_warning').fadeOut();
-
-      if (! jQuery('input[name="removeExif"]').is(':checked') && jQuery('.exif_imagick_warning').data('imagick') <= 0)
-        jQuery('.exif_imagick_warning').fadeIn();
-      else
-        jQuery('.exif_imagick_warning').fadeOut();
-
-    }
-
-		function checkSmartCropWarning()
-		{
-			if (jQuery('input[name="useSmartcrop"]').is(':checked') && jQuery('.smartcrop_warning').data('smartcrop') == 1 )
-        jQuery('.smartcrop_warning').fadeIn();
-      else
-        jQuery('.smartcrop_warning').fadeOut();
-
-		}
-
-    function checkBackUpWarning()
-    {
-      if (! jQuery('input[name="backupImages"]').is(':checked') )
-      {
-        jQuery('.backup_warning').fadeIn();
-      }
-      else {
-        jQuery('.backup_warning').fadeOut();
-      }
-    }
-
-    function checkHeavyFeatureWarning(name)
-    {
-       var inputName = (name == 'retina') ? 'optimizeRetina' : 'optimizeUnlisted';
-       var input = jQuery('input[name="' + inputName + '"]');
-
-       if (! input)
-         return;
-
-       var warningEl = jQuery('.heavy-feature-virtual.' + name );
-
-
-       if (input.is(':checked'))
-       {
-          //input.attr('disabled', true);
-          warningEl.fadeIn();
-       }
-       else {
-         //input.attr('disabled', false);
-         warningEl.fadeOut();
-       }
-    }
-
     function setupGeneralTab() {
 				// @todo Make something workable out of this
         var rad = 0;
 
-        if (typeof document.wp_shortpixel_options !== 'undefined')
+        /*if (typeof document.wp_shortpixel_options !== 'undefined')
           rad = document.wp_shortpixel_options.compressionType;
-
+        */
 				if (document.getElementById('compressionType-database') !== null)
 					var savedCompression = document.getElementById('compressionType-database').value;
 				else
@@ -202,9 +144,9 @@ var ShortPixel = function() {
                 }
 
 							 if (this.value == savedCompression)
-  					 		jQuery('.compression-notice-row').addClass('shortpixel-hide');
+  					 		jQuery('#compression-type warning').removeClass('display');
 							else
-							  jQuery('.compression-notice-row').removeClass('shortpixel-hide');
+							  jQuery('#compression-type warning').addClass('display');
             };
         }
 
@@ -244,71 +186,7 @@ var ShortPixel = function() {
             return true;
         });
 
-        jQuery('input[name="removeExif"], input[name="png2jpg"]').on('change', function()
-        {
-            ShortPixel.checkExifWarning();
-        });
-        ShortPixel.checkExifWarning();
 
-        jQuery('input[name="backupImages"]').on('change', function()
-        {
-           ShortPixel.checkBackUpWarning();
-        });
-        ShortPixel.checkBackUpWarning();
-
-				jQuery('input[name="useSmartcrop"]').on('change', function()
-        {
-           ShortPixel.checkSmartCropWarning();
-        });
-        ShortPixel.checkSmartCropWarning();
-
-    }
-
-    function apiKeyChanged() {
-        jQuery(".wp-shortpixel-options .shortpixel-key-valid").css("display", "none");
-        jQuery(".wp-shortpixel-options button#validate").css("display", "inline-block");
-    }
-
-    function setupAdvancedTab() {
-
-      /* @TODO - Removed in favor of AjaxController method . Remove in next version
-        jQuery("input.remove-folder-button").on('click', function(){
-            var id = jQuery(this).data("value");
-            var path = jQuery(this).data('name');
-            var r = confirm( SPstringFormat(_spTr.areYouSureStopOptimizing, path) );
-            if (r == true) {
-                jQuery("#removeFolder").val(id);
-                jQuery('#wp_shortpixel_options').submit();
-            }
-        });
-
-        jQuery("input.recheck-folder-button").on('click', function(){
-            var path = jQuery(this).data("value");
-            var r = confirm( SPstringFormat(_spTr.areYouSureStopOptimizing, path));
-            if (r == true) {
-                jQuery("#recheckFolder").val(path);
-                jQuery('#wp_shortpixel_options').submit();
-            }
-        });
-        */
-
-        if (document.querySelector('.heavy-feature-virtual.retina') !== null)
-        {
-          jQuery('input[name="optimizeRetina"]').on('change', function()
-          {
-             ShortPixel.checkHeavyFeatureWarning('retina');
-          });
-          ShortPixel.checkHeavyFeatureWarning('retina');
-        }
-
-        if (document.querySelector('.heavy-feature-virtual.unlisted') !== null)
-        {
-          jQuery('input[name="optimizeUnlisted"]').on('change', function()
-          {
-             ShortPixel.checkHeavyFeatureWarning('unlisted');
-          });
-          ShortPixel.checkHeavyFeatureWarning('unlisted');
-        }
     }
 
     function checkThumbsUpdTotal(el) {
@@ -318,11 +196,9 @@ var ShortPixel = function() {
     }
 
     function initSettings() {
-        ShortPixel.adjustSettingsTabs();
+      //  ShortPixel.adjustSettingsTabs();
         ShortPixel.setupGeneralTab(); // certain alerts.
-        jQuery( window ).on('resize', function() {
-            ShortPixel.adjustSettingsTabs();
-        });
+
 
 
         jQuery("article.sp-tabs a.tab-link").on('click', function(e){
@@ -330,87 +206,11 @@ var ShortPixel = function() {
             ShortPixel.switchSettingsTab( theID );
         });
 
-
-        jQuery('input[type=radio][name=deliverWebpType]').on('change', function(e) {
-						// shortpixel-settings init trigger events for toggles, ignore this when so.
-						if (e.detail && e.detail.init && e.detail.init === true)
-						{
-								return false;
-						}
-            if (this.value == 'deliverWebpAltered') {
-                if(window.confirm(_spTr.alertDeliverWebPAltered)){
-                    var selectedItems = jQuery('input[type=radio][name=deliverWebpAlteringType]:checked').length;
-                    if (selectedItems == 0) {
-                        jQuery('#deliverWebpAlteredWP').prop('checked',true);
-                    }
-                } else {
-                    jQuery(this).prop('checked', false);
-                }
-            } else if(this.value == 'deliverWebpUnaltered') {
-                window.alert(_spTr.alertDeliverWebPUnaltered);
-            }
-        });
-
-				// Init active tab
-				var activeTab = document.querySelector('section.sel-tab');
-				if (activeTab !== null);
-				ShortPixel.switchSettingsTab(activeTab.getAttribute('id'));
     }
 
-    // Switch between settings tabs.
-    function switchSettingsTab(target){
+   
 
-        var tab = target.replace("tab-",""),
-            beacon = "",
-            section = jQuery("section#" +target);
-          //  url = location.href.replace(location.hash,"") + '#' + tab;
-        /*if(history.pushState) {
-            history.pushState(null, null, url);
-        }
-        else {
-            location.hash = url;
-        } */
-				if (section.length == 0)
-				{
-					 tab = 'settings'; // if tab does not exist.
-				}
-        jQuery('input[name="display_part"]').val(tab);
-        var uri = window.location.href.toString();
-        if (uri.indexOf("?") > 0) {
-            var clean_uri = uri.substring(0, uri.indexOf("?"));
-            clean_uri += '?' + jQuery.param({'page':'wp-shortpixel-settings', 'part': tab});
-            window.history.replaceState({}, document.title, clean_uri);
-        }
-
-        if(section.length > 0){
-            jQuery("section").removeClass("sel-tab");
-            jQuery('section .wp-shortpixel-tab-content').fadeOut(50);
-            jQuery(section).addClass("sel-tab");
-            //ShortPixel.adjustSettingsTabs();
-            //jQuery(section).find('.wp-shortpixel-tab-content').fadeIn(50);
-            jQuery(section).find('.wp-shortpixel-tab-content').fadeIn(50, ShortPixel.adjustSettingsTabs);
-
-						var event = new CustomEvent('shortpixel.ui.settingsTabLoad', { detail : {tabName: tab, section: section }});
-						window.dispatchEvent(event);
-
-        }
-
-    }
-
-    // Fixes the height of the current active tab.
-    function adjustSettingsTabsHeight(){
-        jQuery('.wso.banner').css('opacity', 1);
-    }
-
-    function closeHelpPane() {
-        jQuery('#shortpixel-hs-button-blind').remove();
-        jQuery('#shortpixel-hs-tools').remove();
-        jQuery('#hs-beacon').remove();
-        jQuery('#botbutton').remove();
-        jQuery('#shortpixel-hs-blind').remove();
-    }
-
-
+    
 
     function checkQuota() {
         var data = {
@@ -420,12 +220,9 @@ var ShortPixel = function() {
         };
 
         jQuery.post(ShortPixel.AJAX_URL, data, function(result) {
-            console.log("quota refreshed");
-            console.log(result);
             window.location.href = result.redirect;
         });
     }
-
 
     function percentDial(query, size) {
         jQuery(query).knob({
@@ -439,7 +236,7 @@ var ShortPixel = function() {
         });
     }
 
-    function browseContent(browseData) {
+  /*function browseContent(browseData) {
         browseData.action = 'shortpixel_browse_content';
 
         var browseResponse = "";
@@ -453,7 +250,7 @@ var ShortPixel = function() {
             async: false
         });
         return browseResponse;
-    }
+    } */
 
 
     function newApiKey(event) {
@@ -499,7 +296,6 @@ var ShortPixel = function() {
             },
 						complete: function(response, status)
 						{
-							 //console.log(response, status);
 
 						}
         });
@@ -549,6 +345,7 @@ var ShortPixel = function() {
             if(!shown) e.target.parentElement.classList.add("sp-show");
     }
 
+// @todo Comparer should probably move to screen-base js
     function loadComparer(id, type) {
         this.comparerData.origUrl = false;
          if(this.comparerData.cssLoaded === false) {
@@ -562,23 +359,20 @@ var ShortPixel = function() {
             this.comparerData.cssLoaded = 2;
         }
         if(this.comparerData.jsLoaded === false) {
-            jQuery.getScript(this.WP_PLUGIN_URL + '/res/js/jquery.twentytwenty.min.js', function(){
+             jQuery.getScript(this.WP_PLUGIN_URL + '/res/js/jquery.twentytwenty.js', function(){
                 ShortPixel.comparerData.jsLoaded = 2;
-                /*   What should this do?
-                if(ShortPixel.comparerData.origUrl.length > 0) {
-                    ShortPixel.displayComparerPopup(ShortPixel.comparerData.width, ShortPixel.comparerData.height, ShortPixel.comparerData.origUrl, ShortPixel.comparerData.optUrl);
-                } */
+
             });
             this.comparerData.jsLoaded = 1;
-            //jQuery(".sp-close-button").click(ShortPixel.closeComparerPopup);
         }
+
         if(this.comparerData.origUrl === false) {
                if (typeof type == 'undefined')
                   var type = 'media';  // default.
             jQuery.ajax({
                 type: "POST",
                 url: ShortPixel.AJAX_URL,
-                data: { action : 'shortpixel_get_comparer_data', id : id, type: type, nonce: ShortPixelConstants[0].nonce_ajaxrequest },
+								data: { action: 'shortpixel_ajaxRequest', screen_action : 'getComparerData', id : id, type: type, nonce: ShortPixelProcessorData.nonce_ajaxrequest },
                 success: function(response) {
                   //  data = JSON.parse(response);
 
@@ -626,7 +420,6 @@ var ShortPixel = function() {
 
         // Close Options
         jQuery(".sp-close-button").on('click',  { modal: modal}, ShortPixel.closeComparerPopup);
-        jQuery(document).on('keyup.sp_modal_active', { modal: modal}, ShortPixel.closeComparerPopup );
         jQuery('.sp-modal-shade').on('click', { modal: modal},  ShortPixel.closeComparerPopup, );
 
         //change images srcs
@@ -636,21 +429,20 @@ var ShortPixel = function() {
         setTimeout(function(){
             jQuery(window).trigger('resize');
         }, 1000);
-        imgOpt.load(function(){
+        imgOpt.on('load', function(){
             jQuery(window).trigger('resize');
         });
         imgOpt.attr("src", imgOptimized);
 
-        console.log('Popup Loaded! ', modal);
     }
 
     function closeComparerPopup(e) {
 
 				e.data.modal.addClass('shortpixel-hide');
         jQuery('.sp-modal-shade').hide();
-        jQuery(document).unbind('keyup.sp_modal_active');
         jQuery('.sp-modal-shade').off('click');
         jQuery(".sp-close-button").off('click');
+
     }
 
     function convertPunycode(url) {
@@ -668,22 +460,20 @@ var ShortPixel = function() {
         init                : init,
         didInit             : false,
         setOptions          : setOptions,
-        isEmailValid        : isEmailValid,
+        //isEmailValid        : isEmailValid,
         updateSignupEmail   : updateSignupEmail,
         validateKey         : validateKey,
         enableResize        : enableResize,
         setupGeneralTab     : setupGeneralTab,
-        apiKeyChanged       : apiKeyChanged,
-        setupAdvancedTab    : setupAdvancedTab,
+  //      apiKeyChanged       : apiKeyChanged,
         checkThumbsUpdTotal : checkThumbsUpdTotal,
         initSettings        : initSettings,
-        switchSettingsTab   : switchSettingsTab,
-        adjustSettingsTabs  : adjustSettingsTabsHeight,
-        closeHelpPane       : closeHelpPane,
+      //  switchSettingsTab   : switchSettingsTab,
+      //  closeHelpPane       : closeHelpPane,
         checkQuota          : checkQuota,
         percentDial         : percentDial,
       //  initFolderSelector  : initFolderSelector,
-        browseContent       : browseContent,
+    //    browseContent       : browseContent,
         newApiKey           : newApiKey,
         proposeUpgrade      : proposeUpgrade,
         closeProposeUpgrade : closeProposeUpgrade,
@@ -696,10 +486,9 @@ var ShortPixel = function() {
         displayComparerPopup: displayComparerPopup,
         closeComparerPopup  : closeComparerPopup,
         convertPunycode     : convertPunycode,
-        checkExifWarning    : checkExifWarning,
-        checkBackUpWarning  : checkBackUpWarning,
-				checkSmartCropWarning: checkSmartCropWarning,
-        checkHeavyFeatureWarning : checkHeavyFeatureWarning,
+      //  checkExifWarning    : checkExifWarning,
+      //  checkBackUpWarning  : checkBackUpWarning,
+			//	checkSmartCropWarning: checkSmartCropWarning,
         comparerData        : {
             cssLoaded   : false,
             jsLoaded    : false,

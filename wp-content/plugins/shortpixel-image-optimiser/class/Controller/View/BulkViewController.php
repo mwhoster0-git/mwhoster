@@ -6,12 +6,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 use ShortPixel\ShortPixelLogger\ShortPixelLogger as Log;
-use ShortPixel\Notices\NoticeController as Notices;
 
 use ShortPixel\Controller\AdminNoticesController as AdminNoticesController;
 use ShortPixel\Controller\ApiKeyController as ApiKeyController;
 use ShortPixel\Controller\QuotaController as QuotaController;
-use ShortPixel\Controller\OptimizeController as OptimizeController;
+use ShortPixel\Controller\QueueController as QueueController;
 use ShortPixel\Controller\BulkController as BulkController;
 use ShortPixel\Controller\StatsController as StatsController;
 use ShortPixel\Controller\OtherMediaController as OtherMediaController;
@@ -36,14 +35,15 @@ class BulkViewController extends \ShortPixel\ViewController
   public function load()
   {
     $quota = QuotaController::getInstance();
-    $optimizeController = new OptimizeController();
+    $queueController = new QueueController();
+    $bulkController = BulkController::getInstance();
 
     $this->view->quotaData = $quota->getQuota();
 
-    $this->view->stats = $optimizeController->getStartupData();
+    $this->view->stats = $queueController->getStartupData();
     $this->view->approx = $this->getApproxData();
 
-    $this->view->logHeaders = array(__('Images', 'shortpixel_image_optimiser'), __('Errors', 'shortpixel_image_optimizer'), __('Date', 'shortpixel_image_optimizer'));
+    $this->view->logHeaders = array(__('Images', 'shortpixel_image_optimiser'), __('Errors', 'shortpixel_image_optimizer'), __('Date', 'shortpixel_image_optimizer'), '');
     $this->view->logs = $this->getLogs();
 
     $keyControl = ApiKeyController::getInstance();
@@ -73,8 +73,101 @@ class BulkViewController extends \ShortPixel\ViewController
 		$this->view->buyMoreHref = 'https://shortpixel.com/' . ($keyControl->getKeyForDisplay() ? 'login/' . $keyControl->getKeyForDisplay() . '/spio-unlimited' : 'pricing');
 
 
+    $custom_operation_media = $bulkController->getCustomOperation('media');
+    $custom_operation_custom = $bulkController->getCustomOperation('custom');
+
+    $custom_operation_media = (false === $custom_operation_media) ? $this->checkBulkViaPanelArg() : $custom_operation_media; 
+    $custom_operation_custom = (false === $custom_operation_custom) ? $this->checkBulkViaPanelArg() : $custom_operation_custom;
+
+    $this->view->customOperationMedia = (false !== $custom_operation_media) ? $this->getCustomLabel($custom_operation_media) : false;
+    $this->view->customOperationCustom = (false !== $custom_operation_custom) ? $this->getCustomLabel($custom_operation_custom) : false;
+    // Not in use : 
+    //$this->view->customOperationMediaName = $custom_operation_media; 
+    //$this->view->customerOperationCustomName = $custom_operation_custom;
+    
+
+    $noticesController = AdminNoticesController::getInstance(); 
+
+    $this->view->remoteOffer = $noticesController->getRemoteOffer(); 
+
+    $this->loadDashboard();
 
     $this->loadView();
+
+  }
+
+  private function loadDashboard()
+  {
+      $noticesController = AdminNoticesController::getInstance();
+      $offer = $noticesController->getRemoteOffer(); 
+
+          $this->view->dashboard_icon = plugins_url('res/images/icon/shortpixel.svg', SHORTPIXEL_PLUGIN_FILE); 
+          $this->view->dashboard_link = false; 
+          $this->view->dashboard_title = false; 
+          $this->view->dashboard_message = ''; 
+      if (is_array($offer))
+      {
+         $this->view->dashboard_icon = $offer['icon']; 
+         $this->view->dashboard_link = $offer['link']; 
+         $this->view->dashboard_title = $offer['title'];
+         $this->view->dashboard_message = $offer['message'];
+
+      } 
+  }
+
+  private function getCustomLabel($operation)
+  {
+      switch($operation)
+      {
+          case 'bulk-restore':
+            $label = __('Bulk Restore', 'shortpixel-image-optimiser');
+          break;
+          case 'migrate':
+            $label = __('Bulk Migrate Optimization Data', 'shortpixel-image-optimiser');
+          break;
+          case 'removeLegacy':
+            $label = __('Bulk Remove Legacy Data', 'shortpixel-image-optimiser');
+          break;
+          case 'bulk-undoAI':
+            $label = __('Bulk Remove AI Data', 'shortpixel-image-optimiser');           
+          break; 
+      }
+
+      return $label;
+  }
+  
+  /** This function has no other purpose than the map the Panel get argument to the proper bulk action. Reason this exists is because at the time the bulk screen is loaded, the bulk hasn't started, thus the specialOPeration is not in place, not showing the text in process / finished
+   * @todo Harmonize the panel name, bulk action name etc so this function is not needed to display string
+   * @return false|string 
+   */
+  private function checkBulkViaPanelArg()
+  {
+      $panel = isset($_GET['panel']) ? sanitize_text_field($_GET['panel']) : null;
+
+      if (is_null($panel))
+      {
+         return false; 
+      }
+
+      $action = false; 
+
+      switch($panel)
+      {
+         case 'bulk-migrate': 
+            $action = 'migrate'; 
+         break;
+         case 'bulk-restore':
+            $action = 'bulk-restore'; 
+         break; 
+         case 'bulk-restoreAI':
+            $action = 'bulk-undoAI';
+         break; 
+         case 'bulk-removeLegacy': 
+            $action = 'removeLegacy'; 
+         break; 
+      }
+
+      return $action;
 
   }
 
@@ -110,7 +203,9 @@ class BulkViewController extends \ShortPixel\ViewController
 
     // If sizes are excluded, remove this count from the approx.
     if (is_array($excludeSizes) && count($excludeSizes) > 0)
+    {
       $approx->media->thumbs = $approx->media->thumbs - ($approx->media->items * count($excludeSizes));
+    }
 
     // Total optimized items + Total optimized (approx) thumbnails
     $approx->media->total = $approx->media->items + $approx->media->thumbs;
@@ -173,8 +268,6 @@ class BulkViewController extends \ShortPixel\ViewController
 				$kblink = UIHelper::getKBSearchLink($message);
 				$kbinfo = '<span class="kbinfo"><a href="' . $kblink . '" target="_blank" ><span class="dashicons dashicons-editor-help">&nbsp;</span></a></span>';
 
-
-
 				$output .= '<div class="fatal">';
 				$output .= $date . ': ';
 				if ($message)
@@ -200,14 +293,12 @@ class BulkViewController extends \ShortPixel\ViewController
 
       foreach($logs as $logData)
       {
-
-
           $logFile = $fs->getFile($backupDir->getPath() . 'bulk_' . $logData['type'] . '_' . $logData['date'] . '.log');
           $errors = $logData['fatal_errors'];
 
           if ($logFile->exists())
 					{
-            $errors = '<a data-action="OpenLog" data-file="' . $logFile->getFileName() . '" href="' . $fs->pathToUrl($logFile) . '">' . $errors . '</a>';
+            $errors = '<a data-action="OpenLog" data-file="' . $logFile->getFileBase() . '" href="' . $fs->pathToUrl($logFile) . '">' . $errors . '</a>';
 					}
 
 					$op = (isset($logData['operation'])) ? $logData['operation'] : false;
@@ -231,23 +322,25 @@ class BulkViewController extends \ShortPixel\ViewController
 					switch($op)
 					{
 							 case 'bulk-restore':
-							 		 $bulkName .= __('Restore', 'shortpixel-image-optimiser');
+							 	$bulkName .= __('Restore', 'shortpixel-image-optimiser');
 							 break;
 							 case 'migrate':
-							 		 $bulkName .= __('Migrate old Metadata', 'shortpixel-image-optimiser');
+							 	$bulkName .= __('Migrate old Metadata', 'shortpixel-image-optimiser');
 							 break;
 							 case 'removeLegacy':
 								$bulkName = __('Remove Legacy Data', 'shortpixel-image-optimiser');
 							 break;
+							 case 'bulk-undoAI':
+								$bulkName  = __('Bulk Remove AI Data', 'shortpixel-image-optimiser');
+							 break;
 							 default:
-							 	 	 $bulkName .= __('Optimization', 'shortpixel-image-optimiser');
+							 	$bulkName .= __('Optimization', 'shortpixel-image-optimiser');
 							 break;
 					}
 
 					$images = isset($logData['total_images']) ? $logData['total_images'] : $logData['processed'];
 
           $view[] = array('type' => $logData['type'], 'images' => $images, 'errors' => $errors, 'date' => UiHelper::formatTS($logData['date']), 'operation' => $op, 'bulkName' => $bulkName);
-
       }
 
       krsort($view);

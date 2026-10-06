@@ -95,13 +95,19 @@
     }
 
     a {
-      text-decoration: none !important;
-      font-weight: 700 !important;
-      color: #0059FF !important;
+      text-decoration: underline !important;
+      color: #fff !important;
       transition: color 0.5s;
     }
 
     a:hover {
+      color: #f5f5f5 !important;
+    }
+
+    h2 a{
+      color: #0059FF !important;
+    }
+    h2 a:hover{
       color: #0C33A9 !important;
     }
 
@@ -183,6 +189,20 @@
       td.mj-full-width-mobile {
         width: auto !important;
       }
+    .smush-ultra-upsell-icon-col,
+    .smush-ultra-upsell-icon-col .smush-ultra-icon-circle,
+    .smush-ultra-upsell-icon-col .smush-ultra-icon-circle table,
+    .smush-ultra-upsell-icon-col .smush-ultra-icon-circle td {
+      width: 52px !important;
+      height: 52px !important;
+      min-width: 52px !important;
+      min-height: 52px !important;
+      line-height: 52px !important;
+    }
+    .smush-ultra-upsell-icon-col .smush-ultra-icon-circle img {
+        width: 28px !important;
+        height: auto !important;
+      }
     }
   </style>
  
@@ -229,7 +249,12 @@
   </style>
   <style>
     @media only screen and (prefers-color-scheme: dark) {
-      .smush-mail-body {
+     body,
+     .smush-mail-body,
+     .summary-compression-body
+     .summary-compression > table,
+     .smush-whitelabel-summary,
+     .smush-whitelabel-summary table {
         background: #1A1A1A !important;
       }
       .smush-header-logo{
@@ -258,12 +283,30 @@
       h2 a:hover{
         color: #0C33A9 !important;
       }
+      a {
+        color: #0059FF !important;
+      }
+
+      a:hover {
+        color: #0C33A9 !important;
+      }
       .main-content p, .summary-compression p,.summary-compression td, .summary-compression strong, .summary-compression span{
         color: #F8F8F8 !important;
       }
       .summary-compression .smush-summary-row {
         border-top-color: #323339 !important;
         border-bottom-color: #323339 !important;
+      }
+      #smush-email-ultra-upsell,
+      .smush-email-ultra-upsell {
+        background: #2A253A !important;
+        background-color: #2A253A !important;
+      }
+      #smush-email-ultra-upsell .smush-ultra-upsell-dark-text {
+        color: #FFFFFF !important;
+      }
+      #smush-email-ultra-upsell .smush-ultra-upsell-purple-text {
+        color: #C2A5FF !important;
       }
       #smush-cdn-upto2x {
         background: #C0EDF6 !important;
@@ -349,6 +392,17 @@
      [data-ogsc] .summary-compression  .smush-summary-row {
       border-top-color: #323339 !important;
       border-bottom-color: #323339 !important;
+    }
+    [data-ogsc] #smush-email-ultra-upsell,
+    [data-ogsc] .smush-email-ultra-upsell {
+      background: #2A253A !important;
+      background-color: #2A253A !important;
+    }
+    [data-ogsc] #smush-email-ultra-upsell .smush-ultra-upsell-dark-text {
+      color: #FFFFFF !important;
+    }
+    [data-ogsc] #smush-email-ultra-upsell .smush-ultra-upsell-purple-text {
+      color: #C2A5FF !important;
     }
     [data-ogsc] #smush-cdn-upto2x {
       background: #C0EDF6 !important;

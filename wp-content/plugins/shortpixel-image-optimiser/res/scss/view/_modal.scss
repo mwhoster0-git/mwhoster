@@ -15,7 +15,6 @@ div.shortpixel-modal {
     background-color: #fefefe;
     /*margin: 8% auto;  15% from the top and centered */
     padding: 20px;
-    border: 1px solid #888;
     width: 30%; /* Could be more or less, depending on screen size */
     min-width: 300px; /* Could be more or less, depending on screen size */
     z-index: 999999; /* Z-index wars :/ */
@@ -24,7 +23,7 @@ div.shortpixel-modal {
     left: 50%;
     max-height: 90%;
     overflow-y: auto;
-    .sp-close-button, button.sp-close-upgrade-button
+    button.sp-close-button, button.sp-close-upgrade-button,
     {
       float: right;
       margin-top: 0px;
@@ -32,7 +31,9 @@ div.shortpixel-modal {
       border: none;
       font-size: 22px;
       line-height: 10px;
+			color: #000 !important;
       cursor: pointer;
+
 
     }
     .sptw-modal-spinner {
@@ -45,7 +46,25 @@ div.shortpixel-modal {
 
 div.sp-modal-title {
     font-size: 22px;
+    color: #3c434a;
+    text-transform: none;
+    font-weight: 400;
 }
 div.sp-modal-body {
     margin-top: 10px;
+}
+
+// Fix for annyoing ngg overrides. Copy of button above. Probably should be replace in general.
+#ngg_page_content .sp-modal-title button {
+  float: right;
+  margin-top: 0px;
+  background: transparent !important;
+  border: none;
+  font-size: 22px;
+  line-height: 10px;
+ color: #000 !important;
+  cursor: pointer;
+  height: auto !important;
+  padding: 0 !important;
+
 }

@@ -2,6 +2,8 @@
 
 namespace WP_STATISTICS;
 
+use WP_Statistics\Utils\Signature;
+
 class RestAPI
 {
     /**
@@ -87,6 +89,23 @@ class RestAPI
         $server   = rest_get_server();
 
         return $server->response_to_data($response, false);
+    }
+
+    /**
+     * @param $request
+     * @return true|\WP_Error
+     * @doc https://wp-statistics.com/resources/managing-request-signatures/
+     */
+    protected function checkSignature($request)
+    {
+        // Verify the signature against the same request data that is recorded,
+        // so a request cannot be authenticated with one identity while a
+        // different identity is stored.
+        if (!Helper::verifyHitSignature()) {
+            return new \WP_Error('rest_forbidden', __('Invalid signature', 'wp-statistics'), array('status' => 403));
+        }
+
+        return true;
     }
 }
 

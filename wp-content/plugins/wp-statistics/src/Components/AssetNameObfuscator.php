@@ -2,6 +2,7 @@
 
 namespace WP_Statistics\Components;
 
+use WP_Statistics;
 use WP_STATISTICS\Helper;
 use WP_STATISTICS\Option;
 
@@ -11,11 +12,25 @@ use WP_STATISTICS\Option;
 class AssetNameObfuscator
 {
     /**
+     * Field names inside each option entry.
+     */
+    private const KEY_VERSION = 'version';
+    private const KEY_DIR     = 'dir';
+    private const KEY_NAME    = 'name';
+
+    /**
      * Option that contains information about all hashed files.
      *
      * @var string
      */
     private $optionName = 'hashed_assets';
+
+    /**
+     * Memoized result of Helper::get_uploads_dir() for this request.
+     *
+     * @var string
+     */
+    private $uploadsDir = '';
 
     /**
      * All hashed files.
@@ -51,36 +66,30 @@ class AssetNameObfuscator
     private $hashedFileName;
 
     /**
-     * Root of the hash files dir.
-     *
-     * @var string
-     */
-    private $hashedFilesRootDir;
-
-    /**
-     * Full dir of the hashed file.
-     *
-     * @var string
-     */
-    private $hashedFileDir;
-
-    /**
-     * @param   string  $file   Full path of the input file. 
+     * @param string $file Full path of the input file.
      * Pass `null` if you only want to use `deleteAllHashedFiles` and `deleteDatabaseOption` methods. (e.g. When uninstalling the plugin)
      *
      * @return  void
      */
     public function __construct($file = null)
     {
-        // Handle slashes
-        $this->inputFileDir = wp_normalize_path($file);
-        $this->pluginsRoot  = wp_normalize_path(WP_PLUGIN_DIR . DIRECTORY_SEPARATOR);
+        $this->inputFileDir = !empty($file) ? wp_normalize_path($file) : '';
 
-        if (stripos($this->inputFileDir, $this->pluginsRoot) === false) {
+        if (defined('WP_STATISTICS_MAIN_FILE')) {
+            $this->pluginsRoot = wp_normalize_path(plugin_dir_path(WP_STATISTICS_MAIN_FILE));
+        } elseif (defined('WP_STATISTICS_DIR')) {
+            $this->pluginsRoot = wp_normalize_path(WP_STATISTICS_DIR . DIRECTORY_SEPARATOR);
+        } else {
+            $this->pluginsRoot = wp_normalize_path(WP_PLUGIN_DIR . DIRECTORY_SEPARATOR);
+        }
+
+        if ($this->inputFileDir && !is_file($this->inputFileDir)) {
             $this->inputFileDir = path_join($this->pluginsRoot, $this->inputFileDir);
         }
 
-        if (!is_file($this->inputFileDir)) return;
+        if (!$this->inputFileDir || !is_file($this->inputFileDir)) {
+            return;
+        }
 
         $this->initializeVariables();
         $this->obfuscateFileName();
@@ -97,54 +106,55 @@ class AssetNameObfuscator
         $this->hashedFileOptionKey = str_replace($this->pluginsRoot, '', $this->inputFileDir);
 
         if (empty($this->hashedAssetsArray[$this->hashedFileOptionKey])) {
-            $this->hashedAssetsArray[$this->hashedFileOptionKey]            = [];
-            $this->hashedAssetsArray[$this->hashedFileOptionKey]['version'] = WP_STATISTICS_VERSION;
+            $this->hashedAssetsArray[$this->hashedFileOptionKey] = [
+                self::KEY_VERSION => WP_STATISTICS_VERSION,
+            ];
         }
 
-        $this->hashedFileName     = $this->generateShortHash(WP_STATISTICS_VERSION . $this->hashedFileOptionKey);
-        $this->hashedFileName     .= '.' . pathinfo($this->inputFileDir, PATHINFO_EXTENSION);
-        $this->hashedFileName     = apply_filters('wp_statistics_hashed_asset_name', $this->hashedFileName, $this->inputFileDir);
-        $this->hashedFilesRootDir = apply_filters('wp_statistics_hashed_asset_root', Helper::get_uploads_dir());
+        $this->hashedFileName = $this->generateShortHash(WP_STATISTICS_VERSION . $this->hashedFileOptionKey);
+        $this->hashedFileName .= '.' . pathinfo($this->inputFileDir, PATHINFO_EXTENSION);
+        $this->hashedFileName = $this->cleanHashedFileName($this->hashedFileName);
+        $this->hashedFileName = apply_filters('wp_statistics_hashed_asset_name', $this->hashedFileName, $this->inputFileDir);
 
-        if (!is_dir($this->hashedFilesRootDir)) {
-            // Try to make the filtered dir if it not exists
-            if (!mkdir($this->hashedFilesRootDir, 0700)) {
-                // Revert back to default uploads folder if the filtered dir is invalid
-                $this->hashedFilesRootDir = Helper::get_uploads_dir();
-            }
+        $this->uploadsDir = Helper::get_uploads_dir();
+
+        // Fire deprecated filters only when something is listening, so we
+        // skip arg construction (and the global no-op) on every other call.
+        if (has_filter('wp_statistics_hashed_asset_root')) {
+            apply_filters_deprecated('wp_statistics_hashed_asset_root', [$this->uploadsDir], '14.16.7', '', 'The obfuscator no longer writes a copy of the tracker into wp-content/uploads/.');
         }
 
-        $this->hashedFileDir = $this->isHashedFileExists() ? $this->hashedAssetsArray[$this->hashedFileOptionKey]['dir'] : path_join($this->hashedFilesRootDir, $this->hashedFileName);
-        $this->hashedFileDir = apply_filters('wp_statistics_hashed_asset_dir', $this->hashedFileDir, $this->hashedFilesRootDir, $this->hashedFileName);
-    }
-
-    private function generateShortHash($input)
-    {
-        $hash = wp_hash($input);
-        return substr($hash, 0, 10);
+        if (has_filter('wp_statistics_hashed_asset_dir')) {
+            apply_filters_deprecated('wp_statistics_hashed_asset_dir', [path_join($this->uploadsDir, $this->hashedFileName), $this->uploadsDir, $this->hashedFileName], '14.16.7', '', 'The obfuscator no longer writes a copy of the tracker into wp-content/uploads/.');
+        }
     }
 
     /**
-     * Obfuscate/Randomize file name.
+     * Generates a truncated MD5 hash of the input string.
      *
-     * @return  void
+     * @param string $input The input string to be hashed.
+     * @param int $length The length of the truncated hash.
+     * @return string The truncated MD5 hash.
+     */
+    private function generateShortHash($input, $length = 10)
+    {
+        $hash = wp_hash($input);
+        return substr($hash, 0, $length);
+    }
+
+    /**
+     * Records the original-path -> hashed-name mapping in the option.
      */
     private function obfuscateFileName()
     {
-        // Return if the hashed file for this version exists
         if ($this->isHashedFileExists()) return;
 
-        // Delete old file
+        // Clean up any legacy uploads/<hash>.js copy from before the v3 refactor.
         $this->deleteHashedFile($this->hashedAssetsArray, $this->hashedFileOptionKey);
 
-        // Copy and randomize the name of the input file
-        if (!copy($this->inputFileDir, $this->getHashedFileDir())) {
-            \WP_Statistics::log("Unable to copy hashed file to {$this->getHashedFileDir()}!");
-            return;
-        }
-
-        $this->hashedAssetsArray[$this->hashedFileOptionKey]['version'] = WP_STATISTICS_VERSION;
-        $this->hashedAssetsArray[$this->hashedFileOptionKey]['dir']     = $this->getHashedFileDir();
+        $this->hashedAssetsArray[$this->hashedFileOptionKey][self::KEY_VERSION] = WP_STATISTICS_VERSION;
+        $this->hashedAssetsArray[$this->hashedFileOptionKey][self::KEY_DIR]     = $this->inputFileDir;
+        $this->hashedAssetsArray[$this->hashedFileOptionKey][self::KEY_NAME]    = $this->hashedFileName;
         Option::saveOptionGroup($this->hashedFileOptionKey, $this->hashedAssetsArray[$this->hashedFileOptionKey], $this->optionName);
     }
 
@@ -155,9 +165,20 @@ class AssetNameObfuscator
      */
     private function isHashedFileExists()
     {
-        return $this->hashedAssetsArray[$this->hashedFileOptionKey]['version'] === WP_STATISTICS_VERSION &&
-            !empty($this->hashedAssetsArray[$this->hashedFileOptionKey]['dir']) &&
-            file_exists($this->hashedAssetsArray[$this->hashedFileOptionKey]['dir']);
+        $entry = $this->hashedAssetsArray[$this->hashedFileOptionKey] ?? [];
+
+        if (($entry[self::KEY_VERSION] ?? null) !== WP_STATISTICS_VERSION) {
+            return false;
+        }
+
+        $dir = $entry[self::KEY_DIR] ?? '';
+
+        if (empty($dir) || !file_exists($dir)) {
+            return false;
+        }
+
+        // Force regeneration of pre-refactor entries that still point into uploads/.
+        return !$this->isLegacyUploadsPath($dir);
     }
 
     /**
@@ -171,48 +192,62 @@ class AssetNameObfuscator
     }
 
     /**
-     * Returns hashed files root dir.
+     * Generates a dynamic query parameter based on the hashed domain URL.
+     * This helps to avoid conflicts with other plugins and prevents ad-blocking issues.
      *
-     * @return  string
+     * @return string The dynamic query parameter.
      */
-    public function getHashedFilesRootDir()
+    public function getDynamicAssetKey()
     {
-        return $this->hashedFilesRootDir;
+        return $this->generateShortHash(home_url(), 6);
     }
 
     /**
-     * Returns full path (DIR) of the hashed file.
+     * Generates a URL to serve the asset through a proxy.
      *
-     * @return  string
+     * @return string
      */
-    public function getHashedFileDir()
+    public function getUrlThroughProxy()
     {
-        return $this->hashedFileDir;
-    }
-
-    /**
-     * Returns full URL of the hashed file.
-     *
-     * @return  string
-     */
-    public function getHashedFileUrl()
-    {
-        return Helper::dirToUrl($this->hashedFileDir);
+        return esc_url(home_url('?' . $this->getDynamicAssetKey() . '=' . $this->hashedFileName));
     }
 
     /**
      * Deletes a hashed file.
      *
-     * @param   array   $assetsArray    All hashed files.
-     * @param   string  $key            Hashed file's key (which is its path relative to `WP_STATISTICS_DIR`).
+     * @param array $assetsArray All hashed files.
+     * @param string $key Hashed file's key (which is its path relative to `WP_STATISTICS_DIR`).
      *
      * @return  void
      */
     private function deleteHashedFile($assetsArray, $key)
     {
-        if (!empty($assetsArray[$key]) && !empty($assetsArray[$key]['dir']) && file_exists($assetsArray[$key]['dir'])) {
-            unlink($assetsArray[$key]['dir']);
+        $dir = $assetsArray[$key][self::KEY_DIR] ?? '';
+
+        // Only unlink files we created in the legacy uploads/ location.
+        // The current 'dir' stores the original plugin file path, which must never be removed.
+        if (empty($dir) || !file_exists($dir) || !$this->isLegacyUploadsPath($dir)) {
+            return;
         }
+
+        wp_delete_file($dir);
+    }
+
+    /**
+     * Whether the given path is inside the legacy uploads/ root used by the
+     * v1 obfuscator. Anything outside it is treated as belonging to the
+     * plugin and never written or deleted by this class.
+     */
+    private function isLegacyUploadsPath($path)
+    {
+        if (empty($this->uploadsDir)) {
+            $this->uploadsDir = Helper::get_uploads_dir();
+        }
+
+        $uploadsRoot = wp_normalize_path(untrailingslashit($this->uploadsDir)) . '/';
+        $normalized  = wp_normalize_path($path);
+
+        return strpos($normalized, $uploadsRoot) === 0;
     }
 
     /**
@@ -238,5 +273,119 @@ class AssetNameObfuscator
     public function deleteDatabaseOption()
     {
         delete_option('wp_statistics_hashed_assets');
+    }
+
+    /**
+     * Proxies requested asset files through PHP to serve them securely.
+     *
+     * @param string $asset
+     *
+     * @return void
+     */
+    public function serveAssetByHash($asset)
+    {
+        $asset             = $this->cleanHashedFileName($asset);
+        $hashedAssetsArray = Option::getOptionGroup($this->optionName, null, []);
+        $originalFilePath  = $this->getHashedAssetPath($asset, $hashedAssetsArray);
+
+        if ($originalFilePath && file_exists($originalFilePath)) {
+            $extension   = pathinfo($originalFilePath, PATHINFO_EXTENSION);
+            $mimeTypes   = [
+                'js'  => 'application/javascript',
+                'css' => 'text/css',
+            ];
+            $contentType = isset($mimeTypes[$extension]) ? $mimeTypes[$extension] : 'application/octet-stream';
+
+            header("Content-Type: $contentType");
+            header('Cache-Control: public, max-age=86400');
+
+            readfile($originalFilePath);
+
+            exit();
+        } else {
+            wp_die(__('File not found.', 'wp-statistics'), __('404 Not Found', 'wp-statistics'), array('response' => 404));
+        }
+    }
+
+    /**
+     * Retrieves the original file path based on a hashed file name.
+     *
+     * @param string $hashedFileName
+     *
+     * @param array $hashedAssetsArray
+     *
+     * @return string|null
+     */
+    private function getHashedAssetPath($hashedFileName, $hashedAssetsArray)
+    {
+        if (empty($hashedAssetsArray)) {
+            return null;
+        }
+
+        foreach ($hashedAssetsArray as $originalKey => $info) {
+            // Fast path: post-refactor entries store the hashed name explicitly
+            // and 'dir' is the original plugin file (always present on disk).
+            if (isset($info[self::KEY_NAME]) && $info[self::KEY_NAME] === $hashedFileName) {
+                if (!empty($info[self::KEY_DIR]) && file_exists($info[self::KEY_DIR])) {
+                    return $info[self::KEY_DIR];
+                }
+            }
+
+            // Legacy entries stored the hashed name as basename of an uploads/
+            // copy that may now be gone. Recover by resolving the original
+            // plugin file from the option key.
+            if (empty($info[self::KEY_DIR]) || basename($info[self::KEY_DIR]) !== $hashedFileName) {
+                continue;
+            }
+
+            foreach ($this->legacyFallbackCandidates($originalKey, $info[self::KEY_DIR]) as $candidate) {
+                if (file_exists($candidate)) {
+                    return $candidate;
+                }
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * @param string $originalKey
+     * @param string $dir
+     * @return string[]
+     */
+    private function legacyFallbackCandidates($originalKey, $dir)
+    {
+        $candidates = [$dir];
+
+        if (!empty($originalKey)) {
+            $candidates[] = $originalKey;
+            if (!empty($this->pluginsRoot)) {
+                $candidates[] = path_join($this->pluginsRoot, $originalKey);
+            }
+        }
+
+        return $candidates;
+    }
+
+    /**
+     * Clean the file name by removing any extra data
+     *
+     * @param string $hashedFileName
+     *
+     * @return string
+     */
+    private function cleanHashedFileName($hashedFileName)
+    {
+        $posJs = strpos($hashedFileName, '.js');
+        if ($posJs !== false) {
+            return substr($hashedFileName, 0, $posJs + 3);
+        }
+
+        $posCss = strpos($hashedFileName, '.css');
+        if ($posCss !== false) {
+            return substr($hashedFileName, 0, $posCss + 4);
+        }
+
+        return $hashedFileName;
     }
 }

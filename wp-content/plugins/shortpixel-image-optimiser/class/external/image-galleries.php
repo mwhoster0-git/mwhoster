@@ -6,7 +6,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 use ShortPixel\ShortPixelLogger\ShortPixelLogger as Log;
-use ShortPixel\Notices\NoticeController as Notices;
 
 // Image gallery plugins that require a few small extra's
 class ImageGalleries
@@ -14,7 +13,7 @@ class ImageGalleries
   public function __construct()
   {
       add_action('admin_init', array($this, 'addConstants'));
-      add_filter('shortpixel/init/optimize_on_screens', array($this, 'add_screen_loads'));
+      add_filter('shortpixel/init/optimize_on_screens', array($this, 'add_screen_loads'), 10, 2);
   }
 
   // This adds constants for mentioned plugins checking for specific suffixes on addUnlistedImages.
@@ -23,11 +22,9 @@ class ImageGalleries
   public function addConstants()
   {
     //if( !defined('SHORTPIXEL_CUSTOM_THUMB_SUFFIXES')) {
-        if(\is_plugin_active('envira-gallery/envira-gallery.php') ||
-					 \is_plugin_active('soliloquy-lite/soliloquy-lite.php') ||
-					 \is_plugin_active('soliloquy/soliloquy.php') ||
-					 \is_plugin_active('envira-gallery-lite/envira-gallery-lite.php')
-			 )
+
+
+    if (\wpSPIO()->env()->plugin_active('envira') || \wpSPIO()->env()->plugin_active('soliquy') )
 		{
 
 						add_filter('shortpixel/image/unlisted_suffixes', array($this, 'envira_suffixes'));
@@ -42,14 +39,14 @@ class ImageGalleries
 
   }
 
-  public function add_screen_loads($screens)
+  public function add_screen_loads($screens, $screen)
   {
 
      // Envira Gallery Lite
      $screens[] = 'edit-envira';
      $screens[] = 'envira';
 
-     // Solo Cuy 
+     // Solo Cuy
      $screens[] = 'edit-soliloquy';
      $screens[] = 'soliloquy';
      return $screens;

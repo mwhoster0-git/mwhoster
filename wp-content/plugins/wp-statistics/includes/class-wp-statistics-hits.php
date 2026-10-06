@@ -2,17 +2,24 @@
 
 namespace WP_STATISTICS;
 
+if (!defined('ABSPATH')) exit; // Exit if accessed directly
+
+use Exception;
 use WP_Statistics\Components\Singleton;
 use WP_Statistics\Service\Analytics\VisitorProfile;
+use WP_Statistics\Service\Integrations\IntegrationHelper;
+use WP_Statistics\Traits\ErrorLoggerTrait;
 
 class Hits extends Singleton
 {
+    use ErrorLoggerTrait;
+
     /**
      * Rest-APi Hit Record Params Key
      *
      * @var string
      */
-    public static $rest_hits_key = 'wp_statistics_hit_rest';
+    public static $rest_hits_key = 'wp_statistics_hit';
 
     /**
      * Rest-Api Hit Data
@@ -24,30 +31,38 @@ class Hits extends Singleton
     /**
      * WP_Statistics Hits Class.
      *
-     * @throws \Exception
+     * @throws Exception
      */
     public function __construct()
     {
 
-        # Sanitize Hit Data if Has Rest-Api Process
+        // Sanitize Hit Data if Has Rest-Api Process.
+        //
+        // The client-data filters are installed here, but whether the
+        // client-supplied page identity is actually trusted is decided at record
+        // time inside the filter callbacks (set_current_page / set_page_uri),
+        // where the signature is verified. Deciding it here would be too early:
+        // the constructor runs on plugins_loaded, before a theme/init-registered
+        // wp_statistics_request_signature_enabled filter is in effect, so an
+        // early signature check could wrongly discard a legitimate page.
         if (self::is_rest_hit()) {
 
-            # Get Hit Data
+            // Get Hit Data
             $this->rest_hits = (object)self::rest_params();
 
-            # Filter Data
+            // Filter Data
             add_filter('wp_statistics_current_page', array($this, 'set_current_page'));
             add_filter('wp_statistics_page_uri', array($this, 'set_page_uri'));
             add_filter('wp_statistics_user_id', array($this, 'set_current_user'));
         }
 
-        # Record Login Page Hits
+        // Record Login Page Hits
         if (!Option::get('exclude_loginpage')) {
-            add_action('init', array($this, 'record_login_page_hits'));
+            add_action('init', array($this, 'trackLoginPageCallback'));
         }
 
-        # Record WordPress Front Page Hits
-        add_action('wp', array($this, 'record_wp_hits'));
+        // Server Side Tracking
+        add_action('wp', array($this, 'trackServerSideCallback'));
     }
 
     /**
@@ -58,11 +73,35 @@ class Hits extends Singleton
      */
     public function set_current_page($current_page)
     {
+        // Only trust client-supplied page identity when the request carries a
+        // valid signature. Verified here, at record time, so a late-registered
+        // wp_statistics_request_signature_enabled filter is honoured and an
+        // unsigned/spoofed request cannot inject a page identity.
+        if (!Helper::verifyHitSignature()) {
+            return $current_page;
+        }
 
-        if (isset($this->rest_hits->current_page_type) and isset($this->rest_hits->current_page_id)) {
+        /**
+         * Filter to resolve page type and ID from URL for SPA tracking.
+         *
+         * @param string $pageUri The page URI (decoded)
+         */
+        $pageUri  = (isset($this->rest_hits->page_uri) && is_string($this->rest_hits->page_uri)) ? sanitize_url(base64_decode($this->rest_hits->page_uri)) : '';
+        $resolved = apply_filters('wp_statistics_resolve_page_from_uri', $pageUri);
+
+        if (is_array($resolved) && isset($resolved['type']) && $resolved['type'] !== 'unknown') {
             return array(
-                'type'         => esc_sql($this->rest_hits->current_page_type),
-                'id'           => esc_sql($this->rest_hits->current_page_id),
+                'type'         => esc_sql($resolved['type']),
+                'id'           => esc_sql($resolved['id']),
+                'search_query' => isset($resolved['search_query']) ? $resolved['search_query'] : ''
+            );
+        }
+
+        // Default behavior - use client-provided values
+        if (isset($this->rest_hits->source_type) and isset($this->rest_hits->source_id)) {
+            return array(
+                'type'         => esc_sql($this->rest_hits->source_type),
+                'id'           => esc_sql($this->rest_hits->source_id),
                 'search_query' => isset($this->rest_hits->search_query) ? base64_decode($this->rest_hits->search_query) : ''
             );
         }
@@ -78,7 +117,13 @@ class Hits extends Singleton
      */
     public function set_page_uri($page_uri)
     {
-        return isset($this->rest_hits->page_uri) ? base64_decode($this->rest_hits->page_uri) : $page_uri;
+        // Only trust the client-supplied page URI when the request is signed
+        // (verified at record time, mirroring set_current_page).
+        if (!Helper::verifyHitSignature()) {
+            return $page_uri;
+        }
+
+        return (isset($this->rest_hits->page_uri) && is_string($this->rest_hits->page_uri)) ? sanitize_url(base64_decode($this->rest_hits->page_uri)) : $page_uri;
     }
 
     /**
@@ -129,9 +174,9 @@ class Hits extends Singleton
     }
 
     /**
-     * Get Visitor information and Record To DB
+     * Record the visitor
      *
-     * @throws \Exception
+     * @throws Exception
      */
     public static function record($visitorProfile = null)
     {
@@ -139,46 +184,46 @@ class Hits extends Singleton
             $visitorProfile = new VisitorProfile();
         }
 
-        # Check Exclusion This Hits
+        /**
+         * Check the exclusion
+         */
         $exclusion = Exclusion::check($visitorProfile);
 
-        # Record Hits Exclusion
+        /**
+         * Record exclusion if needed & then skip the tracking
+         */
         if ($exclusion['exclusion_match'] === true) {
             Exclusion::record($exclusion);
+            self::errorListener();
+
+            // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- internal exception, message is not rendered to HTML
+            throw new Exception($exclusion['exclusion_reason'], 200);
         }
 
-        # Record User Views
-        if (Visit::active() and $exclusion['exclusion_match'] === false) {
-            Visit::record();
+        /**
+         * Record Pages
+         */
+        $pageId = false;
+        if (Pages::active()) {
+            $pageId = Pages::record($visitorProfile);
         }
 
-        # Record Visitor Detail
+        /**
+         * Record Visitor Detail
+         */
+        $visitorId = false;
         if (Visitor::active()) {
-            $visitor_id = Visitor::record($visitorProfile, $exclusion);
+            $visitorId = Visitor::record($visitorProfile, ['page_id' => $pageId]);
         }
 
-        # Record Search Engine
-        if (isset($visitor_id) and $visitor_id > 0 and $exclusion['exclusion_match'] === false) {
-            SearchEngine::record(array('visitor_id' => $visitor_id));
+        /**
+         * Record Visitor Relationship
+         */
+        if ($visitorId && $pageId) {
+            Visitor::save_visitors_relationships($pageId, $visitorId);
         }
 
-        # Record Pages
-        if (Pages::active() and $exclusion['exclusion_match'] === false) {
-            $page_id = Pages::record($visitorProfile);
-        }
-
-        # Record Visitor Relationship
-        if (isset($visitor_id) and $visitor_id > 0 and isset($page_id) and $page_id > 0) {
-            Visitor::save_visitors_relationships($page_id, $visitor_id);
-        }
-
-        # Record User Online
-        if (UserOnline::active() and ($exclusion['exclusion_match'] === false)) {
-            $pageID = isset($page_id) && $page_id > 0 ? $page_id : 0;
-            UserOnline::record($visitorProfile, [
-                'page_id' => $pageID,
-            ]);
-        }
+        self::errorListener();
 
         return $exclusion;
     }
@@ -186,24 +231,40 @@ class Hits extends Singleton
     /**
      * Record Hits in Login Page
      *
-     * @throws \Exception
+     * @throws Exception
      */
-    public static function record_login_page_hits()
+    public static function trackLoginPageCallback()
     {
         if (Helper::is_login_page()) {
-            self::record();
+            try {
+                self::record();
+            } catch (Exception $e) {
+                self::errorListener();
+            }
         }
     }
 
     /**
-     * Record WordPress Frontend Hits
+     * Server-Side Tracking Callback
      *
-     * @throws \Exception
+     * @throws Exception
      */
-    public static function record_wp_hits()
+    public static function trackServerSideCallback()
     {
-        if (!Option::get('use_cache_plugin') and !Helper::dntEnabled()) {
-            self::record();
+        try {
+            if (is_favicon() || is_admin() || is_preview() || Option::get('use_cache_plugin') || Helper::dntEnabled()) {
+                return;
+            }
+
+            $isConsentGiven     = IntegrationHelper::isConsentGiven();
+            $trackAnonymously   = IntegrationHelper::shouldTrackAnonymously();
+
+            if ($isConsentGiven || $trackAnonymously) {
+                self::record();
+            }
+
+        } catch (Exception $e) {
+            self::errorListener();
         }
     }
 }

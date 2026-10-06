@@ -20,12 +20,18 @@ class PrivacyAuditController
      */
     public function getPrivacyStatus_action_callback()
     {
+        if (!current_user_can('manage_options')) {
+            wp_send_json_error(esc_html__('Unauthorized.', 'wp-statistics'), 403);
+        }
+
         check_ajax_referer('wp_rest', 'wps_nonce');
 
         // Get the compliance, audit and faq list status
-        $response['compliance_status'] = $this->dataProvider->getComplianceStatus();
-        $response['audit_list']        = $this->dataProvider->getAuditsStatus();
-        $response['faq_list']          = $this->dataProvider->getFaqsStatus();
+        $response['compliance_status']  = $this->dataProvider->getComplianceStatus();
+        $response['recommended_audits'] = $this->dataProvider->getAuditsByStatus('recommended');
+        $response['passed_audits']      = $this->dataProvider->getAuditsByStatus('success');
+        $response['unpassed_audits']    = $this->dataProvider->getAuditsByStatus('warning');
+        $response['faq_list']           = $this->dataProvider->getFaqsStatus();
 
         // Send the response
         wp_send_json_success($response);
@@ -38,6 +44,10 @@ class PrivacyAuditController
      */
     public function updatePrivacyStatus_action_callback()
     {
+        if (!current_user_can('manage_options')) {
+            wp_send_json_error(esc_html__('Unauthorized.', 'wp-statistics'), 403);
+        }
+
         try {
             check_ajax_referer('wp_rest', 'wps_nonce');
 
@@ -73,7 +83,7 @@ class PrivacyAuditController
 
     /**
      * Privacy compliance test result for WordPress site health.
-     * 
+     *
      * @return array $result
      */
     public function privacyComplianceTest()
@@ -89,7 +99,8 @@ class PrivacyAuditController
 				'color' => 'blue'
 			],
 			'description' => sprintf(
-                __('<p>The settings in your WP Statistics account comply with the privacy regulations. Visit the <a target="_blank" href="%s">%s<span aria-hidden="true" class="dashicons dashicons-external"></span></a> to learn more about best practices.</p>', 'wp-statistics'),
+                /* translators: %1$s: string value, %2$s: string value */
+                __('<p>The settings in your WP Statistics account comply with the privacy regulations. Visit the <a target="_blank" href="%1$s">%2$s<span aria-hidden="true" class="dashicons dashicons-external"></span></a> to learn more about best practices.</p>', 'wp-statistics'),
                 esc_url(Menus::admin_url(Menus::get_page_slug('privacy-audit'))),
                 esc_html__('Privacy Audit page', 'wp-statistics')
             ),
@@ -99,7 +110,8 @@ class PrivacyAuditController
 		if ($isPrivacyCompliant == false) {
 			$result['label']          = esc_html__('Your WP Statistics settings are not privacy-compliant. Please update your settings.', 'wp-statistics');
 			$result['description']    = sprintf(
-                __('<p>Your WP Statistics settings do not meet the necessary privacy standards. Immediate adjustments are required to ensure compliance and protect user data. Please review and update your settings as recommended on the <a target="_blank" href="%s">%s<span aria-hidden="true" class="dashicons dashicons-external"></span></a>.</p>', 'wp-statistics'),
+                /* translators: %1$s: string value, %2$s: string value */
+                __('<p>Your WP Statistics settings do not meet the necessary privacy standards. Immediate adjustments are required to ensure compliance and protect user data. Please review and update your settings as recommended on the <a target="_blank" href="%1$s">%2$s<span aria-hidden="true" class="dashicons dashicons-external"></span></a>.</p>', 'wp-statistics'),
                 esc_url(Menus::admin_url(Menus::get_page_slug('privacy-audit'))),
                 esc_html__('Privacy Audit page', 'wp-statistics')
             );

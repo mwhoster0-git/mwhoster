@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-06-29 21:26+0000\n"
+"POT-Creation-Date: 2026-02-05 19:38+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: \n"
@@ -16,6 +16,14 @@ msgstr ""
 
 #: bbq-settings.php:33
 msgid "and try again."
+msgstr ""
+
+#: bbq-settings.php:359
+msgid "Apply code"
+msgstr ""
+
+#: bbq-settings.php:359
+msgid "at checkout. Lifetime licenses available. Sale ends 3/28/2026."
 msgstr ""
 
 #: bbq-settings.php:120
@@ -41,8 +49,8 @@ msgstr ""
 
 #. Description of the plugin
 msgid ""
-"BBQ is a super fast firewall that protects WordPress against a wide range of "
-"threats."
+"BBQ is a blazing fast firewall that protects WordPress against a wide range "
+"of threats."
 msgstr ""
 
 #: bbq-settings.php:158
@@ -61,10 +69,6 @@ msgstr ""
 msgid "blocked requests"
 msgstr ""
 
-#: bbq-settings.php:358
-msgid "Buy one get one FREE with code"
-msgstr ""
-
 #: bbq-settings.php:272
 msgid "Click here to rate and review this plugin at WordPress.org"
 msgstr ""
@@ -81,7 +85,11 @@ msgstr ""
 msgid "Confirm Test"
 msgstr ""
 
-#: bbq-settings.php:433
+#: bbq-settings.php:358
+msgid "Dial in the perfect firewall for your site"
+msgstr ""
+
+#: bbq-settings.php:432
 msgid "Dismiss"
 msgstr ""
 
@@ -99,10 +107,6 @@ msgstr ""
 
 #: bbq-settings.php:171
 msgid "Get BBQ Pro&nbsp;&raquo;"
-msgstr ""
-
-#: bbq-settings.php:360
-msgid "Get&nbsp;plugins&nbsp;&raquo;"
 msgstr ""
 
 #: bbq-settings.php:247
@@ -141,10 +145,6 @@ msgstr ""
 msgid "Okay run the test."
 msgstr ""
 
-#: bbq-settings.php:359
-msgid "or take 30% off with code"
-msgstr ""
-
 #: bbq-settings.php:31
 msgid "Please return to the "
 msgstr ""
@@ -155,10 +155,6 @@ msgstr ""
 
 #: bbq-settings.php:105
 msgid "Plugin Information"
-msgstr ""
-
-#: bbq-settings.php:357
-msgid "Pro Plugin Sale!"
 msgstr ""
 
 #: bbq-settings.php:114
@@ -248,4 +244,8 @@ msgstr ""
 
 #: bbq-settings.php:58
 msgid "★★★★★ rating&nbsp;&raquo;"
+msgstr ""
+
+#: bbq-settings.php:357
+msgid "🔥 SAVE 30% on BBQ Pro!"
 msgstr ""

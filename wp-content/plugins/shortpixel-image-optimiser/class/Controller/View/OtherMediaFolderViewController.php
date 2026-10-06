@@ -6,7 +6,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 use ShortPixel\ShortPixelLogger\ShortPixelLogger as Log;
-use ShortPixel\Notices\NoticeController as Notices;
 use ShortPixel\Helper\InstallHelper as InstallHelper;
 use ShortPixel\Controller\OtherMediaController as OtherMediaController;
 
@@ -35,6 +34,7 @@ class OtherMediaFolderViewController extends \ShortPixel\ViewController
   {
     parent::__construct();
 
+
     $fs = \wpSPIO()->filesystem();
 
 		$this->controller = OtherMediaController::getInstance();
@@ -59,17 +59,10 @@ class OtherMediaFolderViewController extends \ShortPixel\ViewController
   /** Controller default action - overview */
   public function load()
   {
-    //  $this->process_actions();
-    //
-
       $this->view->items = $this->getItems();
-  //    $this->view->folders = $this->getItemFolders($this->view->items);
       $this->view->headings = $this->getHeadings();
       $this->view->pagination = $this->getPagination();
       $this->view->filter = $this->getFilter();
-
-
-//      $this->checkQueue();
       $this->loadView();
   }
 
@@ -129,7 +122,6 @@ class OtherMediaFolderViewController extends \ShortPixel\ViewController
      ));
 
      $actions = array_merge($actions, $refreshAction, $removeAction, $showFilesAction);
-//     $actions = array_merge($actions, );
 
      return $actions;
   }
@@ -167,7 +159,6 @@ class OtherMediaFolderViewController extends \ShortPixel\ViewController
         'limit' => $this->items_per_page,
         'offset' => ($page - 1) * $this->items_per_page,
     );
-
 
     $filters = $this->getFilter();
     $args = wp_parse_args($args, $defaults);
@@ -207,7 +198,7 @@ class OtherMediaFolderViewController extends \ShortPixel\ViewController
         $sql .= " AND status <> -1";
     }
 
-    $sql .= ($this->orderby ? " ORDER BY " . $this->orderby . " " . $this->order . " " : "");
+		$sql .= ($this->orderby ? " ORDER BY " . sanitize_sql_orderby($this->orderby . " " . $this->order) . " " : "");
 
     if ($args['limit'] > 0)
     {
@@ -344,8 +335,6 @@ class OtherMediaFolderViewController extends \ShortPixel\ViewController
 
     protected function getPagination()
     {
-        $parray = array();
-
         $current = $this->currentPage;
         $total = $this->total_items;
         $per_page = $this->items_per_page;
@@ -379,8 +368,6 @@ class OtherMediaFolderViewController extends \ShortPixel\ViewController
          $page_args =$this->getPageArgs(); // has url
          if (isset($page_args['paged']))
           unset($page_args['paged']);
-
-
 
          // Try with controller URL, if not present, try with upload URL and page param.
          $admin_url = admin_url('upload.php');

@@ -52,13 +52,12 @@ class QuotaController
           return $this->quotaData;
 
         $cache = new CacheController();
-
         $cacheData = $cache->getItem(self::CACHE_NAME);
 
         if (! $cacheData->exists() )
         {
             $quotaData = $this->getRemoteQuota();
-						if (! $this->hasQuota())
+            if (false === $this->hasQuota())
 							$timeout = MINUTE_IN_SECONDS;
 						else {
 							$timeout = HOUR_IN_SECONDS;
@@ -83,7 +82,9 @@ class QuotaController
           $quotaData = $this->getQuotaData();
           $DateNow = time();
 
-          $DateSubscription = strtotime($quotaData['APILastRenewalDate']);
+          // This check to prevent IIS issue on 32Bit PHP to have complaints (?) .  //https://support.shortpixel.com/conversation/240212
+          $DateSubscription = (isset($quotaData['APILastRenewalDate']) && $quotaData['APILastRenewalDate'] != 0 ) ? 
+                          strtotime($quotaData['APILastRenewalDate']) : false; 
           $DaysToReset =  30 - ( (int) (  ( $DateNow  - $DateSubscription) / DAY_IN_SECONDS) % 30);
 
           $quota = (object) [
@@ -102,6 +103,7 @@ class QuotaController
                 'remaining' => $quotaData['APICallsQuotaOneTimeNumeric'] - $quotaData['APICallsMadeOneTimeNumeric'],
               ],
           ];
+
 
           $quota->total = (object) [
               'total' => $quota->monthly->total + $quota->onetime->total,
@@ -173,7 +175,6 @@ class QuotaController
 				{
 						AdminNoticesController::resetQuotaNotices();
 				}
-		//		Log::addDebug('Reset Quota Exceeded and reset Notices');
        	$settings->quotaExceeded = 0;
     }
 
@@ -192,7 +193,6 @@ class QuotaController
           $apiKey = $keyControl->forceGetApiKey();
         }
 
-
         $settings = \wpSPIO()->settings();
 
           if($settings->httpProto != 'https' && $settings->httpProto != 'http') {
@@ -200,6 +200,7 @@ class QuotaController
           }
 
           $requestURL = $settings->httpProto . '://' . SHORTPIXEL_API . '/v2/api-status.php';
+
           $args = array(
               'timeout'=> 15, // wait for 15 secs.
               'body' => array('key' => $apiKey)
@@ -240,9 +241,11 @@ class QuotaController
               $args['body']['pass'] = stripslashes($settings->siteAuthPass);
               $argsStr .= '&user=' . urlencode($args['body']['user']) . '&pass=' . urlencode($args['body']['pass']);
           }
+          /* TF?
           if($settings !== false) {
+
               $args['body']['Settings'] = $settings;
-          }
+          } */
 
           $time = microtime(true);
           $comm = array();
@@ -283,7 +286,6 @@ class QuotaController
               $response = wp_remote_get($requestURL, $args);
               $comm['C: ' . (number_format(microtime(true) - $time, 2))] = array("sent" => "POST: " . $requestURL, "args" => $args, "received" => $response);
           }
-    //      Log::addInfo("API STATUS COMM: " . json_encode($comm));
 
           $defaultData = array(
               "APIKeyValid" => false,
@@ -356,7 +358,7 @@ class QuotaController
               $this->setQuotaExceeded();
 					}
 
-          Log::addDebug('GetQuotaInformation Result ', $dataArray);
+        //  Log::addDebug('GetQuotaInformation Result ', $dataArray);
           return $dataArray;
     }
 

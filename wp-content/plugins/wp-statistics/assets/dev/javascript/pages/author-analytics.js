@@ -3,7 +3,6 @@ if (wps_js.isset(wps_js.global, 'request_params', 'page') && wps_js.global.reque
     const wpStatisticsAuthorAnalytics = {
         init: function () {
             if (typeof Wp_Statistics_Author_Analytics_Object == "undefined") {
-                console.log('Variable Wp_Statistics_Author_Analytics_Object not found.');
                 return;
             }
 
@@ -24,91 +23,23 @@ if (wps_js.isset(wps_js.global, 'request_params', 'page') && wps_js.global.reque
 
             const chartData = Wp_Statistics_Author_Analytics_Object.browser_chart_data;
 
-            if (chartData.data.length == 0) {
-                jQuery('#wps-browsers').parent().text(wps_js._('no_result'));
-                jQuery('#wps-browsers').remove();
-                return;
+            if (!chartData.data ||chartData.data.length == 0) {
+                jQuery('#wps-browsers').parent().html(wps_js.no_results());
+            } else {
+                wps_js.horizontal_bar( 'wps-browsers', chartData.labels, chartData.data, chartData.icons );
             }
-
-            const browsersData = {
-                labels: chartData.labels,
-                datasets: [{
-                    data: chartData.data,
-                    backgroundColor: ['#F7D399', '#99D3FB', '#D7BDE2', '#D7BDE2', '#EBA39B', '#F5CBA7'],
-                    borderColor: '#fff',
-                    borderWidth: 1,
-                }]
-            };
-            const browsersOptions = {
-                responsive: true,
-                plugins: {
-                    legend: {
-                        position: 'top',
-                        hidden: false,
-                        labels: {
-                            padding: 13,
-                            fontSize: 13,
-                            color: '#56585A',
-                            usePointStyle: true,
-                            pointStyle: 'rect',
-                            pointRadius: 2
-                        }
-                    }
-                }
-            };
-            const browsersCtx = document.getElementById('wps-browsers').getContext('2d');
-            const browsersChart = new Chart(browsersCtx, {
-                type: 'pie',
-                data: browsersData,
-                options: browsersOptions
-            });
         },
-
         generateOperatingSystemChart: function() {
             if (!wps_js.isset(Wp_Statistics_Author_Analytics_Object, 'os_chart_data')) {
                 return;
             }
 
             const chartData = Wp_Statistics_Author_Analytics_Object.os_chart_data;
-
-            if (chartData.labels.length == 0 || chartData.data.length ==0) {
-                jQuery('#wps-operating-systems').parent().text(wps_js._('no_result'));
-                jQuery('#wps-operating-systems').remove();
-                return;
+            if (!chartData.data || chartData.labels.length == 0 || chartData.data.length ==0) {
+                jQuery('#wps-operating-systems').parent().html(wps_js.no_results());
+            } else {
+                wps_js.horizontal_bar( 'wps-operating-systems', chartData.labels, chartData.data, chartData.icons );
             }
-
-            const operatingSystemsData = {
-                labels: chartData.labels,
-                datasets: [{
-                    data: chartData.data,
-                    backgroundColor: ['#F7D399', '#99D3FB', '#D7BDE2', '#D7BDE2', '#EBA39B', '#F5CBA7'],
-                    borderColor: '#fff',
-                    borderWidth: 1,
-                }]
-            };
-            const operatingSystemsOptions = {
-                responsive: true,
-                plugins: {
-                    legend: {
-                        position: 'top',
-                        hidden: false,
-                        labels: {
-                            padding: 13,
-                            fontSize: 13,
-                            color: '#56585A',
-                            usePointStyle: true,
-                            pointStyle: 'rect',
-                            pointRadius: 2
-                        }
-                    }
-                }
-            };
-            const operatingSystemsCtx = document.getElementById('wps-operating-systems').getContext('2d');
-            const operatingSystemsChart = new Chart(operatingSystemsCtx, {
-                type: 'pie',
-                data: operatingSystemsData,
-                options: operatingSystemsOptions
-            });
         },
 
         generateViewsPerPostsChart: function () {
@@ -118,166 +49,179 @@ if (wps_js.isset(wps_js.global, 'request_params', 'page') && wps_js.global.reque
 
             const publishedChartData = Wp_Statistics_Author_Analytics_Object.views_per_posts_chart_data;
 
-            const chartImageUrls     = publishedChartData.data.map(point => point.img);
+            const chartImageUrls = publishedChartData.datasets.map(point => point.img);
 
-            const chartImages = chartImageUrls.map(url => {
-                const img = new Image();
-                img.src = url;
-                return img;
-            });
-
-            const afterRenderPlugin = {
-                id: 'afterRenderPlugin',
-
-                afterDraw: function (chart, args, options) {
-
-                    const canvas = document.getElementById('publishedChart');
-                    const ctx = canvas.getContext('2d');
-                    chart.data.datasets.forEach((dataset, datasetIndex) => {
-                        dataset.data.forEach((point, index) => {
-                            const img = chartImages[index % chartImages.length];
-                            const x = chart.scales.x.getPixelForValue(point.x);
-                            const y = chart.scales.y.getPixelForValue(point.y);
-                            const radius = 15;
-                            const borderWidth = 2; // Adjust border width
-                            const centerX = x - radius;
-                            const centerY = y - radius;
-
-                            // Draw border circle
-                            ctx.beginPath();
-                            ctx.arc(x, y, radius + borderWidth, 0, 2 * Math.PI);
-                            ctx.lineWidth = borderWidth * 2;
-                            ctx.strokeStyle = 'rgba(81,0,253,20%)';
-                            ctx.stroke();
-                            ctx.closePath();
-
-                            // Clip to the circle
-                            ctx.save();
-                            ctx.beginPath();
-                            ctx.arc(x, y, radius, 0, 2 * Math.PI);
-                            ctx.clip();
-
-                            // Draw image
-                            ctx.drawImage(img, centerX, centerY, radius * 2, radius * 2);
-                            ctx.restore();
-                        });
-                    });
-                }
+            const loadImage = (url) => {
+                return new Promise((resolve, reject) => {
+                    const img = new Image();
+                    img.src = url;
+                    img.crossOrigin = "Anonymous";
+                    img.onload = () => resolve(img);
+                    img.onerror = () => resolve(null);
+                });
             };
 
-            if (Chart.version.replace(/\./g, "") > 400) {
-                Chart.register(afterRenderPlugin);
-            } else {
-                Chart.plugins.register(afterRenderPlugin);
-            }
+            Promise.all(chartImageUrls.map(url => loadImage(url)))
+                .then(chartImages => {
 
-            Chart.Tooltip.positioners.top = function (element, eventPosition) {
-                const tooltip = this;
+                    const validImages = chartImages.filter(img => img instanceof HTMLImageElement);
 
-                const { chartArea: { bottom }, scales: { x, y } } = this.chart;
+                    if (!validImages.length) {
+                        jQuery('#publishedChart').parent().html(wps_js.no_results());
+                        return;
+                    }
 
-                return {
-                    x: x.getPixelForValue(x.getValueForPixel(eventPosition.x)),
-                    y: y.getPixelForValue(y.getValueForPixel(eventPosition.y)) - 20,
-                    xAlign: 'center',
-                    yAlign: 'bottom'
-                }
-            }
+                    const afterRenderPlugin = {
+                        id: 'afterRenderPlugin',
+                        afterDraw: function (chart, args, options) {
+                            const canvas = document.getElementById('publishedChart');
+                            const ctx = canvas.getContext('2d');
+                            chart.data.datasets.forEach((dataset, datasetIndex) => {
+                                dataset.data.forEach((point, index) => {
+                                    const img = chartImages[index % chartImages.length];
+                                    const x = chart.scales.x.getPixelForValue(point.x);
+                                    const y = chart.scales.y.getPixelForValue(point.y);
+                                    const radius = 15;
+                                    const borderWidth = 2;
+                                    const centerX = x - radius;
+                                    const centerY = y - radius;
 
-            const publishedData = {
-                datasets: [{
-                    label: publishedChartData.chartLabel,
-                    data: publishedChartData.data,
-                    backgroundColor: '#E8EAEE'
-                }],
-            };
-            const publishedConfig = {
-                type: 'scatter',
-                data: publishedData,
-                options: {
-                    responsive: true,
-                    pointRadius: 16,
-                    pointHoverRadius: 16,
-                    tooltipPosition: {
-                        x: 10,
-                        y: 30
-                    },
-                    layout: {
-                        padding: {
-                            Right: 20,
-                            Left: 20,
+                                    // Draw border circle
+                                    ctx.beginPath();
+                                    ctx.arc(x, y, radius + borderWidth, 0, 2 * Math.PI);
+                                    ctx.lineWidth = borderWidth * 2;
+                                    ctx.strokeStyle = 'rgba(81,0,253,20%)';
+                                    ctx.stroke();
+                                    ctx.closePath();
+
+                                    // Clip to the circle
+                                    ctx.save();
+                                    ctx.beginPath();
+                                    ctx.arc(x, y, radius, 0, 2 * Math.PI);
+                                    ctx.clip();
+
+                                    // Draw image
+                                    ctx.drawImage(img, centerX, centerY, radius * 2, radius * 2);
+                                    ctx.restore();
+                                });
+                            });
                         }
-                    },
-                    scales: {
-                        y: {
-                            type: 'linear',
+                    };
 
-                            ticks: {
-                                stepSize: 4,
-                                color: '#56585A',
-                                fontSize: 13,
-                                padding: 15,
+                    if (Chart.version.replace(/\./g, "") > 400) {
+                        Chart.register(afterRenderPlugin);
+                    } else {
+                        Chart.plugins.register(afterRenderPlugin);
+                    }
+
+                    Chart.Tooltip.positioners.top = function (element, eventPosition) {
+                        const tooltip = this;
+                        const { chartArea: { bottom }, scales: { x, y } } = this.chart;
+
+                        return {
+                            x: x.getPixelForValue(x.getValueForPixel(eventPosition.x)),
+                            y: y.getPixelForValue(y.getValueForPixel(eventPosition.y)) - 20,
+                            xAlign: 'center',
+                            yAlign: 'bottom'
+                        };
+                    };
+
+                    const publishedData = {
+                        datasets: [{
+                            label: publishedChartData.labels.chartLabel,
+                            data: publishedChartData.datasets,
+                            backgroundColor: '#E8EAEE'
+                        }],
+                    };
+
+                    const publishedConfig = {
+                        type: 'scatter',
+                        data: publishedData,
+                        options: {
+                            responsive: true,
+                            pointRadius: 16,
+                            pointHoverRadius: 16,
+                            tooltipPosition: {
+                                x: 10,
+                                y: 30
                             },
-                            title: {
-                                display: true,
-                                text: publishedChartData.yAxisLabel,
-                                fontSize: 14,
-                                color: '#000'
-                            },
-                            grid: {
-                                drawBorder: false,
-                                tickLength: 0,
-                            }
-                        },
-                        x: {
-                            type: 'linear',
-                            position: 'bottom',
-                            title: {
-                                display: true,
-                                text: publishedChartData.xAxisLabel,
-                                fontSize: 14,
-                                color: '#000'
-                            },
-                            ticks: {
-                                stepSize: 50000,
-                                autoSkip: false,
-                                maxRotation: 90,
-                                minRotation: 90,
-                                color: '#56585A',
-                                padding: 15,
-                                fontSize: 13
-                            },
-                            grid: {
-                                drawBorder: false,
-                                tickLength: 0,
-                            }
-                        }
-                    },
-                    plugins: {
-                        legend: {
-                            display: false
-                        },
-                        tooltip: {
-                            position: 'top',
-                            callbacks: {
-                                label: function(context) {
-                                    const point = context.raw;
-                                    return [
-                                        `${wps_js._('visits')}/${wps_js._('published')}: (${point.x}, ${point.y})`,
-                                        `${wps_js._('author')}: ${point.author}`
-                                    ];
+                            layout: {
+                                padding: {
+                                    Right: 20,
+                                    Left: 20,
                                 }
-                            }
-                        }
-                    },
-                },
-                plugins: [afterRenderPlugin]
-            };
+                            },
+                            scales: {
+                                y: {
+                                    type: 'linear',
+                                    ticks: {
+                                        stepSize: 4,
+                                        color: '#56585A',
+                                        fontSize: 13,
+                                        padding: 15,
+                                    },
+                                    title: {
+                                        display: true,
+                                        text: publishedChartData.labels.yAxisLabel,
+                                        fontSize: 14,
+                                        color: '#000'
+                                    },
+                                    grid: {
+                                        drawBorder: false,
+                                        tickLength: 0,
+                                    }
+                                },
+                                x: {
+                                    type: 'linear',
+                                    position: 'bottom',
+                                    title: {
+                                        display: true,
+                                        text: publishedChartData.labels.xAxisLabel,
+                                        fontSize: 14,
+                                        color: '#000'
+                                    },
+                                    ticks: {
+                                        stepSize: 50000,
+                                        autoSkip: false,
+                                        maxRotation: 90,
+                                        minRotation: 90,
+                                        color: '#56585A',
+                                        padding: 15,
+                                        fontSize: 13
+                                    },
+                                    grid: {
+                                        drawBorder: false,
+                                        tickLength: 0,
+                                    }
+                                }
+                            },
+                            plugins: {
+                                legend: {
+                                    display: false
+                                },
+                                tooltip: {
+                                    position: 'top',
+                                    callbacks: {
+                                        label: function(context) {
+                                            const point = context.raw;
+                                            return [
+                                                `${wps_js._('visits')}/${wps_js._('published')}: (${point.x}, ${point.y})`,
+                                                `${wps_js._('author')}: ${point.author}`
+                                            ];
+                                        }
+                                    }
+                                }
+                            },
+                        },
+                        plugins: [afterRenderPlugin]
+                    };
 
-            new Chart(
-                document.getElementById('publishedChart'),
-                publishedConfig
-            );
+                    new Chart(document.getElementById('publishedChart'), publishedConfig);
+                })
+                .catch(error => {
+                    console.error('Error loading images:', error);
+                    jQuery('#publishedChart').parent().html(wps_js.no_results());
+                });
         },
 
         generatePublishingOverviewChart: function () {
@@ -296,18 +240,18 @@ if (wps_js.isset(wps_js.global, 'request_params', 'page') && wps_js.global.reque
                 const value = c.dataset.data[c.dataIndex].v;
                 const minValue = Math.min(...c.dataset.data.map(data => data.v));
                 const maxValue = Math.max(...c.dataset.data.map(data => data.v));
-                 if (value === 0) {
+                if (value === 0) {
                     return '#e8eaee';
                 }
                 const interpolatedColor = interpolateColor('#B28DFF', '#250766', minValue, maxValue, value);
 
                 return interpolatedColor;
-             };
+            };
 
             const overviewPublishData = {
                 datasets: [{
                     label: 'overview',
-                    data: Wp_Statistics_Author_Analytics_Object.publish_chart_data,
+                    data: Wp_Statistics_Author_Analytics_Object.publish_chart_data.datasets,
                     backgroundColor: (c) => backgroundColor(c),
                     borderColor: 'transparent',
                     borderWidth: 4,

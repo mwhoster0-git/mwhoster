@@ -25,7 +25,7 @@ class ShortPixelScreen extends ShortPixelScreenItemBase
         if (data.custom)
         {
             var id = data.custom.id;
-            var element = document.getElementById('sp-msg-' + id);
+            var element = document.getElementById('shortpixel-data-' + id);
             element.outerHTML = data.custom.itemView;
 
             var isOptimizable = data.custom.is_optimizable;
@@ -33,9 +33,10 @@ class ShortPixelScreen extends ShortPixelScreenItemBase
 
             var inputSelect = document.querySelector('.item-' + id + ' input[name="select[]"]');
 
-            if (null === inputSelect)
+            if (null === inputSelect) // This happens on NGG 
             {
                console.warn('Checkbox not found ' + id);
+               return; 
             }
 
             inputSelect.classList.remove('is-optimizable', 'is-restorable');
@@ -135,9 +136,17 @@ class ShortPixelScreen extends ShortPixelScreenItemBase
                  else {
                    console.error('Row Element not found for '  + folder_id);
                  }
-
              }
           }
+
+					if (data.folder.updated)
+					{
+						var el = document.querySelector('.shortpixel-other-media .item.item-' + folder_id + ' .updated');
+						if (null !== el)
+						{
+							 el.innerText = data.folder.updated;
+						}
+					}
 
        }
 
@@ -225,45 +234,124 @@ class ShortPixelScreen extends ShortPixelScreenItemBase
        var selectedAction = selectBox.options[selectBox.selectedIndex];
        selectBox.selectedIndex = 0; // Return to default
 
-       var action = selectedAction.value;
+       var actionValue = selectedAction.value;
 
+			  var bulkActions = []; 
+			  var bulkItems = []; 
 
        for (var i = 0; i < items.length; i++)
        {
            var item = items[i];
+           var actionPushed = false; 
+
            if (false == item.checked) // failsafe
            {
               continue;
            }
            var item_id = item.value;
 
-           if ('optimize' === action)
-           {
-              if (item.classList.contains('is-optimizable'))
-              {
-               this.Optimize(item_id);
-              }
-           }
-           else if ('restore' === action)
-           {
-              if (item.classList.contains('is-restorable'))
-              {
-                this.RestoreItem(item_id);
-              }
-           }
-           else if ('mark-completed' === action)
-           {
-             if (item.classList.contains('is-optimizable'))
-             {
-               this.MarkCompleted(item_id);
-             }
+           var restorable = item.classList.contains('is-restorable'); 
+           var optimizable = item.classList.contains('is-optimizable');
 
+           if (item.dataset.type)
+           {
+              var compressionType = item.dataset.type; 
            }
-           else {
+           else 
+           {
+             var compressionType = -1;
            }
 
-           item.checked = false;
-       }
+           
+				switch (actionValue) {
+					case 'shortpixel-optimize':
+						if (optimizable) {
+							bulkActions.push( this.AddDelayedAction('Optimize', item_id) );
+							actionPushed = true; 
+						}
+						break;
+					case 'shortpixel-glossy':
+					case 'shortpixel-lossy':
+					case 'shortpixel-lossless':
+					case 'shortpixel-smartcrop':
+					case 'shortpixel-smartcropless':
+
+						switch (actionValue) {
+							case 'shortpixel-glossy':
+								var compression = this.imageConstants.COMPRESSION_GLOSSY;
+								break;
+							case 'shortpixel-lossless':
+								var compression = this.imageConstants.COMPRESSION_LOSSLESS;
+								break;
+							case 'shortpixel-lossy':
+								var compression = this.imageConstants.COMPRESSION_LOSSY;
+								break;
+							case 'shortpixel-smartcrop':
+								var action = this.imageConstants.ACTION_SMARTCROP;
+								break;
+							case 'shortpixel-smartcropless':
+								var action = this.imageConstants.ACTION_SMARTCROPLESS;
+							break;
+						}
+
+						if (typeof action === 'undefined' && compressionType == compression) {
+							items.checked = false
+							continue; // no need for compression. Should probably not work when actionstuff is happening.
+						}
+						else {
+							compressionType = compression;
+						}
+
+						if (restorable) {
+							bulkActions.push( this.AddDelayedAction('ReOptimize',item_id, compressionType, action));
+							actionPushed = true; 
+							//this.ReOptimize(media_id, compressionType, action);
+						}
+
+
+						break;
+					case 'shortpixel-restore':
+						if (restorable) {
+							bulkActions.push( this.AddDelayedAction('RestoreItem', item_id) );
+							actionPushed = true; 
+							//this.RestoreItem(media_id);
+						}
+						break;
+					case 'shortpixel-mark-completed':
+							if (optimizable) {
+								bulkActions.push( this.AddDelayedAction('MarkCompleted', item_id) );
+								actionPushed = true; 
+								//this.MarkCompleted(media_id);
+							}
+					break; 
+      }
+				if (false === actionPushed)
+				{
+					items[i].checked = false;
+				}
+				else 
+				{
+					 bulkItems.push(items[i]);
+				}
+      }
+
+			// Timeout: delay a little bit each item to prevent hammering server. 
+			var i = 0; 
+			if (bulkActions.length > 0)
+			{
+
+				var inv = setInterval(() => {
+
+							var item = bulkItems.shift(); 
+							item.checked = false; 
+							bulkActions[i]();
+							i++; 
+							if (i === bulkActions.length)
+							{
+								clearInterval(inv);
+							}
+						}, 1000 );
+			}
 
        var selectAll = document.querySelector('input[name="select-all"]');
        selectAll.checked = false;
@@ -318,6 +406,15 @@ class ShortPixelScreen extends ShortPixelScreenItemBase
       // @todo FadeOut function here
       var picker = document.querySelector('.shortpixel-modal.modal-folder-picker');
       this.Hide(picker);
+
+			var message = picker.querySelector('.folder-message');
+			this.Hide(message);
+
+			var notices = picker.querySelectorAll('.shortpixel-notice');
+			for (var i = 0; i < notices.length; i++ )
+			{
+				 notices[i].remove();
+			}
     }
 
     AddNewFolderEvent(event)
@@ -335,8 +432,11 @@ class ShortPixelScreen extends ShortPixelScreenItemBase
            if ( false == messageEl.classList.contains('hidden'))
            {
                messageEl.classList.add('hidden');
+							 this.Hide(messageEl);
            }
+
       }
+
 
       window.addEventListener('shortpixel.folder.AddNewDirectory', this.UpdateFolderViewEvent.bind(this), {'once':true});
 
@@ -381,6 +481,17 @@ class ShortPixelScreen extends ShortPixelScreenItemBase
            {
                messageEl.textContent = data.folder.message;
                messageEl.classList.remove('hidden');
+							 this.Show(messageEl);
+           }
+           if (data.display_notices)
+           {
+                 //var element = document.querySelector('.modal-folder-picker .description');
+                 this.AppendNotices(data.display_notices, messageEl);
+           }
+           if (data.display_notices)
+           {
+                 //var element = document.querySelector('.modal-folder-picker .description');
+                 this.AppendNotices(data.display_notices, messageEl);
            }
         }
 

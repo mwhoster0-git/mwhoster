@@ -1,9 +1,16 @@
 import '../scss/common.scss';
-import tracker from './utils/tracker';
+import DeactivationSurvey from './modules/deactivation-survey';
+import GlobalTracking from './global-tracking';
 
 /* global ajaxurl */
 
-document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener( 'DOMContentLoaded', function() {
+	// Deactivation survey modal.
+	( new DeactivationSurvey() ).init();
+	// Global Trackings.
+	( new GlobalTracking() ).init();
+
+	// Dismiss notices.
 	const dismissNoticeButton = document.querySelectorAll(
 		'.smush-dismissible-notice .smush-dismiss-notice-button'
 	);
@@ -30,11 +37,17 @@ document.addEventListener('DOMContentLoaded', function () {
 		);
 		xhr.onload = () => {
 			if (notice) {
-				notice.querySelector('button.notice-dismiss').dispatchEvent(new MouseEvent('click', {
-					view: window,
-					bubbles: true,
-					cancelable: true
-				}));
+				// Trigger WordPress notice dismissal.
+				const noticeDismissButton = notice.querySelector('button.notice-dismiss');
+				if (noticeDismissButton) {
+					noticeDismissButton.dispatchEvent(new MouseEvent('click', {
+						view: window,
+						bubbles: true,
+						cancelable: true
+					}));
+				} else {
+					notice.style.display = 'none';
+				}
 			}
 		};
 		xhr.send();
@@ -55,7 +68,6 @@ document.addEventListener('DOMContentLoaded', function () {
 			xhr.send();
 		} );
 	}
-
 
 	// Show header notices.
 	const handleHeaderNotice = () => {
@@ -105,11 +117,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
 	handleHeaderNotice();
 
-	// Global tracking.
-	const upsellSubmenuLink = document.querySelector( '#toplevel_page_smush a[href*="utm_campaign=smush_submenu_upsell' );
-	if ( upsellSubmenuLink ) {
-		upsellSubmenuLink.addEventListener( 'click', (e) => {
-			tracker.track( 'submenu_upsell' );
-		} );
+	// Open the upgrade submenu link in a new tab.
+	const upgradeLink = document.querySelector( '#toplevel_page_smush ul.wp-submenu li:last-child a[href*="wpmudev.com"]' );
+	if ( upgradeLink ) {
+		upgradeLink.target = '_blank';
+		upgradeLink.rel = 'noopener noreferrer';
 	}
 });

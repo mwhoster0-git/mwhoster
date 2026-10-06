@@ -1,15 +1,15 @@
 === WPIDE - File Manager & Code Editor ===
 Contributors: XplodedThemes
-Tags: theme editor, plugin editor, code editor, file editor, file manager, wpide, ide
+Tags: theme editor, plugin editor, code editor, file editor, file manager
 Requires at least: 5.2
-Tested up to: 6.5
-Stable tag: 3.4.9
+Tested up to: 6.9
+Stable tag: 3.5.9
 Requires PHP: 7.4.0
 Requires at least: 5.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-WPIDE is an advanced File Manager & Code Editor for WordPress. You can edit any files in your wp-content folder, not just plugins and themes. Code completion will help you remember your WordPress/PHP commands providing function reference along the way. Edit multiple files with the tabbed editor.
+WPIDE is a powerful file manager and code editor for WordPress with tabs, code completion, and full access to the entire wp-content folder.
 
 == Description ==
 
@@ -151,6 +151,45 @@ This option might be available on other hosting platforms as well.
 6. File Recovery Wizard
 
 == Changelog ==
+
+#### V.3.5.9 - 15.09.2026
+- **fix**: Fixed the Plans and Pricing screen failing to load (endless spinner). The pricing request sanitizer no longer strips the action parameter from Freemius admin-ajax calls, which caused admin-ajax to reject pricing data requests with a 400 response.
+
+#### V.3.5.8 - 21.07.2026
+- **security**: Hardened Plans and Pricing endpoint validation and testimonial rendering to prevent cross-site scripting.
+
+#### V.3.5.7 - 13.07.2026
+- **security**: Strengthened request validation for authenticated WPIDE admin actions.
+
+#### V.3.5.6 - 17.04.2026
+- **fix**: Restored the File Editor admin sidebar route so it opens the editor instead of bouncing back to File Manager.
+- **new**: Added separate editor settings for Autocompletion and the Info Bar, both enabled by default.
+- **fix**: Resetting the new editor settings now correctly restores their enabled default value on existing installs.
+- **fix**: File save state detection now uses the actual loaded content baseline, preventing the Save button from appearing when a file has not changed.
+
+#### V.3.5.5 - 14.04.2026
+- **fix**: Updated bundled Composer libraries to reduce plugin conflicts and PHP 8.5 deprecation noise.
+- **security**: Upgraded `symfony/http-foundation` to the supported 5.4 LTS line.
+- **update**: Refreshed bundled Composer packages including `monolog/monolog`, `composer/installers`, and `symfony/mime`.
+- **fix**: Fatal error drop-in now respects silenced PHP errors and the active `error_reporting()` mask, preventing noisy `preg_match()` warnings from other plugins being written to `debug.log`.
+- **new**: Active file editor state is now reflected in the URL so refreshing the page restores the same file.
+- **fix**: Image editor state loading now avoids PHP 8.5 `json_decode(null)` deprecation notices, and logger writes now fall back to a valid file when the active `error_log` setting points to a directory.
+
+#### V.3.5.3 - 24.10.2025
+- **update**: Freemius SDK update v2.12.2
+
+#### V.3.5.2 - 01.04.2025
+- **support**: WordPress future 6.8 release
+- **update**: Freemius SDK update v2.11.0
+
+#### V.3.5.1 - 06.02.2025
+- **support**: WordPress 6.7
+- **update**: Freemius SDK update v2.9.0
+- **fix**: Minor fixes
+
+#### V.3.5.0 - 09.10.2024
+- **support**: WordPress 6.6
+- **fix**: Minor fixes
 
 #### V.3.4.9 - 05.04.2024
 - **support**: WordPress 6.5
@@ -360,4 +399,3 @@ This option might be available on other hosting platforms as well.
 
 #### 1.0
 - **initial**: Initial release.
-

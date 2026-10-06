@@ -34,12 +34,10 @@ function bodhi_svg_support_settings_page() {
 
 	if ( ! current_user_can( 'manage_options' ) ) {
 
-		wp_die( __('You can\'t play with this.', 'svg-support') );
+		wp_die( esc_html__('You can\'t play with this.', 'svg-support') );
 
 	}
 
-	// Swapped the global with this line to work with WordPress Bedrock on LEMP stack | https://wordpress.org/support/topic/settings-not-saving-24/
-	// global $bodhi_svgs_options;
 	$bodhi_svgs_options = get_option( 'bodhi_svgs_settings' );
 
 	require( BODHI_SVGS_PLUGIN_PATH . 'admin/svgs-settings-page.php' );
@@ -47,38 +45,65 @@ function bodhi_svg_support_settings_page() {
 }
 
 /**
- * Sanitize class before saving
+ * Sanitize and save settings
  */
-
-function bodhi_sanitize_fields( $value ) {
-    
-	global $bodhi_svgs_options;
-    $bodhi_plugin_version_stored = get_option( 'bodhi_svgs_plugin_version' );
-
-    if( !isset($value['sanitize_svg']) ) {
-        $value['sanitize_svg'] = "none";
-    }
-
-    if( !isset($value['sanitize_on_upload_roles']) ) {
-        $value['sanitize_on_upload_roles'] = array("none");
-    }
-
-    if( !isset($value['restrict']) ) {
-        $value['restrict'] = array("none");
-    }
-
-	$value['css_target'] = esc_attr( sanitize_text_field( $value['css_target'] ) );
-
-	if( $value['sanitize_svg_front_end'] !== 'on' ) {
-	    
-	    $value['sanitize_svg_front_end'] = false;
-    
+function bodhi_svgs_settings_sanitize($input) {
+	// Process all settings
+	$output = $input;
+	
+	// Sanitize css_target
+	if (isset($output['css_target'])) {
+		$output['css_target'] = esc_attr( sanitize_text_field( $output['css_target'] ) );
 	}
-    
-	return $value;
 
+	// Handle sanitize_svg_front_end setting
+	if (!isset($output['sanitize_svg_front_end']) || $output['sanitize_svg_front_end'] !== 'on') {
+		$output['sanitize_svg_front_end'] = false;
+	}
+
+	// Handle sanitize_on_upload_roles setting
+	if (!isset($output['sanitize_on_upload_roles'])) {
+		$output['sanitize_on_upload_roles'] = array("none");
+	} else {
+		$output['sanitize_on_upload_roles'] = (array)$output['sanitize_on_upload_roles'];
+	}
+
+	// Handle restrict setting
+	if (!isset($output['restrict'])) {
+		$output['restrict'] = array("none");
+	} else {
+		$output['restrict'] = (array)$output['restrict'];
+	}
+	
+	return $output;
 }
 
+/**
+ * Auto-save settings via AJAX (settings screen)
+ * Runs the same sanitize callback as the classic options.php flow.
+ */
+function bodhi_svgs_autosave_settings() {
+
+	check_ajax_referer( 'bodhi_svgs_autosave', 'nonce' );
+
+	if ( ! current_user_can( 'manage_options' ) ) {
+		wp_send_json_error( array( 'message' => esc_html__( 'You can\'t play with this.', 'svg-support' ) ), 403 );
+	}
+
+	$raw = isset( $_POST['bodhi_svgs_settings'] ) ? wp_unslash( $_POST['bodhi_svgs_settings'] ) : array(); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- sanitized below via map_deep + settings sanitize callback.
+
+	if ( ! is_array( $raw ) ) {
+		wp_send_json_error( array( 'message' => esc_html__( 'Invalid settings payload.', 'svg-support' ) ), 400 );
+	}
+
+	$clean = bodhi_svgs_settings_sanitize( map_deep( $raw, 'sanitize_text_field' ) );
+
+	update_option( 'bodhi_svgs_settings', $clean );
+
+	wp_send_json_success();
+
+}
+add_action( 'wp_ajax_bodhi_svgs_autosave', 'bodhi_svgs_autosave_settings' );
 
 /**
  * Register settings in the database
@@ -86,7 +111,7 @@ function bodhi_sanitize_fields( $value ) {
 function bodhi_svgs_register_settings() {
 
 	$args = array(
-		'sanitize_callback' => 'bodhi_sanitize_fields'
+		'sanitize_callback' => 'bodhi_svgs_settings_sanitize'
 	);
 
 	register_setting( 'bodhi_svgs_settings_group', 'bodhi_svgs_settings', $args );
@@ -95,8 +120,22 @@ function bodhi_svgs_register_settings() {
 add_action( 'admin_init', 'bodhi_svgs_register_settings' );
 
 /**
+ * Remove old sanitize setting
+ */
+function bodhi_svgs_remove_old_sanitize_setting() {
+	// Fetch current settings
+	$bodhi_svgs_options = get_option('bodhi_svgs_settings');
+
+	// Remove the old 'sanitize_svg' setting if it exists
+	if (isset($bodhi_svgs_options['sanitize_svg'])) {
+		unset($bodhi_svgs_options['sanitize_svg']);
+		update_option('bodhi_svgs_settings', $bodhi_svgs_options);
+	}
+}
+add_action('admin_init', 'bodhi_svgs_remove_old_sanitize_setting');
+
+/**
  * Advanced Mode Check
- *
  * Creates a usable function for conditionals around the plugin
  */
 function bodhi_svgs_advanced_mode() {
@@ -165,23 +204,23 @@ function bodhi_svgs_specific_pages_media_library() {
  */
 function bodhi_svgs_is_edit_page( $new_edit = null ) {
 
-    global $pagenow;
+	global $pagenow;
 
-    if ( ! is_admin() ) return false;
+	if ( ! is_admin() ) return false;
 
-    if ( $new_edit == 'edit' ) {
+	if ( $new_edit == 'edit' ) {
 
-        return in_array( $pagenow, array( 'post.php',  ) );
+		return in_array( $pagenow, array( 'post.php',  ) );
 
-    } elseif ( $new_edit == "new" ) { //check for new post page
+	} elseif ( $new_edit == "new" ) { //check for new post page
 
-        return in_array( $pagenow, array( 'post-new.php' ) );
+		return in_array( $pagenow, array( 'post-new.php' ) );
 
-    } else { //check for either new or edit
+	} else { //check for either new or edit
 
-        return in_array( $pagenow, array( 'post.php', 'post-new.php' ) );
+		return in_array( $pagenow, array( 'post.php', 'post-new.php' ) );
 
-    }
+	}
 
 }
 
@@ -192,7 +231,31 @@ function bodhi_svgs_admin_footer_text( $default ) {
 
 	if ( bodhi_svgs_specific_pages_settings() || bodhi_svgs_specific_pages_media_library() ) {
 
-		printf( __( 'If you like <strong>SVG Support</strong> please leave a %s&#9733;&#9733;&#9733;&#9733;&#9733;%s rating. A huge thanks in advance!', 'svg-support' ), '<a href="https://wordpress.org/support/view/plugin-reviews/svg-support?filter=5#postform" target="_blank" class="svgs-rating-link">', '</a>' );
+		$strong_open = '<strong>';
+		$strong_close = '</strong>';
+		$link_open = '<a href="https://wordpress.org/support/view/plugin-reviews/svg-support?filter=5#postform" target="_blank" class="svgs-rating-link">';
+		$link_close = '</a>';
+
+		// translators: %1$s: Opening strong tag, %2$s: Closing strong tag, %3$s: Opening anchor tag for rating link, %4$s: Closing anchor tag
+		$text = esc_html__( 'If you like %1$sSVG Support%2$s please leave a %3$s★★★★★%4$s rating. A huge thanks in advance!', 'svg-support' );
+
+		echo wp_kses(
+			sprintf( 
+				$text,
+				$strong_open,
+				$strong_close,
+				$link_open,
+				$link_close
+			),
+			array(
+				'strong' => array(),
+				'a' => array(
+					'href' => array(),
+					'target' => array(),
+					'class' => array()
+				)
+			)
+		);
 
 	} else {
 

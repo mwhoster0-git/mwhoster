@@ -3,6 +3,8 @@
 namespace Smush\Core\Lazy_Load;
 
 use Smush\Core\Array_Utils;
+use Smush\Core\Keyword_Exclusions;
+use Smush\Core\LCP\LCP_Transform;
 use Smush\Core\Parser\Composite_Element;
 use Smush\Core\Parser\Element;
 use Smush\Core\Parser\Element_Attribute;
@@ -13,8 +15,9 @@ use Smush\Core\Upload_Dir;
 use Smush\Core\Url_Utils;
 
 class Lazy_Load_Transform implements Transform {
-	const LAZYLOAD_CLASS = 'lazyload';
-	const TEMP_SRC = 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==';
+	private static $lazyload_class = 'lazyload';
+	private static $temp_src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMSIgaGVpZ2h0PSIxIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjwvc3ZnPg==';
+
 	/**
 	 * @var Settings
 	 */
@@ -26,7 +29,15 @@ class Lazy_Load_Transform implements Transform {
 	/**
 	 * @var array
 	 */
-	private $excluded_attributes;
+	private $excluded_keywords;
+
+	/**
+	 * Keyword Exclusions.
+	 *
+	 * @var Keyword_Exclusions
+	 */
+	private $keyword_exclusions;
+
 	/**
 	 * @var Lazy_Load_Helper
 	 */
@@ -76,7 +87,7 @@ class Lazy_Load_Transform implements Transform {
 	 *
 	 * @return void
 	 */
-	private function transform_iframe( Element $iframe_element ) {
+	private function transform_iframe( $iframe_element ) {
 		$src_attribute = $iframe_element->get_attribute( 'src' );
 		if ( ! $src_attribute ) {
 			return;
@@ -95,84 +106,61 @@ class Lazy_Load_Transform implements Transform {
 			return;
 		}
 
+		if ( $this->helper->should_lazy_load_embed_video() ) {
+			$lazy_load_video = new Lazy_Load_Video_Embed( $original_src_url, $iframe_element );
+			if ( $lazy_load_video->can_lazy_load() ) {
+				$lazy_load_video->transform();
+				if ( $this->helper->is_noscript_fallback_enabled() ) {
+					$iframe_element->set_postfix( "<noscript>$original_iframe_markup</noscript>" );
+				}
+
+				return;
+			}
+		}
+
 		if ( $this->helper->is_native_lazy_loading_enabled() ) {
 			if ( ! $this->element_has_native_lazy_load_attribute( $iframe_element ) ) {
 				$this->add_native_lazy_loading_attribute( $iframe_element );
 			}
-		} else {
-			$this->update_element_attributes_for_lazy_load( $iframe_element, array( 'src' ) );
-			$iframe_element->add_attribute( new Element_Attribute( 'data-load-mode', '1' ) );
+
+			return;
 		}
+
+		$this->update_iframe_element_attributes_for_lazy_load( $iframe_element );
 	}
 
-	private function update_element_attributes_for_lazy_load( Element $element, $replace_attributes ) {
+	private function update_iframe_element_attributes_for_lazy_load( $iframe_element ) {
+		$this->remove_native_lazy_loading_attribute( $iframe_element );
+		$this->update_element_attributes_for_lazy_load( $iframe_element, array( 'src' ) );
+		$iframe_element->add_attribute( new Element_Attribute( 'data-load-mode', '0' ) );
+	}
+
+	private function update_element_attributes_for_lazy_load( $element, $replace_attributes ) {
 		$this->replace_attributes_with_data_attributes( $element, $replace_attributes );
-		// We are adding a new src below, the original src is gone because we replaced it
-		$element->add_attribute( new Element_Attribute( 'src', self::TEMP_SRC ) );
+		// We are adding a new src below, the original src is gone because we replaced it.
+		$element->add_attribute( new Element_Attribute( 'src', self::$temp_src ) );
 		$this->add_lazy_load_class( $element );
 	}
 
-	private function element_has_native_lazy_load_attribute( Element $element ) {
-		$attribute_value = $element->get_attribute_value( 'loading' );
-		return ! empty( $attribute_value );
+	private function element_has_native_lazy_load_attribute( $element ) {
+		return $element->has_attribute( 'loading' );
 	}
 
-	private function is_element_excluded( Element $element ) {
+	private function is_element_excluded( $element ) {
 		return $this->is_high_priority_element( $element )
-		       || $this->element_has_excluded_attribute_values( $element );
+		       || $element->is_lcp()
+		       || $this->element_has_excluded_keywords( $element );
 	}
 
-	private function element_has_excluded_attribute_values( Element $element ) {
-		$excluded_attributes = $this->get_excluded_attributes();
-		if ( empty( $excluded_attributes ) ) {
+	private function element_has_excluded_keywords( $element ) {
+		$keyword_exclusions = $this->keyword_exclusions();
+		if ( ! $keyword_exclusions->has_excluded_keywords() ) {
 			return false;
 		}
 
-		if ( $this->markup_has_excluded_attribute_values( $element->get_markup(), $excluded_attributes ) ) {
-			// Exact match found
-			return true;
-		}
-
-		// Now try with # and . for id and class respectively
-		$id_attribute = $element->get_attribute_value( 'id' );
-		if ( $id_attribute ) {
-			$element_id = '#' . $id_attribute;
-			if ( in_array( $element_id, $excluded_attributes, true ) ) {
-				return true;
-			}
-		}
-
-		$class_attribute = $element->get_attribute_value( 'class' );
-		if ( $class_attribute ) {
-			$element_classes = explode( ' ', $class_attribute );
-			foreach ( $element_classes as $class ) {
-				if ( in_array( ".{$class}", $excluded_attributes, true ) ) {
-					return true;
-				}
-			}
-		}
-
-		return false;
-	}
-
-	private function markup_has_excluded_attribute_values( $string, $excluded_values ) {
-		if ( empty( $excluded_values ) ) {
-			return false;
-		}
-
-		$excluded_values = (array) $excluded_values;
-
-		foreach ( $excluded_values as $excluded_value ) {
-			if ( empty( $excluded_value ) || ! is_string( $excluded_value ) ) {
-				continue;
-			}
-
-			if ( strpos( $string, $excluded_value ) !== false ) {
-				return true;
-			}
-		}
-
-		return false;
+		return $keyword_exclusions->is_markup_excluded( $element->get_markup() )
+		       || $keyword_exclusions->is_id_attribute_excluded( $element->get_attribute_value( 'id' ) )
+		       || $keyword_exclusions->is_class_attribute_excluded( $element->get_attribute_value( 'class' ) );
 	}
 
 	private function is_iframe_skipped_through_filter( $src, $iframe ) {
@@ -188,25 +176,25 @@ class Lazy_Load_Transform implements Transform {
 		return $this->lazy_load_options;
 	}
 
-	private function get_excluded_attributes() {
-		if ( ! $this->excluded_attributes ) {
-			$this->excluded_attributes = $this->prepare_excluded_attributes();
+	private function get_excluded_keywords() {
+		if ( ! $this->excluded_keywords ) {
+			$this->excluded_keywords = $this->prepare_excluded_keywords();
 		}
-		return $this->excluded_attributes;
+		return $this->excluded_keywords;
 	}
 
-	private function prepare_excluded_attributes() {
-		$exclude_attributes = $this->get_default_excluded_attributes();
-		$exclude_classes    = $this->helper->get_excluded_classes();
-		$exclude_attributes = array_merge(
-			$exclude_attributes,
-			$exclude_classes
+	private function prepare_excluded_keywords() {
+		$default_exclude_keywords = $this->get_default_excluded_keywords();
+		$exclude_keywords         = $this->helper->get_excluded_classes();// @since 3.13.0 used excluded ids, classes as excluded keywords.
+		$exclude_keywords         = array_merge(
+			$default_exclude_keywords,
+			$exclude_keywords
 		);
 
-		return apply_filters( 'wp_smush_lazyload_excluded_attributes', array_unique( $exclude_attributes ) );
+		return apply_filters( 'wp_smush_lazyload_excluded_keywords', array_unique( $exclude_keywords ) );
 	}
 
-	private function replace_attributes_with_data_attributes( Element $element, $attribute_names ) {
+	private function replace_attributes_with_data_attributes( $element, $attribute_names ) {
 		foreach ( $attribute_names as $attribute_name ) {
 			$this->replace_attribute_with_data_attribute( $element, $attribute_name );
 		}
@@ -218,7 +206,7 @@ class Lazy_Load_Transform implements Transform {
 	 *
 	 * @return void
 	 */
-	private function replace_attribute_with_data_attribute( Element $element, $original_attribute_name ) {
+	private function replace_attribute_with_data_attribute( $element, $original_attribute_name ) {
 		$attribute = $element->get_attribute( $original_attribute_name );
 		if ( $attribute ) {
 			$original_value = $attribute->get_value();
@@ -227,7 +215,7 @@ class Lazy_Load_Transform implements Transform {
 		}
 	}
 
-	private function get_default_excluded_attributes() {
+	private function get_default_excluded_keywords() {
 		return array(
 			'data-lazyload=',
 			'soliloquy-preload', // Soliloquy slider.
@@ -259,7 +247,7 @@ class Lazy_Load_Transform implements Transform {
 		);
 	}
 
-	private function is_high_priority_element( Element $element ) {
+	private function is_high_priority_element( $element ) {
 		/**
 		 * An image should not be lazy-loaded and marked as high priority at the same time.
 		 *
@@ -275,11 +263,27 @@ class Lazy_Load_Transform implements Transform {
 	 *
 	 * @return void
 	 */
-	private function add_native_lazy_loading_attribute( Element $element ) {
+	private function add_native_lazy_loading_attribute( $element ) {
 		$element->add_attribute( new Element_Attribute( 'loading', 'lazy' ) );
 	}
 
-	private function transform_image_elements( Page $page ) {
+	private function remove_native_lazy_loading_attribute( $element ) {
+		$native_lazyload_attr = $element->get_attribute( 'loading' );
+		if ( ! empty( $native_lazyload_attr ) ) {
+			$element->remove_attribute( $native_lazyload_attr );
+		}
+	}
+
+	private function transform_image_elements( $page ) {
+		/**
+		 * The following is being done in addition to the separate LCP_Transform just to save an extra re-parse in the transformer {@see Transformer::transform_content()}.
+		 * TODO: Remove this when re-parsing after every transform is not necessary.
+		 */
+		if ( $this->settings->is_lcp_preload_enabled() ) {
+			$lcp_transform = new LCP_Transform();
+			$lcp_transform->transform_page( $page );
+		}
+
 		foreach ( $page->get_composite_elements() as $composite_element ) {
 			if ( ! $this->is_composite_element_excluded( $composite_element ) ) {
 				$this->transform_elements( $composite_element->get_elements() );
@@ -289,7 +293,7 @@ class Lazy_Load_Transform implements Transform {
 		$this->transform_elements( $page->get_elements() );
 	}
 
-	private function transform_image_element( Element $element ) {
+	private function transform_image_element( $element ) {
 		if ( $element->get_tag() === 'source' ) {
 			$this->maybe_lazy_load_source_element( $element );
 		} else {
@@ -300,7 +304,7 @@ class Lazy_Load_Transform implements Transform {
 		}
 	}
 
-	private function maybe_lazy_load_source_element( Element $element ) {
+	private function maybe_lazy_load_source_element( $element ) {
 		$srcset_attribute = $element->get_attribute( 'srcset' );
 		if ( ! $srcset_attribute || empty( $srcset_attribute->get_image_urls() ) ) {
 			return false;
@@ -320,6 +324,7 @@ class Lazy_Load_Transform implements Transform {
 			return false;
 		}
 
+		$this->remove_native_lazy_loading_attribute( $element );
 		$this->replace_attributes_with_data_attributes( $element, array(
 			'src',
 			'srcset',
@@ -328,7 +333,7 @@ class Lazy_Load_Transform implements Transform {
 		return true;
 	}
 
-	private function maybe_lazy_load_image_element( Element $element ) {
+	private function maybe_lazy_load_image_element( $element ) {
 		$src_attribute = $element->get_attribute( 'src' );
 		if ( ! $src_attribute ) {
 			return false;
@@ -360,6 +365,7 @@ class Lazy_Load_Transform implements Transform {
 				$this->add_native_lazy_loading_attribute( $element );
 			}
 		} else {
+			$this->remove_native_lazy_loading_attribute( $element );
 			$this->update_element_attributes_for_lazy_load( $element, array(
 				'src',
 				'srcset',
@@ -376,24 +382,39 @@ class Lazy_Load_Transform implements Transform {
 		return true;
 	}
 
-	private function maybe_lazy_load_background( Element $element ) {
-		$background_property  = $element->get_background_css_property();
-		$background_image_url = $background_property && ! empty( $background_property->get_single_image_url()->get_absolute_url() )
-			? $background_property->get_single_image_url()->get_absolute_url()
-			: '';
-		$background_extension = $background_property && ! empty( $background_property->get_single_image_url()->get_ext() )
-			? $background_property->get_single_image_url()->get_ext()
-			: '';
+	private function maybe_lazy_load_background( $element ) {
+		$background_property = $element->get_background_css_property();
+		if ( ! $background_property ) {
+			return;
+		}
 
-		$original_markup = $element->get_markup();
+		$image_urls = $background_property->get_image_urls();
+		if ( empty( $image_urls ) ) {
+			return;
+		}
+
+		// Element-level checks (cheap, run first).
 		if (
-			! $background_image_url
-			|| ! $this->helper->is_image_extension_supported( $background_extension, $background_image_url )
-			|| $this->is_element_excluded( $element )
-			|| $this->is_image_element_skipped_through_filter( $background_image_url, $original_markup )
+			$this->is_element_excluded( $element )
 			|| $this->helper->is_native_lazy_loading_enabled()
 		) {
 			return;
+		}
+
+		// Per-URL checks: if any URL has an unsupported extension or is excluded
+		// via the filter, skip the entire property (covers multi-URL image-set() values).
+		$original_markup = $element->get_markup();
+		foreach ( $image_urls as $image_url ) {
+			$absolute_url = $image_url->get_absolute_url();
+			$extension    = $image_url->get_ext();
+
+			if (
+				! $absolute_url
+				|| ! $this->helper->is_image_extension_supported( $extension, $absolute_url )
+				|| $this->is_image_element_skipped_through_filter( $absolute_url, $original_markup )
+			) {
+				return;
+			}
 		}
 
 		$data_attribute_name = 'data-' . str_replace( 'background', 'bg', $background_property->get_property() );  // data-bg|data-bg-image.
@@ -435,15 +456,15 @@ class Lazy_Load_Transform implements Transform {
 	 *
 	 * @return void
 	 */
-	private function add_lazy_load_class( Element $element ) {
+	private function add_lazy_load_class( $element ) {
 		$class_attr = $element->get_attribute_value( 'class' );
-		if ( ! empty( $class_attr ) && strpos( $class_attr, self::LAZYLOAD_CLASS ) !== false ) {
+		if ( ! empty( $class_attr ) && strpos( $class_attr, self::$lazyload_class ) !== false ) {
 			return;
 		}
 
 		$new_class_attr = empty( $class_attr )
-			? self::LAZYLOAD_CLASS
-			: $class_attr . ' ' . self::LAZYLOAD_CLASS;
+			? self::$lazyload_class
+			: $class_attr . ' ' . self::$lazyload_class;
 
 		$new_class_attr = apply_filters( 'wp_smush_lazy_load_classes', $new_class_attr );
 
@@ -456,22 +477,20 @@ class Lazy_Load_Transform implements Transform {
 	 *
 	 * @return void
 	 */
-	private function set_placeholder_width_and_height_in_style_attribute( Element $element, $src_image_url ) {
+	private function set_placeholder_width_and_height_in_style_attribute( $element, $src_image_url ) {
+		if ( strpos( $element->get_markup(), '--smush-image-aspect-ratio' ) ) {
+			return;
+		}
+
 		// We need explicit values for width and height. First try attribute values.
-		$width  = (int) $element->get_attribute_value( 'width' );
-		$height = (int) $element->get_attribute_value( 'height' );
+		$raw_width  = $element->get_attribute_value( 'width' );
+		$width      = false === strpos($raw_width, '%') ? (int) $raw_width : 0;
+		$raw_height = $element->get_attribute_value( 'height' );
+		$height     = false === strpos($raw_height, '%') ? (int) $raw_height : 0;
 
 		// If attributes are missing, check if the image file name has dimensions in it
 		if ( empty( $width ) || empty( $height ) ) {
-			list( $width, $height ) = $this->url_utils->guess_dimensions_from_image_url( $src_image_url );
-		}
-
-		// If all else fails, use getimagesize for local images
-		if ( empty( $width ) || empty( $height ) ) {
-			$image_dimensions = $this->get_image_dimensions( $src_image_url );
-			if ( ! empty( $image_dimensions ) ) {
-				list( $width, $height ) = $image_dimensions;
-			}
+			list( $width, $height ) = $this->url_utils->get_image_dimensions( $src_image_url );
 		}
 
 		if ( $width && $height ) {
@@ -482,27 +501,12 @@ class Lazy_Load_Transform implements Transform {
 		}
 	}
 
-	private function get_image_dimensions( $image_url ) {
-		$upload_url = $this->upload_dir->get_upload_url();
-		if ( ! str_starts_with( $image_url, $upload_url ) ) {
-			return array();
-		}
-
-		$upload_path = $this->upload_dir->get_upload_path();
-		$image_path  = str_replace( $upload_url, $upload_path, $image_url );
-		if ( ! file_exists( $image_path ) ) {
-			return array();
-		}
-
-		return getimagesize( $image_path );
-	}
-
 	/**
 	 * @param Composite_Element $composite_element
 	 *
 	 * @return bool
 	 */
-	private function is_composite_element_excluded( Composite_Element $composite_element ): bool {
+	private function is_composite_element_excluded( $composite_element ) {
 		foreach ( $composite_element->get_elements() as $sub_element ) {
 			if ( $this->is_element_excluded( $sub_element ) ) {
 				return true;
@@ -516,9 +520,42 @@ class Lazy_Load_Transform implements Transform {
 	 *
 	 * @return void
 	 */
-	private function transform_elements( array $elements ) {
+	private function transform_elements( $elements ) {
 		foreach ( $elements as $element ) {
 			$this->transform_image_element( $element );
 		}
 	}
+
+	/**
+	 * Get Keyword Exclusions.
+	 *
+	 * @return Keyword_Exclusions
+	 */
+	private function keyword_exclusions() {
+		if ( ! $this->keyword_exclusions ) {
+			$this->keyword_exclusions = new Keyword_Exclusions( $this->get_excluded_keywords() );
+		}
+
+		return $this->keyword_exclusions;
+	}
+
+	/**
+	 * Get lazyload_class.
+	 *
+	 * @return string
+	 */
+	public static function get_lazyload_class() {
+		return self::$lazyload_class;
+	}
+
+
+	/**
+	 * Get temp_src.
+	 *
+	 * @return string
+	 */
+	public static function get_temp_src() {
+		return self::$temp_src;
+	}
+
 }

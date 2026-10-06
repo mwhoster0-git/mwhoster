@@ -6,18 +6,28 @@ if ( ! defined( 'ABSPATH' ) ) {
  exit; // Exit if accessed directly.
 }
 ?>
-<div id='sp-msg-<?php echo( esc_attr($view->id) );?>' class='column-wp-shortPixel view-edit-media'>
+<div id='shortpixel-data-<?php echo esc_attr($view->id); ?>' class='column-wp-shortPixel view-edit-media'
+  data-imagewidth="<?php echo esc_attr($view->image['width']); ?>" data-imageheight="<?php echo esc_attr($view->image['height']); ?>"
+  data-extension="<?php echo esc_attr($view->image['extension']); ?>"
+>
 <?php // Debug Data
 if (! is_null($view->debugInfo) && is_array($view->debugInfo) && count($view->debugInfo) > 0 ):  ?>
       <div class='debugInfo' id='debugInfo'>
+
         <a class='debugModal' data-modal="debugInfo" ><?php esc_html_e('Debug Window', 'shortpixel-image-optimiser') ?></a>
         <div class='content wrapper'>
-          <?php foreach($view->debugInfo as $index => $item): ?>
+
+          <?php
+          foreach($view->debugInfo as $index => $item):
+
+        ?>
           <ul class="debug-<?php echo esc_attr($index) ?>">
             <li><strong><?php echo $item[0]; ?></strong>
               <?php
               if (is_array($item[1]) || is_object($item[1]))
+              {
                 echo "<PRE>" . print_r($item[1], true) . "</PRE>";
+              }
               else
                 echo $item[1];
               ?>
@@ -34,7 +44,11 @@ if (! is_null($view->debugInfo) && is_array($view->debugInfo) && count($view->de
 		<?php
 			    // burger if needed.
 			    echo '<p>' . $this->view->list_actions . '</p>'; ?>
-		<p><?php  echo $this->view->text;  ?></p></div>
+<p><?php 
+// Here no escape, this has javascript links in them via UiHelper - actions 
+echo $this->view->text;
+
+?></p></div>
 
 <?php endif; ?>
 
@@ -53,16 +67,17 @@ if (! is_null($view->debugInfo) && is_array($view->debugInfo) && count($view->de
     <ul class='edit-media-stats'>
     <?php foreach($view->stats as $index => $data)
     { ?>
-       <li><span><?php echo $data[0] ?></span> <span><?php echo $data[1] ?></span></li>
+       <li><span><?php echo wp_kses_post($data[0]); ?></span> <span><?php echo wp_kses_post($data[1]); ?></span></li>
     <?php } ?>
     </ul>
     <?php endif; ?>
   </div>
+
 </div>
 
   <div id="sp-message-<?php echo( esc_attr($this->view->id) ); ?>" class='spio-message'>
   <?php if (! is_null($view->status_message)): ?>
-  <?php echo esc_html($view->status_message); ?>
+  <?php echo wp_kses_post($view->status_message); ?>
   <?php endif; ?>
   </div>
 

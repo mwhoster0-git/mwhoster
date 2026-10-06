@@ -17,6 +17,7 @@ class EnvironmentModel extends \ShortPixel\Model
     public $is_nginx;
     public $is_apache;
     public $is_gd_installed;
+    public $is_imagick_installed;
     public $is_curl_installed;
     private $disabled_functions = array();
 
@@ -31,11 +32,14 @@ class EnvironmentModel extends \ShortPixel\Model
     public $is_front = false;
     public $is_admin = false;
     public $is_ajaxcall = false;
+		public $is_jsoncall = false;
+		public $is_croncall = false;
 
     private $screen_is_set = false;
     public $is_screen_to_use = false; // where shortpixel optimizer loads
     public $is_our_screen = false; // where shortpixel hooks in more complicated functions.
 		public $is_gutenberg_editor = false;
+    public $is_classic_editor = false; 
     public $is_bulk_page = false; // ShortPixel bulk screen.
     public $screen_id = false;
 
@@ -93,7 +97,6 @@ class EnvironmentModel extends \ShortPixel\Model
 
 	public function checkPHPVersion($needed)
 	{
-
 		 if (version_compare(PHP_VERSION, $needed) >= 0 )
 		 {
 			 return true;
@@ -101,35 +104,62 @@ class EnvironmentModel extends \ShortPixel\Model
 		 return false;
 	}
 
-	public function plugin_active($name)
+  /**
+   * Checks if a plugin is active. This uses the WP is_plugin_active with addiotional checks. Also should be able to provide alternate ways since is_plugin_active is fallible.
+   * @param  [type]  $name               Name of the plugin
+   * @param  boolean $type                Check against all options ( in case plugin has i.e. pro version, by name )
+   * @return boolean  Active or not
+   */
+	public function plugin_active($name, $type = 'all')
 	{
-		 switch($name)
-		 {
-			  case 'wpml':
-					$plugin = 'sitepress-multilingual-cms/sitepress.php';
-				break;
-				case 'polylang':
-					$plugin = 'polylang/polylang.php';
-				break;
-				case 'spai':
-					$plugin = 'shortpixel-adaptive-images/short-pixel-ai.php';
-				break;
-				case 's3-offload':
-				  $plugin = 'amazon-s3-and-cloudfront/wordpress-s3.php';
-				break;
-				case 'woocommerce':
-					 $plugin = 'woocommerce/woocommerce.php';
-				break;
-				default:
-				 	$plugin = 'none';
-				break;
-		 }
+     if (!function_exists('is_plugin_active')) {
+      include_once(ABSPATH . 'wp-admin/includes/plugin.php');
+     }
 
-		 if (!function_exists('is_plugin_active')) {
-    	include_once(ABSPATH . 'wp-admin/includes/plugin.php');
-		 }
+     $plugins = [
+       'wpml' => 'sitepress-multilingual-cms/sitepress.php',
+       'polylang' => ['normal' => 'polylang/polylang.php',
+                      'pro' => 'polylang-pro/polylang.php'],
+       'spai' => 'shortpixel-adaptive-images/short-pixel-ai.php',
+       's3-offload' => ['lite' => 'amazon-s3-and-cloudfront/wordpress-s3.php',
+                        'pro' => 'amazon-s3-and-cloudfront-pro/amazon-s3-and-cloudfront-pro.php'],
+        'woocommerce' => 'woocommerce/woocommerce.php',
+        'envira' => [ 'lite' => 'envira-gallery-lite/envira-gallery-lite.php',
+                      'pro' => 'envira-gallery/envira-gallery.php',
+                    ],
+        'soliquy' => ['lite' => 'soliloquy-lite/soliloquy-lite.php',
+                      'pro' => 'soliloquy/soliloquy.php',
+                  ],
 
-		 return \is_plugin_active($plugin);
+     ];
+
+     if (false === isset($plugins[$name]))
+     {
+        return false;
+     }
+
+     if (is_array($plugins[$name]))
+     {
+      $check_plugins = $plugins[$name];
+     }
+     else {
+       $check_plugins = [$plugins[$name]];
+     }
+
+     if ($type !== 'all')
+     {
+        $check_plugins = [$plugins[$name][$type]];
+     }
+
+     foreach($check_plugins as $index => $slug)
+     {
+        if (true === is_plugin_active($slug))
+        {
+           return true;
+        }
+     }
+
+     return false;
 	}
 
   //https://www.php.net/manual/en/function.sys-getloadavg.php
@@ -170,7 +200,9 @@ class EnvironmentModel extends \ShortPixel\Model
 
   public function useVirtualHeavyFunctions()
   {
-      $bool = apply_filters('shortpixel/file/virtual/heavy_features', true);
+      $bool = ($this->hasOffload()) ? false : true; // If has WP Offload, by default don't use.
+
+      $bool = apply_filters('shortpixel/file/virtual/heavy_features', $bool);
       return $bool;
   }
 
@@ -179,6 +211,8 @@ class EnvironmentModel extends \ShortPixel\Model
     $this->is_nginx = ! empty($_SERVER["SERVER_SOFTWARE"]) && strpos(strtolower(wp_unslash($_SERVER["SERVER_SOFTWARE"])), 'nginx') !== false ? true : false;
     $this->is_apache = ! empty($_SERVER["SERVER_SOFTWARE"]) && strpos(strtolower(wp_unslash($_SERVER["SERVER_SOFTWARE"])), 'apache') !== false ? true : false;
     $this->is_gd_installed = function_exists('imagecreatefrompng') && function_exists('imagejpeg');
+    $this->is_imagick_installed = (extension_loaded('imagick')) ? true : false; 
+
     $this->is_curl_installed = function_exists('curl_init');
 
     $this->memoryLimit = $this->unitToInt(ini_get('memory_limit'));
@@ -196,15 +230,16 @@ class EnvironmentModel extends \ShortPixel\Model
 
     $this->determineFrontBack();
 
-    if (wp_doing_ajax())
-    {
-      $this->is_ajaxcall = true;
-    }
+    $this->is_ajaxcall = wp_doing_ajax();
+		$this->is_jsoncall = wp_is_json_request();
+		$this->is_croncall = wp_doing_cron();
 
     $this->is_debug = Log::debugIsActive();
 
     if (\wpSPIO()->settings()->autoMediaLibrary == 1)
       $this->is_autoprocess = true;
+
+    
 
   }
 
@@ -233,7 +268,8 @@ class EnvironmentModel extends \ShortPixel\Model
         'edit-page', // all pages
         'media', // add new item screen
     );
-    $use_screens = apply_filters('shortpixel/init/optimize_on_screens', $use_screens);
+
+    $use_screens = apply_filters('shortpixel/init/optimize_on_screens', $use_screens, $screen);
 
     $this->screen_id = $screen->id;
     if(is_array($use_screens) && in_array($screen->id, $use_screens)) {
@@ -241,10 +277,10 @@ class EnvironmentModel extends \ShortPixel\Model
     }
 
     // Our pages.
-    $pages = \wpSPIO()->get_admin_pages();
+    $admin_pages = \wpSPIO()->get_admin_pages();
     // the main WP pages where SPIO hooks a lot of functions into, our operating area.
     $wp_pages = array('upload', 'attachment');
-    $pages = array_merge($pages, $wp_pages);
+    $pages = array_merge($admin_pages, $wp_pages);
 
     /* pages can be null in certain cases i.e. plugin activation.
     * treat those cases as improper screen set.
@@ -254,11 +290,14 @@ class EnvironmentModel extends \ShortPixel\Model
         return false;
     }
 
+
     if ( in_array($screen->id, $pages))
     {
        $this->is_screen_to_use = true;
+       if (in_array($screen->id, $admin_pages))
+       {
        $this->is_our_screen = true;
-
+       }
 			 // Strpos instead of full screen id, because the first page (media_page) is not reliable and can change.
        if ( strpos($screen->id, 'wp-short-pixel-bulk') !== false)
         $this->is_bulk_page = true;
@@ -267,7 +306,15 @@ class EnvironmentModel extends \ShortPixel\Model
 			  $this->is_screen_to_use = true;
 				$this->is_gutenberg_editor = true;
 	  }
-
+    // If settings / classic editor is by default, this get is not included, so test-override for now to always load on post, see if other page editor have issues with this. 
+    // If no issues, at some point this statements should be done uh better. 
+    elseif (isset($_GET['classic-editor']) || 'post' === $screen->id)
+    {
+      $this->is_screen_to_use = true;
+      $this->is_classic_editor = true;
+      
+    }
+    
     $this->screen_is_set = true;
   }
 
@@ -349,13 +396,12 @@ class EnvironmentModel extends \ShortPixel\Model
           if ($limit <= 0)
             return false;
 
-          $elapsed = time() - $start;
+          $elapsed = time() - $start; // Seconds elapsed since start of the process.
 
           if ($elapsed <= 0)
           {
             return false;
           }
-
 
           // max execution is the percentage of max execution time one can take upon.
           $limit_perc  = round($limit/100 * apply_filters('spio/process/max_execution', 90));
@@ -369,7 +415,6 @@ class EnvironmentModel extends \ShortPixel\Model
           return false;
       }
 
-      // @todo Add in Env or in ShortPixelLogger item that can track exec. time / memory and write to debug output.
       public function IsOverMemoryLimit($runCount)
       {
           $memory_limit = $this->memoryLimit;

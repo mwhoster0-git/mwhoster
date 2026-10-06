@@ -5,6 +5,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  exit; // Exit if accessed directly.
 }
 
+use ShortPixel\Controller\Backup\BackupController;
 use ShortPixel\ShortPixelLogger\ShortPixelLogger as Log;
 
 class CronController
@@ -12,8 +13,8 @@ class CronController
 
   private static $instance;
 
-  protected $cron_options = array();
-  protected $cron_hooks = array();
+  protected $cron_options = [];
+  protected $cron_hooks = [];
 
   protected $background_is_active = false;
 
@@ -36,7 +37,9 @@ class CronController
        }
 
        $this->custom_scheduler();
+       $this->tools_scheduler();
      }
+
   }
 
   public static function getInstance()
@@ -56,8 +59,9 @@ class CronController
 
         $schedules['spio_interval_30min'] = array(
           'interval' => apply_filters('shortpixel/cron/interval', 30 * MINUTE_IN_SECONDS),
-          'display' => __('ShortPixel cron interval', 'shortpixel-image-optimiser')
+          'display' => __('ShortPixel 30 min interval', 'shortpixel-image-optimiser')
         );
+        
 
         return $schedules;
   }
@@ -84,6 +88,7 @@ class CronController
           )
       );
 
+
       foreach($background_crons as $name => $options)
       {
          add_action($options['cron_name'], array(AdminController::getInstance(), 'processCronHook'));
@@ -93,6 +98,8 @@ class CronController
       {
          add_action($options['cron_name'], array(AdminController::getInstance(), 'scanCustomFoldersHook'));
       }
+
+      add_action('spio-remove-backups', [BackupController::getBackupController(), 'cronRemoveBackups']);
 
       $this->cron_options = $background_crons;
   }
@@ -116,6 +123,7 @@ class CronController
   {
       $this->bulkRemoveAll();
       $this->custom_scheduler(true);
+      $this->removeLegacyCron();
   }
 
   protected function bulk_scheduler()
@@ -123,7 +131,9 @@ class CronController
          foreach($this->cron_options as $type => $options)
          {
             $name = $options['cron_name'];
-            $args = array('bulk' => $options['bulk']);
+            $args = [0 => [
+                  'bulk' => $options['bulk']]
+              ];
 
             if ( false === wp_next_scheduled($name, $args))
             {
@@ -139,26 +149,64 @@ class CronController
   protected function custom_scheduler($unschedule = false)
   {
       $name = 'spio-refresh-dir';
-      $args = array( 'args' => [
+      $args = [0 => [
           'amount' => 10]
-      );
+      ];
 
       $scheduled = wp_next_scheduled($name, $args);
-      $add_cron = apply_filters('shortpixel/othermedia/add_cron', true);
+
+			$add_cron = (false == \wpSPIO()->settings()->showCustomMedia) ? false : true;
+			$add_cron = apply_filters('shortpixel/othermedia/add_cron', $add_cron);
 
       if (false == $scheduled && true === $add_cron && false === $unschedule)
       {
-        $otherMediaController = OtherMediaController::getInstance();
-        if (true === $otherMediaController->hasCustomImages())
-        {
                 wp_schedule_event(time(), 'spio_interval_30min', $name, $args);
-        }
-      
       }
       elseif(false !== $scheduled && (false === $add_cron || true == $unschedule) )
       {
            wp_unschedule_event(wp_next_scheduled($name, $args), $name, $args);
       }
+
+  }
+
+  protected function tools_scheduler($unschedule = false)
+  {
+     $name = 'spio-remove-backups';  
+
+     $scheduled = wp_next_scheduled($name);
+
+     $add_cron = (false == \wpSPIO()->settings()->autoRemoveBackups) ? false : true;
+     
+     if (false == $scheduled && true === $add_cron && false === $unschedule)
+     {
+               wp_schedule_event(time(), 'daily', $name);
+     }
+     elseif(false !== $scheduled && (false === $add_cron || true == $unschedule) )
+     {
+          wp_unschedule_event(wp_next_scheduled($name), $name);
+     }
+
+  }
+
+  protected function removeLegacyCron()
+  {
+      $name = 'spio-refresh-dir';
+      $args = ['args' => [
+        'amount' => 10]
+      ];
+
+      wp_unschedule_event(wp_next_scheduled($name, $args), $name, $args);
+
+      $name = 'spio-single-cron';
+      $args = array('bulk' => false);
+
+      wp_unschedule_event(wp_next_scheduled($name, $args), $name, $args);
+
+
+      $name = 'spio-bulk-cron';
+      $args = array('bulk' => true);
+
+      wp_unschedule_event(wp_next_scheduled($name, $args), $name, $args);
 
   }
 
@@ -183,12 +231,19 @@ class CronController
 
   }
 
+  /**
+   * Remove all Cron Events.
+   *
+   * @return void
+   */
   protected function bulkRemoveAll()
   {
     foreach($this->cron_options as $type => $options)
     {
        $name = $options['cron_name'];
-       $args = array('bulk' => $options['bulk']);
+       $args = [0 => [
+             'bulk' => $options['bulk']]
+         ];
 
        if (false !== wp_next_scheduled ($name, $args))
        {
@@ -212,18 +267,18 @@ class CronController
   // This could be transferred to getStartUpData instead.
   private function getQueueData($queue_type)
   {
-      $optimizeController = new OptimizeController();
       if ('bulk' === $queue_type)
       {
-         $optimizeController->setBulk(true);
+         $args['is_bulk'] = true; 
       }
-      else {
-        $optimizeController->setBulk(false);
+      else
+      {
+        $args['is_bulk'] = false;
       }
 
 
-      $data = $optimizeController->getStartUpData();
-      return $data;
+      $queueController = new QueueController($args);
+      return $queueController->getStartUpData();
 
   }
 

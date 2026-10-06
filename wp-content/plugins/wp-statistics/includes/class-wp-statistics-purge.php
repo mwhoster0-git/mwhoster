@@ -16,16 +16,17 @@ class Purge
         if ($purge_days >= apply_filters('wp_statistics_schedule_db_maint_days', 30)) {
 
             /**
-             * Purge the visit data.
+             * Store visits data.
              */
-            $table_name  = DB::table('visit');
+            $table_name  = DB::table('visitor');
             $date_string = TimeZone::getCurrentDate('Y-m-d', '-' . $purge_days);
 
-            $result = $wpdb->query($wpdb->prepare("DELETE FROM {$table_name} WHERE `last_counter` < %s", $date_string));
+            // Get sum of visits
+            $result = $wpdb->get_var($wpdb->prepare("SELECT SUM(hits) FROM {$table_name} WHERE `last_counter` < %s", $date_string));
 
             if ($result) {
                 // Update the historical count with what we purged.
-                $historical_result = $wpdb->query($wpdb->prepare("UPDATE {$historical_table} SET value = value + %d WHERE `category` = 'visits'", $result));
+                $historical_result = $wpdb->query($wpdb->prepare("UPDATE {$historical_table} SET value = value + %d WHERE `category` = 'visits'", intval($result)));
 
                 // Insert
                 if ($historical_result == 0) {
@@ -40,13 +41,15 @@ class Purge
                     );
                     if (!$insert) {
                         if (!empty($wpdb->last_error)) {
-                            \WP_Statistics::log($wpdb->last_error);
+                            \WP_Statistics::log($wpdb->last_error, 'warning');
                         }
                     }
                 }
 
+                /* translators: %1$s: string value, %2$s: string value */
                 $result_string = sprintf(__('Data from %1$s Older Than %2$s Days Successfully Purged.', 'wp-statistics'), '<code>' . $table_name . '</code>', '<code>' . $purge_days . '</code>');
             } else {
+                /* translators: %s: string value */
                 $result_string = sprintf(__('No Records to Purge from %s!', 'wp-statistics'), '<code>' . $table_name . '</code>');
             }
 
@@ -72,7 +75,7 @@ class Purge
                     );
                     if (!$insert) {
                         if (!empty($wpdb->last_error)) {
-                            \WP_Statistics::log($wpdb->last_error);
+                            \WP_Statistics::log($wpdb->last_error, 'warning');
                         }
                     }
                 }
@@ -81,8 +84,10 @@ class Purge
                 $table_name = DB::table('visitor_relationships');
                 $wpdb->query($wpdb->prepare("DELETE FROM {$table_name} WHERE `date` < %s", $date_string));
 
+                /* translators: %1$s: string value, %2$s: string value */
                 $result_string .= '<br>' . sprintf(__('Data from %1$s Older Than %2$s Days Successfully Purged.', 'wp-statistics'), '<code>' . $table_name . '</code>', '<code>' . $purge_days . '</code>');
             } else {
+                /* translators: %s: string value */
                 $result_string .= '<br>' . sprintf(__('No Records to Purge from %s!', 'wp-statistics'), '<code>' . $table_name . '</code>');
             }
 
@@ -94,20 +99,10 @@ class Purge
             $result = $wpdb->query($wpdb->prepare("DELETE FROM {$table_name} WHERE `date` < %s", $date_string));
 
             if ($result) {
+                /* translators: %1$s: string value, %2$s: string value */
                 $result_string .= '<br>' . sprintf(__('Data from %1$s Older Than %2$s Days Successfully Purged.', 'wp-statistics'), '<code>' . $table_name . '</code>', '<code>' . $purge_days . '</code>');
             } else {
-                $result_string .= '<br>' . sprintf(__('No Records to Purge from %s!', 'wp-statistics'), '<code>' . $table_name . '</code>');
-            }
-
-            /**
-             * Purge the search data.
-             */
-            $table_name = DB::table('search');
-            $result     = $wpdb->query($wpdb->prepare("DELETE FROM {$table_name} WHERE `last_counter` < %s", $date_string));
-
-            if ($result) {
-                $result_string .= '<br>' . sprintf(__('Data from %1$s Older Than %2$s Days Successfully Purged.', 'wp-statistics'), '<code>' . $table_name . '</code>', '<code>' . $purge_days . '</code>');
-            } else {
+                /* translators: %s: string value */
                 $result_string .= '<br>' . sprintf(__('No Records to Purge from %s!', 'wp-statistics'), '<code>' . $table_name . '</code>');
             }
 
@@ -159,7 +154,7 @@ class Purge
                         );
                         if (!$insert) {
                             if (!empty($wpdb->last_error)) {
-                                \WP_Statistics::log($wpdb->last_error);
+                                \WP_Statistics::log($wpdb->last_error, 'warning');
                             }
                         }
                     }
@@ -172,16 +167,11 @@ class Purge
             $result = $wpdb->query($wpdb->prepare("DELETE FROM {$table_name} WHERE `date` < %s", $date_string));
 
             if ($result) {
+                /* translators: %1$s: string value, %2$s: string value */
                 $result_string .= '<br>' . sprintf(__('Data from %1$s Older Than %2$s Days Successfully Purged.', 'wp-statistics'), '<code>' . $table_name . '</code>', '<code>' . $purge_days . '</code>');
             } else {
+                /* translators: %s: string value */
                 $result_string .= '<br>' . sprintf(__('No Records to Purge from %s!', 'wp-statistics'), '<code>' . $table_name . '</code>');
-            }
-
-            // Send Email
-            if (Option::get('prune_report') == true) {
-
-                Helper::send_mail(Option::getEmailNotification(), __('WP Statistics - Database Clean-Up Report for', 'wp-statistics') . ' ' . get_bloginfo('name'), $result_string, true,
-                    array("email_title" => __('WP Statistics - Database Clean-Up Report for', 'wp-statistics') . ' <a href="' . get_bloginfo('url') . '" target="_blank" style="text-decoration: none; color: #303032; font-family: Roboto,Arial,Helvetica,sans-serif; font-size: 16px; font-weight: 600; line-height: 18.75px;font-style: italic">' . get_bloginfo('name') . '</a>'));
             }
 
             return $result_string;
@@ -195,7 +185,6 @@ class Purge
     {
         global $wpdb;
         $visitor_table = DB::table('visitor');
-        $visit_table   = DB::table('visit');
 
         // If it's less than 10 hits, don't do anything.
         if ($purge_hits > 9) {
@@ -214,23 +203,13 @@ class Purge
             }
             if (count($to_delete) > 0) {
                 foreach ($to_delete as $item) {
-
-                    // First update the daily hit count.
-                    $wpdb->query(
-                        $wpdb->prepare(
-                            "UPDATE {$visit_table} SET `visit` = `visit` - %d WHERE `last_counter` = %s;",
-                            $item[2],
-                            $item[1]
-                        )
-                    );
-
-                    // Next remove the visitor.  Note we can't do both in a single query, looks like $wpdb doesn't like executing them together.
                     $wpdb->query(
                         $wpdb->prepare("DELETE FROM {$visitor_table} WHERE `id` = %s;", $item[0])
                     );
                 }
 
                 $result_string = sprintf(
+                    /* translators: %s: string value */
                     __('%s Records Successfully Purged.', 'wp-statistics'),
                     '<code>' . count($to_delete) . '</code>'
                 );
@@ -239,13 +218,6 @@ class Purge
             }
         } else {
             $result_string = __('Number of views must be greater than or equal to 10!', 'wp-statistics');
-        }
-
-        // Send Email
-        if (Option::get('prune_report') == true) {
-
-            Helper::send_mail(Option::getEmailNotification(), __('WP Statistics - Database Clean-Up Report for', 'wp-statistics') . ' ' . get_bloginfo('name'), $result_string, true,
-                array("email_title" => __('WP Statistics - Database Clean-Up Report for', 'wp-statistics') . ' <a href="' . get_bloginfo('url') . '" target="_blank" style="text-decoration: none; color: #303032; font-family: Roboto,Arial,Helvetica,sans-serif; font-size: 16px; font-weight: 600; line-height: 18.75px;font-style: italic;">' . get_bloginfo('name') . '</a>'));
         }
 
         return $result_string;

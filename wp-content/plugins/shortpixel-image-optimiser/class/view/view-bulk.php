@@ -1,17 +1,44 @@
 <?php
 namespace ShortPixel;
+use ShortPixel\ShortPixelLogger\ShortPixelLogger as Log;
+use ShortPixel\Helper\UiHelper as UiHelper;
 
 if ( ! defined( 'ABSPATH' ) ) {
  exit; // Exit if accessed directly.
 }
 ?>
 
+<hr class="wp-header-end">
+
+<div class="wrap is-shortpixel-bulk-page">
+<header>
+  <h1>
+      <?php echo UIHelper::getIcon('res/images/illustration/logo_settings.svg'); ?>
+      <?php //esc_html_e('ShortPixel Plugin Settings','shortpixel-image-optimiser');?>
+  </h1>
+
+<!--
+  <div class='top-buttons'>
+    <button><i class='shortpixel-icon notifications'></i><?php _e('Notifications','shortpixel-image-optimiser'); ?></button>
+
+  </div>
+-->
+</header>
 <div class="shortpixel-bulk-wrapper">
-  <h1><?php esc_html_e('ShortPixel Bulk Processing', 'shortpixel-image-optimiser'); ?></h1>
 
   <div id="processPaused" class="processor-paused" data-action="ResumeBulk"><span class='dashicons dashicons-controls-pause' data-action="ResumeBulk"></span>
-		<?php esc_html_e('The Bulk Processing is paused, please click to resume','shortpixel-image-optimiser'); ?>
-    <p class='small'><?php _e('If you have activated background mode, please note that this process will continue', 'shortpixel-image-optimiser'); ?></p>
+    <?php if (true === \wpSPIO()->settings()->doBackgroundProcess)
+    {
+        $title = esc_html__('Bulk Processing is paused in this browser and continues to run in the background as long as visitors are on the website','shortpixel-image-optimiser');
+        $alt = __('Click here to continue processing in this browser, which may be faster', 'shortpixel-image-optimiser');
+    }
+    else {
+        $title = esc_html__('The Bulk Processing is paused, please click to resume','shortpixel-image-optimiser');
+        $alt = '';
+    }
+    ?>
+    <?php echo esc_html($title); ?>
+    <p class='small'><?php echo esc_html($alt); ?></p>
   </div>
 
   <div id="processorOverQuota" class="processor-overquota">

@@ -1,9 +1,10 @@
 <?php
+if (!defined('ABSPATH')) exit; // Exit if accessed directly
 /**
  * This is a list of all known country codes and their country names.
  * It is used in several places in the plugin and is therefore centralized here for ease of update.
  */
-$ISOCountryCode['000'] = _x('Unknown', 'Country', 'wp-statistics');
+$ISOCountryCode['000'] = _x('(not set)', 'Country', 'wp-statistics');
 $ISOCountryCode['AF']  = "Afghanistan";
 $ISOCountryCode['AX']  = "Åland Islands";
 $ISOCountryCode['AL']  = "Albania";

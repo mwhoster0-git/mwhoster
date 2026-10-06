@@ -1,7 +1,7 @@
 === Redirect 404 to Homepage ===
 Contributors: pipdig
 Requires at least: 4.8
-Tested up to: 6.6
+Tested up to: 7.1
 Requires PHP: 5.6
 Stable tag: trunk
 License: GPLv2 or later
@@ -11,17 +11,20 @@ Redirect 404 missing pages to the homepage using SEO 301 redirection. Super ligh
 
 == Description ==
 
-Redirect all 404 missing links to the homepage using a 301 redirect. This means any old broken links will still count towards your site's SEO ranking.
+Redirect all 404 missing links to the homepage using a 301 redirect. This means all broken links will still count towards your site's SEO ranking.
 
-This plugin is designed to be **very lightweight**. There are no options or settings (or annoying banner ads trying to sell SEO services). Simply activate the plugin and you're good to go. It will redirect 404s silently in the background without slowing down your website.
+We designed this plugin to be **very lightweight**. There are no options or settings (or annoying banner ads trying to sell SEO services). Simply activate the plugin and you're done! It will redirect 404s silently in the background without slowing down your website.
 
 ### Features
 
 - Works with any theme.
 - Works on any host.
-- Super lightweight (only 6 lines of code).
+- Super lightweight + fast.
+- No logs (GDPR compliant).
 - Helps with SEO.
-- Unlike other plugins, this is 100% free and we don't sell upgrades/marketing.
+- **100% free** with nothing locked behind a "pro" version.
+
+This free plugin is brought to you by [pipdig](https://www.pipdig.co)
 
 == Frequently Asked Questions ==
 
@@ -44,6 +47,9 @@ Try going to any link on your site which does not exist. e.g. www.example.com/th
 - That's all! If you try accessing a page which does not exist, you will be redirected to the homepage.
 
 == Changelog ==
+
+= 1.1 =
+* Version bump.
 
 = 1.0 =
 * Initial release.

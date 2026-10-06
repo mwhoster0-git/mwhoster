@@ -1,4 +1,8 @@
 <?php
+namespace WP_STATISTICS;
+
+if (!defined('ABSPATH')) exit; // Exit if accessed directly
+
 /**
  * WP Background Process
  *
@@ -375,6 +379,17 @@ abstract class WP_Background_Process extends WP_Async_Request {
 		return false;
 	}
 
+    /**
+     * Stops the background process.
+     * 
+     * @return void
+     */
+    public function stopProcess() {
+        $this->clear_scheduled_event();
+        $this->delete_all();
+        $this->unlock_process();
+    }
+
 	/**
 	 * Lock process.
 	 *
@@ -469,7 +484,7 @@ abstract class WP_Background_Process extends WP_Async_Request {
 		if ( ! empty( $items ) ) {
 			$batches = array_map(
 				function ( $item ) use ( $column, $value_column ) {
-					$batch       = new stdClass();
+					$batch       = new \stdClass();
 					$batch->key  = $item->{$column};
 					$batch->data = maybe_unserialize( $item->{$value_column} );
 
@@ -652,6 +667,7 @@ abstract class WP_Background_Process extends WP_Async_Request {
 		if ( 1 === $interval ) {
 			$display = __( 'Every Minute' );
 		} else {
+			/* translators: %d: number value */
 			$display = sprintf( __( 'Every %d Minutes' ), $interval );
 		}
 

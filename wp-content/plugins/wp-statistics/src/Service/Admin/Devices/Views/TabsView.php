@@ -3,6 +3,7 @@
 namespace WP_Statistics\Service\Admin\Devices\Views;
 
 use WP_STATISTICS\Menus;
+use WP_Statistics\Service\Admin\ExportImport\ExportTypes;
 use WP_Statistics\Utils\Request;
 use WP_STATISTICS\Admin_Template;
 use WP_Statistics\Abstracts\BaseTabView;
@@ -12,8 +13,9 @@ use WP_Statistics\Service\Admin\Devices\DevicesDataProvider;
 class TabsView extends BaseTabView
 {
     protected $dataProvider;
-    protected $defaultTab = 'browsers';
+    protected $defaultTab = 'overview';
     protected $tabs       = [
+        'overview',
         'browsers',
         'platforms',
         'models',
@@ -28,13 +30,14 @@ class TabsView extends BaseTabView
         parent::__construct();
 
         $this->dataProvider = new DevicesDataProvider([
-            'date'     => [
-                'from' => Request::get('from', date('Y-m-d', strtotime('-30 days'))),
-                'to'   => Request::get('to', date('Y-m-d')),
-            ],
             'per_page' => 10,
             'page'     => Admin_Template::getCurrentPaged()
         ]);
+    }
+
+    public function getOverviewData()
+    {
+        return $this->dataProvider->getOverviewData();
     }
 
     /**
@@ -68,88 +71,86 @@ class TabsView extends BaseTabView
     }
 
     /**
-     * Returns the current tab's template.
+     * Returns data for "Device Categories" tab.
      *
-     * @return  string
+     * @return  array
+     */
+    public function getCategoriesData()
+    {
+        return $this->dataProvider->getCategoriesData();
+    }
+
+    /**
+     * Returns the current tab's template.
      */
     public function render()
     {
-        try {
-            $currentTab  = $this->getCurrentTab();
-            $data        = $this->getTabData();
+        $currentTab  = $this->getCurrentTab();
+        $data        = $this->getTabData();
 
-            $args = [
-                'title'           => esc_html__('Devices', 'wp-statistics'),
-                'pageName'        => Menus::get_page_slug('devices'),
-                'paged'           => Admin_Template::getCurrentPaged(),
-                'custom_get'      => ['tab' => $currentTab],
-                'DateRang'        => Admin_Template::DateRange(),
-                'hasDateRang'     => true,
-                'data'            => $data,
-                'viewMoreUrlArgs' => ['type' => 'single-' . rtrim($currentTab, 's'), 'from' => Request::get('from'), 'to' => Request::get('to')],
-                'tabs'            => [
-                    [
-                        'link'        => Menus::admin_url('devices', ['tab' => 'browsers']),
-                        'title'       => esc_html__('Browsers', 'wp-statistics'),
-                        'tooltip'     => esc_html__('Displays the different web browsers used by your visitors.', 'wp-statistics'),
-                        'class'       => $currentTab === 'browsers' ? 'current' : '',
-                    ],
-                    [
-                        'link'        => Menus::admin_url('devices', ['tab' => 'platforms']),
-                        'title'       => esc_html__('Operating Systems', 'wp-statistics'),
-                        'tooltip'     => esc_html__('Shows the operating systems your visitors are using.', 'wp-statistics'),
-                        'class'       => $currentTab === 'platforms' ? 'current' : '',
-                    ],
-                    [
-                        'link'        => Menus::admin_url('devices', ['tab' => 'models']),
-                        'title'       => esc_html__('Device Models', 'wp-statistics'),
-                        'tooltip'     => esc_html__('Provides data on the specific models of devices used by your visitors.', 'wp-statistics'),
-                        'class'       => $currentTab === 'models' ? 'current' : '',
-                    ],
-                    [
-                        'link'        => '#',
-                        'title'       => esc_html__('Device Categories', 'wp-statistics'),
-                        'tooltip'     => esc_html__('Coming Soon', 'wp-statistics'),
-                        'class'       => $currentTab === 'categories' ? 'current' : '',
-                        'coming_soon' => true,
-                    ],
-                    [
-                        'link'        => '#',
-                        'title'       => esc_html__('Screen Resolutions', 'wp-statistics'),
-                        'tooltip'     => esc_html__('Coming Soon', 'wp-statistics'),
-                        'class'       => $currentTab === 'resolutions' ? 'current' : '',
-                        'coming_soon' => true,
-                    ],
-                    [
-                        'link'        => '#',
-                        'title'       => esc_html__('Languages', 'wp-statistics'),
-                        'tooltip'     => esc_html__('Coming Soon', 'wp-statistics'),
-                        'class'       => $currentTab === 'languages' ? 'current' : '',
-                        'coming_soon' => true,
-                    ],
-                    [
-                        'link'        => '#',
-                        'title'       => esc_html__('Timezones', 'wp-statistics'),
-                        'tooltip'     => esc_html__('Coming Soon', 'wp-statistics'),
-                        'class'       => $currentTab === 'timezones' ? 'current' : '',
-                        'coming_soon' => true,
-                    ],
+        $args = [
+            'title'           => esc_html__('Devices', 'wp-statistics'),
+            'pageName'        => Menus::get_page_slug('devices'),
+            'paged'           => Admin_Template::getCurrentPaged(),
+            'custom_get'      => ['tab' => $currentTab],
+            'DateRang'        => Admin_Template::DateRange(),
+            'hasDateRang'     => true,
+            'data'            => $data,
+            'viewMoreUrlArgs' => ['type' => 'single-' . rtrim($currentTab, 's'), 'from' => Request::get('from'), 'to' => Request::get('to')],
+            'tabs'            => [
+                [
+                    'id'          => 'overview',
+                    'link'        => Menus::admin_url('devices', ['tab' => 'overview']),
+                    'title'       => esc_html__('Overview', 'wp-statistics'),
+                    'class'       => $this->isTab('overview') ? 'current' : '',
+                    'export'      => [ExportTypes::PDF_PAGE]
                 ],
-            ];
+                [
+                    'id'          => 'browsers',
+                    'link'        => Menus::admin_url('devices', ['tab' => 'browsers']),
+                    'title'       => esc_html__('Browsers', 'wp-statistics'),
+                    'tooltip'     => esc_html__('Displays the different web browsers used by your visitors.', 'wp-statistics'),
+                    'class'       => $this->isTab('browsers') ? 'current' : '',
+                    'export'      => [ExportTypes::CSV_TABLE, ExportTypes::PDF_PAGE]
+                ],
+                [
+                    'id'          => 'platforms',
+                    'link'        => Menus::admin_url('devices', ['tab' => 'platforms']),
+                    'title'       => esc_html__('Operating Systems', 'wp-statistics'),
+                    'tooltip'     => esc_html__('Shows the operating systems your visitors are using.', 'wp-statistics'),
+                    'class'       => $this->isTab('platforms') ? 'current' : '',
+                    'export'      => [ExportTypes::CSV_TABLE, ExportTypes::PDF_PAGE]
+                ],
+                [
+                    'id'          => 'models',
+                    'link'        => Menus::admin_url('devices', ['tab' => 'models']),
+                    'title'       => esc_html__('Device Models', 'wp-statistics'),
+                    'tooltip'     => esc_html__('Provides data on the specific models of devices used by your visitors.', 'wp-statistics'),
+                    'class'       => $this->isTab('models') ? 'current' : '',
+                    'export'      => [ExportTypes::CSV_TABLE, ExportTypes::PDF_PAGE]
 
-            if ($data['total'] > 0) {
-                $args['total'] = $data['total'];
+                ],
+                [
+                    'id'          => 'categories',
+                    'link'        => Menus::admin_url('devices', ['tab' => 'categories']),
+                    'title'       => esc_html__('Device Categories', 'wp-statistics'),
+                    'tooltip'     => esc_html__('Displays visitor distribution across various device categories.', 'wp-statistics'),
+                    'class'       => $this->isTab('categories') ? 'current' : '',
+                    'export'      => [ExportTypes::CSV_TABLE, ExportTypes::PDF_PAGE]
+                ]
+            ],
+        ];
 
-                $args['pagination'] = Admin_Template::paginate_links([
-                    'item_per_page' => 10,
-                    'total'         => $data['total'],
-                    'echo'          => false
-                ]);
-            }
+        if (isset($data['total']) && $data['total'] > 0) {
+            $args['total'] = $data['total'];
 
-            Admin_Template::get_template(['layout/header', 'layout/tabbed-page-header', "pages/devices/$currentTab", 'layout/postbox.hide', 'layout/footer'], $args);
-        } catch (\Exception $e) {
-            Notice::renderNotice($e->getMessage(), $e->getCode(), 'error');
+            $args['pagination'] = Admin_Template::paginate_links([
+                'item_per_page' => 10,
+                'total'         => $data['total'],
+                'echo'          => false
+            ]);
         }
+
+        Admin_Template::get_template(['layout/header', 'layout/tabbed-page-header', "pages/devices/$currentTab", 'layout/postbox.hide', 'layout/footer'], $args);
     }
 }

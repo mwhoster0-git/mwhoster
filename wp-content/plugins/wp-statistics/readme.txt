@@ -1,19 +1,18 @@
-=== WP Statistics - The Most Popular Privacy-Friendly Analytics Plugin ===
-Contributors: mostafa.s1990, kashani, veronalabs, GregRoss
+=== WP Statistics – Simple, privacy-friendly Google Analytics alternative ===
+Contributors: veronalabs, mostafa.s1990, kashani, GregRoss
 Donate link: https://wp-statistics.com/donate/
 Tags: analytics, google analytics, insights, stats, site visitors
-Requires at least: 5.0
-Tested up to: 6.5
-Stable tag: 14.8.1
-Requires PHP: 5.6
+Requires at least: 6.6
+Tested up to: 7.1
+Stable tag: 14.16.15
+Requires PHP: 7.4
 License: GPL-2.0+
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
 Get website traffic insights with GDPR/CCPA compliant, privacy-friendly analytics. Includes visitor data, stunning graphs, and no data sharing.
 
 == Description ==
-= WP Statistics: THE #1 WORDPRESS ANALYTICS PLUGIN =
-Discover GDPR-compliant analytics with [WP Statistics](https://wp-statistics.com/?utm_source=wporg&utm_medium=link&utm_campaign=website), the top choice for WordPress users seeking an alternative to Google Analytics. No external accounts, unlimited visitor tracking, and full data ownership-all stored directly in your WordPress database.
+Discover GDPR-compliant analytics with [WP Statistics](https://wp-statistics.com/?utm_source=wporg&utm_medium=link&utm_campaign=website), the top choice for WordPress users seeking an alternative to Google Analytics. No external accounts, unlimited visitor tracking, and full data ownership—all stored directly in your WordPress database.
 
 [Checkout Demo](https://wp-statistics.com/demo) | [View Screenshots](#screenshots)
 
@@ -34,7 +33,9 @@ You can find more information in "[What we collect](https://wp-statistics.com/re
 
 = Top Features =
 * Fully integrate with your WordPress and your content structure and you have the all reports all in your WP dashboard
+* Content and Category Analytics: Track performance based on your site’s content and categories.
 * Simple analytics dashboard
+* Bounce Rate Tracking: See your site-wide bounce rate in Visitor Insights and per-page bounce rate in the Entry Pages report, so you can spot pages that lose visitors after a single page view.
 * Super easy to install. No coding or technical knowledge needed
 * Advanced data privacy settings that are customizable to fit your needs, in compliance with diverse data protection laws
 * Track URL parameters, including UTMs, for campaign analysis
@@ -42,13 +43,13 @@ You can find more information in "[What we collect](https://wp-statistics.com/re
 * Monitor live online user traffic in real-time
 * Fully customized overview dashboard page
 * Shows your most popular posts and pages
+* Referrals Tracking: Track and analyze referrals with five reports: Referred Visitors, Referrers, Search Engines, Social Media, and Source Categories. The new Source Categories report includes support for Organic Search, Paid Search, Organic Social, Paid Social, and more.
 * Lists your top referral sources such as search engines
 * Author Analytics: Measures author performance.
 * Geographic Reports: Location-based analytics, including countries, cities, European countries, US states, and regions within your country.
-* Devices Report: Detailed device-specific analytics covering browsers, operating systems, and device models.
+* Devices Report: Detailed device-specific analytics covering browsers, operating systems, device categories and device models.
 * Bypass Ad Blockers: Dynamically load the tracking script with a unique name and address to bypass ad blockers.
 * Integrate with WP Consent API: Ensures compatibility with consent plugins like Complianz and Cookiebot.
-* Coming Soon: Content and Category Analytics: Track performance based on your site’s content and categories.
 * Email reports with customizable content
 * Customize role-based access to view analytics and modify settings.
 * Advanced Filtering & Exceptions: By user roles, IPs, countries, URLs, and more.
@@ -58,16 +59,23 @@ You can find more information in "[What we collect](https://wp-statistics.com/re
  * **Link Tracker**: Find out which outbound links your audience clicks on, giving you insights into their preferences and behaviors.
  * **Download Tracker**: Keep track of what's being downloaded, who's downloading it, and when.
  * **Individual Author Performance**: Detailed metrics on the performance of individual authors.
- * **Soon**: Detailed Analytics for Each Country: In-depth analytics for each country to enhance geographical reporting.
+ * **Detailed Analytics for Each Country**: In-depth analytics for each country to enhance geographical reporting.
  * And more!
+* Premium Add-on: [Marketing](https://wp-statistics.com/product/wp-statistics-marketing/?utm_source=wporg&utm_medium=link&utm_campaign=marketing)
+ * **Campaign Analytics**: Track UTM-tagged links and see which campaigns drive the most visitors.
+ * **Google Search Console Integration**: Monitor impressions, clicks, and queries.
+ * **Custom Event Tracking**: Create goals based on clicks, pageviews, or events and monitor conversions.
+ * **Built-in UTM Link Builder**: Generate and validate campaign URLs inside your dashboard.
 
 **Get the most out of your website analytics by using WP Statistics Premium Add-ons**
-Upgrade your analytics toolkit with our range of premium add-ons, including [Data Plus](https://wp-statistics.com/product/wp-statistics-data-plus?utm_source=wporg&utm_medium=link&utm_campaign=dp), [Advanced Reporting](https://wp-statistics.com/product/wp-statistics-advanced-reporting/?utm_source=wporg&utm_medium=link&utm_campaign=adv-report), [Real-Time Stats](https://wp-statistics.com/product/wp-statistics-realtime-stats/?utm_source=wporg&utm_medium=link&utm_campaign=real-time), [Mini Chart](https://wp-statistics.com/product/wp-statistics-mini-chart/?utm_source=wporg&utm_medium=link&utm_campaign=mini-chart), and [more](https://wp-statistics.com/add-ons/?utm_source=wporg&utm_medium=link&utm_campaign=add-ons). Making informed decisions is easier with these powerful tools.
+Upgrade your analytics toolkit with our range of premium add-ons, including [Data Plus](https://wp-statistics.com/product/wp-statistics-data-plus?utm_source=wporg&utm_medium=link&utm_campaign=dp), [Advanced Reporting](https://wp-statistics.com/product/wp-statistics-advanced-reporting/?utm_source=wporg&utm_medium=link&utm_campaign=adv-report), [Real-Time Stats](https://wp-statistics.com/product/wp-statistics-realtime-stats/?utm_source=wporg&utm_medium=link&utm_campaign=realtime), [Mini Chart](https://wp-statistics.com/product/wp-statistics-mini-chart/?utm_source=wporg&utm_medium=link&utm_campaign=mini-chart), [Marketing](https://wp-statistics.com/product/wp-statistics-marketing/?utm_source=wporg&utm_medium=link&utm_campaign=marketing), and [more](https://wp-statistics.com/add-ons/?utm_source=wporg&utm_medium=link&utm_campaign=add-ons). Making informed decisions is easier with these powerful tools.
 
-**Special Offer:** Purchase the [bundle pack](https://wp-statistics.com/product/add-ons-bundle/?utm_source=wporg&utm_medium=link&utm_campaign=bundle) and Enjoy Savings of up to 60%!
+**Special Offer:** Save up to 60% on all premium features when you purchase [WP Statistics Premium](https://wp-statistics.com/pricing/?utm_source=wporg&utm_medium=link&utm_campaign=premium).
 
 = Report Bugs =
 Having trouble with a bug? Please [create an issue](https://github.com/wp-statistics/wp-statistics/issues/new) on GitHub. Kindly note that [GitHub](https://github.com/wp-statistics/wp-statistics) is exclusively for bug reports; other inquiries will be closed.
+
+For security vulnerabilities, please report them through the [Patchstack Vulnerability Disclosure Program](https://patchstack.com/database/wordpress/plugin/wp-statistics/vdp). The Patchstack team will validate, triage, and handle any security issues.
 
 == Installation ==
 1. Upload `wp-statistics` to the `/wp-content/plugins/` directory.
@@ -103,6 +111,9 @@ Yes, you can run them both at the same time without any problems.
 = Are bot visits counted? =
 We filter out bot visits using best practice techniques. Compared to Google Analytics, your views and visitors are very similar. The "[Enhancing Data Accuracy](https://wp-statistics.com/resources/enhancing-data-accuracy/?utm_source=wporg&utm_medium=link&utm_campaign=doc)" article can help you eliminate bots even further.
 
+= Does WP Statistics show bounce rate? =
+Yes. WP Statistics reports your site-wide bounce rate in Visitor Insights and a bounce rate for each entry page. Bounce rate is the share of visits that recorded a single page view, where a visit is one visitor on one day. No Google Analytics account is needed.
+
 = Can I export data? =
 Data can be exported to XML, CSV, or TSV files for backup or reporting purposes.
 
@@ -111,45 +122,132 @@ WP Statistics supports WordPress Multi-Site/Network installations. In the networ
 
 == Screenshots ==
 1. Overview
-2. Website Traffic Overview
-3. Live User Activity Tracker
+2. Visitors Insights
+3. Online Visitors Monitoring
 4. Optimization
 5. Settings
 6. Real-Time Stats
 7. Download Tracker
-8. Referrals
+8. Understand Your Traffic Sources
 9. Geographic
 10. Author Analytics
 11. Devices
 12. Link Tracker
 13. Privacy Audit
+14. Content Analytics Dashboard
+15. Category Analytics
+16. Website Performance Report
+17. Mini Chart Quick View
+18. Page Insights
+19. Detailed Visitor Report
+20. Campaign Reports
+21. Google Search Console Reports
+22. Goal and Event Tracking
 
 == Upgrade Notice ==
-= 14.0 =
-**IMPORTANT NOTE**
-Welcome to WP Statistics v14.0, our biggest update!
-Thank you for being part of our community. We’ve been working hard for one year to develop this version and make WP Statistics better for you. after updating, please update all Add-Ons to tha latest version as well.
-
-If you encounter any bug, please create an issue on [GitHub](https://github.com/wp-statistics/wp-statistics/issues/new) where we can act upon them more efficiently. Since [GitHub](https://github.com/wp-statistics/wp-statistics) is not a support forum, just bugs are welcomed, and any other request will be closed.
+= 14.15 =
+To ensure the plugin works correctly, please clear your cache because some request payloads have been updated. Also, review your settings, especially if you use DataPlus, Advanced Reporting, or Customization, as some options have changed.
+Update add-ons DataPlus, Advanced Reporting, and Mini-Chart to the latest version.
 
 == Changelog ==
-= 14.8.1 - 26.06.2024 =
-* Fix: Compatibility issue with tracking page and default permalink structure.
-* Fix: Charts not displaying due to conflicts with old ChartJs versions from other plugins.
-* Fix: Metabox refresh issue in WordPress dashboard when enabling/disabling widgets via Screen Options.
-* Fix: Meta-box view URL compatibility across browsers and platforms.
-* Fix: Devices pagination.
-* Fix: SQL query issues and optimized queries in Devices.
-* Fix: Column name preparation for finding visitors.
-* Enhancement: Improved GeoIP database update scheduling.
-* Enhancement: Updated incomplete GeoIP info for visitors in the background, with notice in Geographic.
-* Enhancement: Added events table for data export.
-* Enhancement: Improved comments query by excluding ping-backs in Author Analytics.
-* Enhancement: Fixed referrer issue in online request tracking.
-* Enhancement: Refactored `getCountry` method, removing legacy cache.
-* Enhancement: Minor improvements.
-* Development: Added WP CLI command `wp statistics record`.
+= 14.16.15 - 2026-10-01 =
+- **Enhancement:** Hardened URL escaping in the filter dropdowns of the Referrals and Author Analytics reports.
+- **Enhancement:** Removed the unused `tracker.min.js` file. The tracker loads `js/tracker.js`.
 
-For more information about the major update, please [visit our blog post](https://wp-statistics.com/2024/06/15/wp-statistics-version-14-8-whats-new) or follow [@wp_statistics](https://twitter.com/wp_statistics) on Twitter
+= 14.16.14 - 2026-09-19 =
+- **Enhancement:** DuckDuckGo noai, html, lite and start endpoints now count as DuckDuckGo search traffic (issue [#1142](https://github.com/wp-statistics/wp-statistics/issues/1142)).
+- **Enhancement:** Hardened link escaping in admin reports.
+- **Fix:** Taxonomy archive views are now attributed correctly when term and taxonomy IDs differ (issue [#1139](https://github.com/wp-statistics/wp-statistics/issues/1139)).
+- **Fix:** Fewer repeated licence API requests after a refusal (issue [#1123](https://github.com/wp-statistics/wp-statistics/issues/1123)).
+
+= 14.16.13 - 2026-09-05 =
+- **Fix:** Corrected report links in Category Analytics.
+- **Fix:** Date filters no longer trigger PHP warnings when the period name is unrecognized (issue [#1130](https://github.com/wp-statistics/wp-statistics/issues/1130)).
+- **Fix:** Analytics page access and the date range picker now work correctly for custom roles and per-user capabilities (issue [#1126](https://github.com/wp-statistics/wp-statistics/issues/1126)).
+- **Enhancement:** Internal improvements and PHP 8.5 compatibility.
+
+= 14.16.12 - 2026-08-31 =
+- **Enhancement:** General security hardening and internal improvements.
+
+= 14.16.11 - 2026-08-22 =
+- **New:** Bounce Rate in Visitor Insights and a Bounce Rate column in the Entry Pages report.
+- **Enhancement:** Faster bounce rate calculation. Existing per-content bounce rates may shift slightly.
+- **Enhancement:** New `wp_statistics_online_visitors_timeframe` filter to set how long a visitor counts as online.
+- **Enhancement:** Lighter admin dashboard for users without statistics access.
+- **Fix:** Email report schedules now update when the report frequency changes.
+- **Enhancement:** Tested up to WordPress 7.1.
+
+= 14.16.10 - 2026-07-25 =
+- **Fix:** Prevented a fatal error on the tracking request when the referrer parameter was sent as an array instead of a single value.
+- **Enhancement:** General security hardening and internal improvements.
+
+= 14.16.9 - 2026-07-21 =
+- **Fix:** Content Analytics no longer adds the site-wide historical baseline into each post's Total Views, so per-post totals are accurate again (issue [#1097](https://github.com/wp-statistics/wp-statistics/issues/1097)).
+- **Fix:** Prevented a fatal error on admin load when license validation fails or the license key is empty.
+- **Enhancement:** Hardened input handling and output escaping across the visitor and referral reports.
+
+= 14.16.8 - 2026-05-19 =
+- **Enhancement:** Hardened input handling across admin AJAX endpoints, the dynamic query builder, the referrer pipeline, and the GeoIP download URL.
+- **Enhancement:** Removed the bundled moment.min.js in favor of the copy shipped with WordPress core.
+- **Enhancement:** Added direct-file-access guards, switched date() calls to gmdate(), and routed parse_url() through wp_parse_url().
+- **Enhancement:** Normalized translator placeholders and text domains; routed translated UI strings through escape/kses functions.
+- **Enhancement:** Replaced direct unlink() calls in plugin code with wp_delete_file().
+
+= 14.16.7 - 2026-05-12 =
+- **Enhancement:** Hardened escaping and sanitization in device reports.
+- **Enhancement:** Tracking endpoints now send noindex and no-cache headers to prevent "ghost pages" in Google Search Console.
+- **Fix:** Stopped GeoLite2-City background downloads on Cloudflare IP Geolocation sites (issue [#1093](https://github.com/wp-statistics/wp-statistics/issues/1093)).
+- **Fix:** "Bypass Ad Blockers" no longer copies the tracker into uploads, improving compatibility with hardened hosting.
+- **Fix:** **Run Migration** button stays clickable during an active migration to recover stuck queues.
+- **Deprecated:** `wp_statistics_hashed_asset_root` and `wp_statistics_hashed_asset_dir` filters; will be removed in a future release.
+
+= 14.16.6 - 2026-04-16 =
+- **Fix:** Removed legacy TinyMCE integration that caused "Failed to load plugin" errors in the classic editor, especially with themes like Corvix and Avada.
+- **Fix:** Excluded browser prefetch and prerender requests that were inflating visit counts.
+- **Fix:** Excluded headless browsers and automation tools (Headless Chrome, PhantomJS, Puppeteer, Playwright, Selenium) that were being counted as real visitors.
+
+= 14.16.5 - 2026-04-11 =
+- **Enhancement:** Simplify WP Consent API consent level logic.
+- **Enhancement:** Hardened plugin security and improvement
+- **Enhancement:** Tested up to WordPress v7.0
+- **Fix:** Fixed an issue where the download/link tracker did not respect user role exclusion settings (e.g., Administrator), causing admin downloads to be recorded despite being excluded.
+
+= 14.16.4 - 2026-03-16 =
+- **Fix:** Improved permission checks on AJAX handlers for better security.
+- **Enhancement:** Updated Device Detector library (6.4.7 → 6.5.0) with latest browser, device, and bot detection rules.
+- **Enhancement:** Updated MaxMind DB Reader (1.12.1 → 1.13.1) and GeoIP2 libraries.
+
+= 14.16.3 - 2025-02-23 =
+- **Fix:** Minor improvements and fix version.
+
+= 14.16.1 - 2025-02-09 =
+- **Fix:** Fixed an issue where historical data was not included in single-content/single-resource reports.
+- **Fix:** Improved compatibility with Bedrock when WP Statistics is placed in mu-plugins by fixing asset hashing and obfuscated tracker path resolution.
+- **Fix:** Fixed an issue where the Page ID was not correctly updated during Interactivity API navigation and barba.js transitions.
+- **Fix:** Prevent infinite or extremely large percentage values when no previous analytics data exists.
+- **Fix:** Fixed the "All Time" filter showing incorrect start date in single content analytics.
+- **Fix:** Fixed notification indicators hiding when viewing the empty Dismissed tab.
+- **Fix:** Optimized license API caching to prevent excessive requests on multilingual sites.
+- **Fix:** Resolved unsafe SQL calls and direct file access issues for WordPress.org compliance.
+- **New:** Added "Total" row to the Traffic Summary widget showing all-time Visitors and Views (includes legacy historical data).
+- **Enhancement:** Added pagination support for Category Analytics.
+- **Enhancement:** Unified disabled premium buttons across the plugin for a consistent look.
+- **Enhancement:** Added PHP environment configuration values (memory_limit, max_execution_time, post_max_size, upload_max_filesize) to anonymous usage data.
+- **Enhancement:** Updated Advanced Reporting premium modal copies.
+- **Dev:** Added `wp_statistics_register_background_jobs` filter to allow add-ons to register custom background processes.
+- **Dev:** Added `wp_statistics_register_data_migrations` filter to allow add-ons to register custom data migration keys.
+- **Dev:** Added `wp_statistics_resolve_page_from_uri` filter to allow custom page resolution from URL for SPA tracking.
+
+= 14.16 - 2025-12-01 =
+- **New:** Added an **Export** button to all report pages (requires the Advanced Reporting add-on).
+- **New:** Introduced a new `Summary Totals` table to store daily aggregated data, improving performance.
+- **Enhancement:** Tested up to WordPress v6.9.
+- **Enhancement:** Updated minimum PHP requirement to v7.4 and WordPress requirement to v6.6.
+- **Enhancement:** Redesigned Summary widgets across all report pages for a cleaner and more consistent look.
+- **Enhancement:** Optimized database queries and improved overall performance.
+- **Enhancement:** Improved the online tracking system by removing heartbeat requests, reducing server load and improving performance.
+- **Deprecation:** Removed the **Matomo Referrer Spam Blacklist** option from the settings.
+
+For more information about the major update, please [visit our release post](https://wp-statistics.com/release/wp-statistics-v14-15/) or follow [@wp_statistics](https://twitter.com/wp_statistics) on Twitter
 
 [See changelog for all versions](https://raw.githubusercontent.com/wp-statistics/wp-statistics/master/CHANGELOG.md).

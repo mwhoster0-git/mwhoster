@@ -2,8 +2,12 @@
 
 namespace WP_Statistics\Service\Analytics;
 
+use Exception;
 use WP_STATISTICS\Helper;
 use WP_STATISTICS\Hits;
+use WP_Statistics\Components\TrackingResponse;
+use WP_Statistics\Utils\Request;
+use WP_Statistics\Utils\Signature;
 
 class AnalyticsController
 {
@@ -14,48 +18,36 @@ class AnalyticsController
      */
     public function hit_record_action_callback()
     {
-        if (Helper::is_request('ajax')) {
-            // Check Refer Ajax
-            check_ajax_referer('wp_statistics_tracker_nonce', 'nonce');
-
-            // Start Record
-            $exclusion    = Hits::record();
-            $responseData = [
-                'status' => $exclusion['exclusion_match'] == false,
-            ];
-
-            if ($exclusion['exclusion_match']) {
-                $responseData['data'] = $exclusion;
-            }
-
-            // Return response
-            wp_send_json($responseData, 200);
+        if (!Helper::is_request('ajax')) {
+            return;
         }
 
-        exit;
+        TrackingResponse::sendHeaders();
+
+        try {
+            $this->checkSignature();
+            Helper::validateHitRequest();
+
+            Hits::record();
+            wp_send_json(['status' => true]);
+
+        } catch (Exception $e) {
+            wp_send_json(['status' => false, 'data' => $e->getMessage()], $e->getCode());
+        }
     }
 
     /**
-     * Keeps user online when "Bypass Ad Blockers" is enabled.
-     *
-     * @return  void
+     * @return void
+     * @doc https://wp-statistics.com/resources/managing-request-signatures/
+     * @throws Exception
      */
-    public function keep_online_action_callback()
+    private function checkSignature()
     {
-        if (Helper::is_request('ajax')) {
-            // Check Refer Ajax
-            check_ajax_referer('wp_statistics_tracker_nonce', 'nonce');
-
-            $visitorProfile = new VisitorProfile();
-
-            \WP_STATISTICS\UserOnline::record($visitorProfile);
-
-            // Return response
-            wp_send_json([
-                'status' => true
-            ], 200);
+        // Verify the signature against the same request data that is recorded,
+        // so a request cannot be authenticated with one identity while a
+        // different identity is stored.
+        if (!Helper::verifyHitSignature()) {
+            throw new Exception(esc_html__('Invalid signature', 'wp-statistics'), 403);
         }
-
-        exit;
     }
 }

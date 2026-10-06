@@ -20,11 +20,14 @@ class NextGenController
   protected static $instance;
 //  protected $view;
 	private $enableOverride = false; // when activating NG will not report active yet, but try to refresh folders. Do so.
+	private $is_ngg_screen = false; // is current screen NGG.
+
+  protected $is_legacy = false; // assume the best. 
 
 // ngg_created_new_gallery
   public function __construct()
   {
-    add_filter('shortpixel/init/optimize_on_screens', array($this, 'add_screen_loads'));
+    add_filter('shortpixel/init/optimize_on_screens', array($this, 'add_screen_loads'), 10, 2);
 
     add_action('plugins_loaded', array($this, 'hooks'));
     add_action('deactivate_nextgen-gallery/nggallery.php', array($this, 'resetNotification'));
@@ -32,6 +35,7 @@ class NextGenController
 
   public function hooks()
   {
+
 		$controller = new NextGenViewController();
 
     if ($this->optimizeNextGen()) // if optimization is on, hook.
@@ -54,7 +58,15 @@ class NextGenController
       add_filter( 'ngg_manage_images_column_7_content', array( $this, 'loadNextGenItem' ), 10,2 );
 			add_filter('ngg_manage_gallery_fields', array($this, 'refreshFolderOnLoad'), 10, 2);
 
-    }
+      if (false === class_exists('\Imagely\NGG\DataStorage\Manager'))
+      {
+        $this->is_legacy = true;
+      }
+  
+      add_action('current_screen', array($this, 'checkCurrentScreen'), 50);
+   }
+
+
 
   }
 
@@ -87,21 +99,7 @@ class NextGenController
 
   public function isNextGenScreen()
   {
-      $screens = $this->add_screen_loads(array());
-			if (! is_admin())
-			{
-				 return false;
-			}
-			if (! function_exists('get_current_screen'))
-			{
-				 return false;
-			}
-			$screen_id = \wpSPIO()->env()->screen_id;
-
-      if (in_array($screen_id, $screens))
-        return true;
-      else
-        return false;
+			return $this->is_ngg_screen;
 
   }
 
@@ -113,20 +111,55 @@ class NextGenController
   }
 
 
-  public function add_screen_loads($use_screens)
+  public function add_screen_loads($use_screens, $screen)
   {
-
+/*
+The screen IDS seem to be have changed, trying a more definitive solution
     $use_screens[] = 'toplevel_page_nextgen-gallery'; // toplevel
     $use_screens[] = 'nextgen-gallery_page_ngg_addgallery';  // add gallery
     $use_screens[] = 'nextgen-gallery_page_nggallery-manage-album'; // manage album
     $use_screens[] = 'nextgen-gallery_page_nggallery-manage-gallery'; // manage toplevel gallery
     $use_screens[] = 'nggallery-manage-images'; // images in gallery overview
+*/
 
+	 $screen_pos = ['ngg', 'nggallery', 'nextgen-gallery'];
+
+	 if (property_exists($screen, 'ngg'))
+	 {
+		 	$use_screens[] = $screen->id;
+			$this->is_ngg_screen = true;
+
+	 }
+	 else
+	 {
+		 	foreach($screen_pos as $pos)
+			{
+				  $index = strpos($screen->id, $pos);
+
+          if ($index !== false)
+					{
+						 $use_screens[]= $screen->id;
+						 $this->is_ngg_screen = true;
+					}
+			}
+	 }
     return $use_screens;
   }
 
+	public function checkCurrentScreen($screen)
+	{
+
+		if ($this->isNextGenScreen())
+		{
+				$controller = new NextGenViewController();
+					add_action('admin_footer', [$controller, 'loadComparer']);
+		}
+	}
+
+
   public function loadNextGenItem($unknown, $picture)
   {
+			 // @todo The view controller is re-instanced all the time while also doing permanent hooks work in the top, which is not great.
        $viewController = new NextGenViewController();
        $viewController->loadItem($picture);
   }
@@ -143,14 +176,7 @@ class NextGenController
 		 }
 		 return $array;
 	}
-  /** Enables nextGen, add galleries to custom folders
-  * @param boolean $silent Throw a notice or not. This seems to be based if nextgen was already activated previously or not.
-  */
-  /*
-  public function nextGenEnabled($silent)
-  {
-    $this->addNextGenGalleriesToCustom($silent);
-  }  */
+
 
   /** Tries to find a nextgen gallery for a shortpixel folder.
   * Purpose is to test if this folder is a nextgen gallery
@@ -334,6 +360,7 @@ class NextGenController
 
 
 
+  /* Seems not in use 
   public function updateImageSize($nggId, $path) {
 
       $image = $this->getNGImageByID($nggId);
@@ -343,32 +370,70 @@ class NextGenController
       $image->meta_data = array_merge($image->meta_data, $size_meta);
       $image->meta_data['full'] = $size_meta;
       $this->saveToNextGen($image);
-  }
+  } */
 
   protected function getNGImageByID($nggId)
   {
-    $mapper = \C_Image_Mapper::get_instance();
-    $image = $mapper->find($nggId);
-    return $image;
+    if (true === $this->is_legacy)
+    {
+      $mapper = \C_Image_Mapper::get_instance();
+      $image = $mapper->find($nggId);
+      return $image;
+    }
+    
+    $class = '\Imagely\NGG\DataMappers\Image';
+    $imageMapper = $class::get_instance(); 
+
+    return $imageMapper->find($nggId);
+
   }
 
   /* @param NextGen Image */
+  /* Seems not in use 
   protected function saveToNextGen($image)
   {
-    $mapper = \C_Image_Mapper::get_instance();
-    $mapper->save($image);
-  }
+    if (true === $this->is_legacy)
+    {
+      $mapper = \C_Image_Mapper::get_instance();
+      $mapper->save($image);
+    }
+    else
+    {
+      $class = '\Imagely\NGG\DataMappers\Image';
+      $imageMapper = $class::get_instance(); 
+      $imageMapper->save_entity($image);
+    }
+
+  } */
 
   protected function getImageAbspath($image, $size = 'full') {
-      $storage = \C_Gallery_Storage::get_instance();
-      return $storage->get_image_abspath($image, $size);
+
+      if (true === $this->is_legacy)
+      {
+        $storage = \C_Gallery_Storage::get_instance();
+        return $storage->get_image_abspath($image, $size);
+      }
+
+      $class = '\Imagely\NGG\DataStorage\Manager'; 
+      $galleryManager = $class::get_instance(); 
+
+      return $galleryManager->get_image_abspath($image, $size); 
+
   }
 
   protected function getImageSizes($image)
 	{
-		 $storage = \C_Gallery_Storage::get_instance();
+     if (true === $this->is_legacy)
+     {
+		    $storage = \C_Gallery_Storage::get_instance();
+		    return $storage->get_image_sizes($image);
+     }
 
-		 return $storage->get_image_sizes($image);
+      $class = '\Imagely\NGG\DataStorage\Manager'; 
+      $galleryManager = $class::get_instance(); 
+
+      return $galleryManager->get_image_sizes($image); 
+
 	}
 
 } // class.

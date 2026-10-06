@@ -1,13 +1,16 @@
-<?php 
+<?php
 
 namespace WP_Statistics\Service\Admin\AuthorAnalytics;
 
 use WP_STATISTICS\Helper;
+use WP_Statistics\Components\DateRange;
 use WP_Statistics\Models\AuthorsModel;
 use WP_Statistics\Models\ViewsModel;
 use WP_Statistics\Models\PostsModel;
 use WP_Statistics\Models\TaxonomyModel;
 use WP_Statistics\Models\VisitorsModel;
+use WP_Statistics\Service\Admin\Posts\WordCountService;
+use WP_Statistics\Service\Charts\ChartDataProviderFactory;
 
 class AuthorAnalyticsDataProvider
 {
@@ -18,7 +21,7 @@ class AuthorAnalyticsDataProvider
     protected $visitorsModel;
     protected $taxonomyModel;
 
-    
+
     public function __construct($args)
     {
         $this->args = $args;
@@ -30,168 +33,85 @@ class AuthorAnalyticsDataProvider
         $this->taxonomyModel = new TaxonomyModel();
     }
 
-    public function getViewsPerPostsChartData()
+    public function getAuthorsPerformanceData()
     {
-        $args               = array_merge($this->args, ['per_page' => -1]);
-        $topAuthorsByViews  = $this->authorModel->getAuthorsByViewsPerPost($args);
+        $posts     = $this->postsModel->countPosts($this->args);
+        $prevPosts = $this->postsModel->countPosts(array_merge($this->args, ['date' => DateRange::getPrevPeriod()]));
 
-        $data = [];
-        
-        if ($topAuthorsByViews) {
-            foreach ($topAuthorsByViews as $author) {
-                $data[] = [
-                    'x'      => $author->total_views,  
-                    'y'      => $author->total_posts,  
-                    'img'    => esc_url(get_avatar_url($author->id)),
-                    'author' => esc_html($author->name)
-                ];
-            }
-        }
+        $authors     = $this->authorModel->countAuthors($this->args);
+        $prevAuthors = $this->authorModel->countAuthors(array_merge($this->args, ['date' => DateRange::getPrevPeriod()]));
 
-        return $data;
-    }
+        $visitors     = $this->visitorsModel->countVisitors($this->args);
+        $prevVisitors = $this->visitorsModel->countVisitors(array_merge($this->args, ['date' => DateRange::getPrevPeriod()]));
 
-    public function getPublishingChartData()
-    {
-        // Just filter by post type
-        $args = Helper::filterArrayByKeys($this->args, ['post_type', 'author_id']);
+        $views     = $this->viewsModel->countViews($this->args);
+        $prevViews = $this->viewsModel->countViews(array_merge($this->args, ['date' => DateRange::getPrevPeriod()]));
 
-        $publishingData = $this->postsModel->getPostPublishOverview($args);
-        $publishingData = wp_list_pluck($publishingData, 'posts', 'date');
+        $comments        = $this->postsModel->countComments($this->args);
+        $prevComments    = $this->postsModel->countComments(array_merge($this->args, ['date' => DateRange::getPrevPeriod()]));
+        $avgComments     = Helper::divideNumbers($comments, $posts);
+        $prevAvgComments = Helper::divideNumbers($prevComments, $prevPosts);
 
-        $today  = time();
-        $date   = strtotime('-365 days');
+        $topPublishingAuthors = $this->authorModel->getAuthorsByPostPublishes($this->args);
+        $topViewingAuthors    = $this->authorModel->getTopViewingAuthors($this->args);
+        $topAuthorsByComment  = $this->authorModel->getAuthorsByCommentsPerPost($this->args);
+        $topAuthorsByViews    = $this->authorModel->getAuthorsByViewsPerPost($this->args);
 
-        // Get number of posts published per day during last 365 days
-        while ($date <= $today) {
-            $currentDate    = date('Y-m-d', $date);
-            $numberOfPosts  = isset($publishingData[$currentDate]) ? intval($publishingData[$currentDate]) : 0;
-
-            $data[] = [
-                'x' => $currentDate,
-                'y' => date('N', $date),
-                'd' => date_i18n(get_option('date_format', 'Y-m-d'), strtotime($currentDate)),
-                'v' => $numberOfPosts
-            ];
-    
-            $date += 86400;
-        }
-
-        return $data;
-    }
-
-    /**
-     * Organize and count visitors by platform, agent, and country.
-     *
-     * @param array $args 
-     * @return array $result
-     */
-    public function getParsedVisitorsData($args)
-    {
-        $data   = $this->visitorsModel->getVisitors($this->args);
         $result = [
-            'platform'  => [],
-            'agent'     => [],
-            'country'   => []
+            'glance'  => [
+                'authors' => [
+                    'value'  => $authors,
+                    'change' => Helper::calculatePercentageChange($prevAuthors, $authors)
+                ],
+                'posts' => [
+                    'value'  => $posts,
+                    'change' => Helper::calculatePercentageChange($prevPosts, $posts)
+                ],
+                'visitors' => [
+                    'value'  => $visitors,
+                    'change' => Helper::calculatePercentageChange($prevVisitors, $visitors)
+                ],
+                'views' => [
+                    'value'  => $views,
+                    'change' => Helper::calculatePercentageChange($prevViews, $views)
+                ],
+                'comments'  => [
+                    'value'  => $comments,
+                    'change' => Helper::calculatePercentageChange($prevComments, $comments)
+                ],
+                'comments_avg' => [
+                    'value'  => $avgComments,
+                    'change' => Helper::calculatePercentageChange($prevAvgComments, $avgComments)
+                ]
+            ],
+            'top_publishing'    => $topPublishingAuthors,
+            'top_viewing'       => $topViewingAuthors,
+            'top_by_comments'   => $topAuthorsByComment,
+            'top_by_views'      => $topAuthorsByViews
         ];
 
-        if (!empty($data)) {
-            foreach ($data as $item) {
-                if (empty($result['platform'][$item->platform])) {
-                    $result['platform'][$item->platform] = 1;
-                } else {
-                    $result['platform'][$item->platform]++;
-                }
-    
-                if (empty($result['agent'][$item->agent])) {
-                    $result['agent'][$item->agent] = 1;
-                } else {
-                    $result['agent'][$item->agent]++;
-                }
-    
-                if (empty($result['country'][$item->location])) {
-                    $result['country'][$item->location] = 1;
-                } else {
-                    $result['country'][$item->location]++;
-                }
-            }
-    
-            // Sort and limit country
-            arsort($result['country']);
-            $result['country'] = array_slice($result['country'], 0, 10);
+        if (WordCountService::isActive()) {
+            $words    = $this->postsModel->countWords($this->args);
+            $avgWords = Helper::divideNumbers($words, $posts);
+
+            $topAuthorsByWords = $this->authorModel->getAuthorsByWordsPerPost($this->args);
+
+            $result['top_by_words']        = $topAuthorsByWords;
+            $result['glance']['words']     = ['value' => $words];
+            $result['glance']['words_avg'] = ['value' => $avgWords];
         }
 
         return $result;
     }
 
-    public function getAuthorsPerformanceData()
-    {
-        // Authors data
-        $totalAuthors         = $this->authorModel->countAuthors();
-        $activeAuthors        = $this->authorModel->countAuthors($this->args);
-        $topPublishingAuthors = $this->authorModel->getAuthorsByPostPublishes($this->args);
-        $topViewingAuthors    = $this->authorModel->getTopViewingAuthors($this->args);
-        $topAuthorsByComment  = $this->authorModel->getAuthorsByCommentsPerPost($this->args);
-        $topAuthorsByViews    = $this->authorModel->getAuthorsByViewsPerPost($this->args);
-        $topAuthorsByWords    = $this->authorModel->getAuthorsByWordsPerPost($this->args);
-
-        // Views data
-        $totalViews           = $this->viewsModel->countViews($this->args);
-
-        // Posts data
-        $totalWords           = $this->postsModel->countWords($this->args);
-        $totalComments        = $this->postsModel->countComments($this->args);
-        $totalPosts           = $this->postsModel->countPosts($this->args);
-
-        return [
-            'authors' => [
-                'total'             => $totalAuthors,
-                'active'            => $activeAuthors,
-                'published'         => $totalPosts,
-                'avg'               => Helper::divideNumbers($totalPosts, $activeAuthors),
-                'top_publishing'    => $topPublishingAuthors,
-                'top_viewing'       => $topViewingAuthors,
-                'top_by_comments'   => $topAuthorsByComment,
-                'top_by_views'      => $topAuthorsByViews,
-                'top_by_words'      => $topAuthorsByWords
-            ],
-            'views'   => [
-                'total' => $totalViews,
-                'avg'   => Helper::divideNumbers($totalViews, $totalPosts)
-            ],
-            'posts'   => [
-                'words'     => [
-                    'total' => $totalWords,
-                    'avg'   => Helper::divideNumbers($totalWords, $totalPosts)
-                ],
-                'comments'  => [
-                    'total' => $totalComments,
-                    'avg'   => Helper::divideNumbers($totalComments, $totalPosts)
-                ]
-            ]
-        ];
-    }
-
-    public function getAuthorsPagesData()
-    {
-        $args = array_merge(
-            $this->args, 
-            ['post_type' => Helper::get_list_post_type()]
-        );
-        $authors = $this->authorModel->getAuthorsPagesData($args);
-        $total   = $this->authorModel->countAuthors($this->args);
-
-        return [
-            'authors' => $authors,
-            'total'   => $total
-        ];
-    }
-
-
     public function getAuthorsReportData()
     {
-        $authors = $this->authorModel->getAuthorsPerformanceData($this->args);
-        $total   = $this->authorModel->countAuthors($this->args);
+        $args = wp_parse_args($this->args, [
+            'post_type' => 'post'
+        ]);
+
+        $authors = $this->authorModel->getAuthorsReportData($args);
+        $total   = $this->authorModel->countAuthors($args);
 
         return [
             'authors'   => $authors,
@@ -199,116 +119,106 @@ class AuthorAnalyticsDataProvider
         ];
     }
 
-    public function getAuthorsPostsData()
+    public function getAuthorSingleChartData()
     {
-        $posts  = $this->postsModel->getPostsReportData($this->args);
-        $total  = $this->postsModel->countPosts($this->args);
+        $platformDataProvider           = ChartDataProviderFactory::platformCharts($this->args);
+        $publishOverviewDataProvider    = ChartDataProviderFactory::publishOverview(
+            Helper::filterArrayByKeys($this->args, ['post_type', 'author_id'])
+        );
 
-        return [
-            'posts'   => $posts,
-            'total'   => $total
+        $data = [
+            'os_chart_data'         => $platformDataProvider->getOsData(),
+            'browser_chart_data'    => $platformDataProvider->getBrowserData(),
+            'publish_chart_data'    => $publishOverviewDataProvider->getData()
         ];
+
+        return $data;
     }
 
-    public function getVisitSummary()
+    public function getAuthorsChartData()
     {
-        return [
-            'today'     => [
-                'label'     => esc_html__('Today', 'wp-statistics'),
-                'visitors'  => $this->visitorsModel->countVisitors(array_merge($this->args, ['date' => 'today'])),
-                'views'     => $this->viewsModel->countViews(array_merge($this->args, ['date' => 'today'])),
-            ],
-            'yesterday' => [
-                'label'     => esc_html__('Yesterday', 'wp-statistics'),
-                'visitors'  => $this->visitorsModel->countVisitors(array_merge($this->args, ['date' => 'yesterday'])),
-                'views'     => $this->viewsModel->countViews(array_merge($this->args, ['date' => 'yesterday'])),
-            ],
-            '7days'     => [
-                'label'     => esc_html__('Last 7 days', 'wp-statistics'),
-                'visitors'  => $this->visitorsModel->countVisitors(array_merge($this->args, ['date' => '7days'])),
-                'views'     => $this->viewsModel->countViews(array_merge($this->args, ['date' => '7days'])),
-            ],
-            '30days'    => [
-                'label'     => esc_html__('Last 30 days', 'wp-statistics'),
-                'visitors'  => $this->visitorsModel->countVisitors(array_merge($this->args, ['date' => '30days'])),
-                'views'     => $this->viewsModel->countViews(array_merge($this->args, ['date' => '30days'])),
-            ],
-            '60days'    => [
-                'label'     => esc_html__('Last 60 days', 'wp-statistics'),
-                'visitors'  => $this->visitorsModel->countVisitors(array_merge($this->args, ['date' => '60days'])),
-                'views'     => $this->viewsModel->countViews(array_merge($this->args, ['date' => '60days'])),
-            ],
-            '120days'   => [
-                'label'     => esc_html__('Last 120 days', 'wp-statistics'),
-                'visitors'  => $this->visitorsModel->countVisitors(array_merge($this->args, ['date' => '120days'])),
-                'views'     => $this->viewsModel->countViews(array_merge($this->args, ['date' => '120days'])),
-            ],
-            'year'      => [
-                'label'     => esc_html__('Last 12 months', 'wp-statistics'),
-                'visitors'  => $this->visitorsModel->countVisitors(array_merge($this->args, ['date' => 'year'])),
-                'views'     => $this->viewsModel->countViews(array_merge($this->args, ['date' => 'year'])),
-            ],
-            'this_year' => [
-                'label'     => esc_html__('This year (Jan - Today)', 'wp-statistics'),
-                'visitors'  => $this->visitorsModel->countVisitors(array_merge($this->args, ['date' => 'this_year'])),
-                'views'     => $this->viewsModel->countViews(array_merge($this->args, ['date' => 'this_year'])),
-            ],
-            'last_year' => [
-                'label'     => esc_html__('Last Year', 'wp-statistics'),
-                'visitors'  => $this->visitorsModel->countVisitors(array_merge($this->args, ['date' => 'last_year'])),
-                'views'     => $this->viewsModel->countViews(array_merge($this->args, ['date' => 'last_year'])),
-            ],
+        $authorsPostViewsDataProvider   = ChartDataProviderFactory::authorsPostViews(array_merge($this->args, ['per_page' => -1]));
+        $publishOverviewDataProvider    = ChartDataProviderFactory::publishOverview(
+            Helper::filterArrayByKeys($this->args, ['post_type', 'author_id'])
+        );
+
+        $data = [
+            'publish_chart_data'         => $publishOverviewDataProvider->getData(),
+            'views_per_posts_chart_data' => $authorsPostViewsDataProvider->getData()
         ];
+
+        return $data;
     }
 
     public function getAuthorSingleData()
     {
-        $totalViews         = $this->viewsModel->countViews($this->args);
+        $views     = $this->viewsModel->countViews($this->args);
+        $prevViews = $this->viewsModel->countViews(array_merge($this->args, ['date' => DateRange::getPrevPeriod()]));
 
-        $totalWords         = $this->postsModel->countWords($this->args);
-        $totalComments      = $this->postsModel->countComments($this->args);
-        $totalPosts         = $this->postsModel->countPosts($this->args);
-        $totalVisitors      = $this->visitorsModel->countVisitors($this->args);
+        $posts     = $this->postsModel->countPosts($this->args);
+        $prevPosts = $this->postsModel->countPosts(array_merge($this->args, ['date' => DateRange::getPrevPeriod()]));
 
-        $taxonomies         = $this->taxonomyModel->countTaxonomiesPosts($this->args);
-        $topPostsByView     = $this->postsModel->getPostsViewsData($this->args);
-        $topPostsByComment  = $this->postsModel->getPostsCommentsData($this->args);
-        $topPostsByWords    = $this->postsModel->getPostsWordsData($this->args);
+        $comments        = $this->postsModel->countComments($this->args);
+        $prevComments    = $this->postsModel->countComments(array_merge($this->args, ['date' => DateRange::getPrevPeriod()]));
+        $avgComments     = Helper::divideNumbers($comments, $posts);
+        $prevAvgComments = Helper::divideNumbers($prevComments, $prevPosts);
 
-        $visitorsData       = $this->getParsedVisitorsData($this->args);
-        $visitsData         = $this->getVisitSummary();
+        $visitors     = $this->visitorsModel->countVisitors($this->args);
+        $prevVisitors = $this->visitorsModel->countVisitors(array_merge($this->args, ['date' => DateRange::getPrevPeriod()]));
+
+        $taxonomies        = $this->taxonomyModel->getTaxonomiesData($this->args);
+        $topPostsByView    = $this->postsModel->getPostsViewsData($this->args);
+        $topPostsByComment = $this->postsModel->getPostsCommentsData($this->args);
+
+        $visitorsCountry = $this->visitorsModel->getVisitorsGeoData(array_merge($this->args, ['per_page' => 10]));
+
+        $summary = ChartDataProviderFactory::summaryChart($this->args)->getData();
 
         $data = [
-            'visit_summary' => $visitsData,
-            'visitors_data' => $visitorsData,
-            'taxonomies'    => $taxonomies,
-            'overview'      => [
-                'posts'         => [
-                    'total'     => $totalPosts
+            'glance' => [
+                'posts' => [
+                    'value'  => $posts,
+                    'change' => Helper::calculatePercentageChange($prevPosts, $posts)
                 ],
-                'views'     => [
-                    'total'     => $totalViews,
-                    'avg'       => Helper::divideNumbers($totalViews, $totalPosts)
+                'views' => [
+                    'value'  => $views,
+                    'change' => Helper::calculatePercentageChange($prevViews, $views)
                 ],
-                'visitors'  => [
-                    'total'     => $totalVisitors,
-                    'avg'       => Helper::divideNumbers($totalVisitors, $totalPosts)
-                ],
-                'words'     => [
-                    'total'     => $totalWords,
-                    'avg'       => Helper::divideNumbers($totalWords, $totalPosts)
+                'visitors' => [
+                    'value'  => $visitors,
+                    'change' => Helper::calculatePercentageChange($prevVisitors, $visitors)
                 ],
                 'comments'  => [
-                    'total'     => $totalComments,
-                    'avg'       => Helper::divideNumbers($totalComments, $totalPosts)
+                    'value'  => $comments,
+                    'change' => Helper::calculatePercentageChange($prevComments, $comments)
+                ],
+                'comments_avg' => [
+                    'value'  => $avgComments,
+                    'change' => Helper::calculatePercentageChange($prevAvgComments, $avgComments)
                 ]
             ],
-            'posts'         => [
-                'top_views'     => $topPostsByView,
-                'top_comments'  => $topPostsByComment,
-                'top_words'     => $topPostsByWords
-            ]
+            'summary'          => $summary,
+            'posts'            => [
+                'top_views'    => $topPostsByView,
+                'top_comments' => $topPostsByComment,
+            ],
+            'visitors_country' => $visitorsCountry,
+            'taxonomies'       => $taxonomies,
+
+            // Keep for backward-compatibility with older versions of DataPlus
+            'visit_summary'   => []
         ];
+
+        if (WordCountService::isActive()) {
+            $words    = $this->postsModel->countWords($this->args);
+            $avgWords = Helper::divideNumbers($words, $posts);
+
+            $topPostsByWords = $this->postsModel->getPostsWordsData($this->args);
+
+            $data['glance']['words']     = ['value' => $words];
+            $data['glance']['words_avg'] = ['value' => $avgWords];
+            $data['posts']['top_words']  = $topPostsByWords;
+        }
 
         return $data;
     }

@@ -4,3 +4,4 @@ wp-stack-cache.php
 clientarea
 configuration.php
 wp-content/mu-plugins/
+wp-content/local-recovery/
