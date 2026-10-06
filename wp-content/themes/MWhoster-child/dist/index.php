@@ -800,10 +800,10 @@ Their services are of the highest quality, achieving an ideal harmony between ex
                         <!-- Item -->
                         <div class="accordion-item">
                             <h2 class="accordion-header" id="headingOne">
-                                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">What sets MWHoster as the top web hosting company in Pakistan? </button>
+                                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">Which hosting service should I choose? </button>
                             </h2>
                             <div class="accordion-collapse collapse show" id="collapseOne" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
-                                <div class="accordion-body">At MWHoster, we stand out because we offer reliable and fast hosting. We have many different hosting plans to choose from. Our customer support is available all day, every day. Our website interfaces are easy to use. Plus, we always make sure our services are affordable without compromising quality. That's why businesses in Pakistan trust us.</div>
+                                <div class="accordion-body">Choose shared hosting for general websites, WordPress hosting for WordPress projects, or Windows hosting for applications requiring a Windows environment. Compare storage, bandwidth and website limits before selecting your plan.</div>
                             </div>
                         </div>
 
@@ -820,29 +820,29 @@ Their services are of the highest quality, achieving an ideal harmony between ex
                         <!-- Item -->
                         <div class="accordion-item">
                             <h2 class="accordion-header" id="headingThree">
-                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">Is a control panel included with web hosting?</button>
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">Is a hosting control panel included?</button>
                             </h2>
                             <div class="accordion-collapse collapse" id="collapseThree" aria-labelledby="headingThree" data-bs-parent="#accordionExample">
-                                <div class="accordion-body">Indeed! Our unique control panel, MWPanel, is included with every shared hosting subscription. With MWPanel, you can easily manage your hosting account, monitor resource usage, create email accounts, and install a content management system (CMS). </div>
+                                <div class="accordion-body">Yes. Shared hosting includes a control panel for managing website files, databases, email accounts and application installations from one dashboard.</div>
                             </div>
                         </div>
 
                         <!-- Item -->
                         <div class="accordion-item">
                             <h2 class="accordion-header" id="headingFour">
-                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">Does MWHoster provide an auto-installer for scripts?</button>
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">Can I install WordPress without technical experience?</button>
                             </h2>
                             <div class="accordion-collapse collapse" id="collapseFour" aria-labelledby="headingFour" data-bs-parent="#accordionExample">
-                                <div class="accordion-body">Yes, you may use our customized tool to install over 80 apps instantly. Trying out many scripts and selecting the best ones for your website is made quicker and easier with our auto-installer.</div>
+                                <div class="accordion-body">Yes. The one-click installer sets up WordPress through your hosting control panel, automating application installation and database configuration so you can begin building your website.</div>
                             </div>
                         </div>
                             <!-- Item -->
                         <div class="accordion-item">
                             <h2 class="accordion-header" id="headingFive">
-                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFive" aria-expanded="false" aria-controls="collapseFive">What has been the customer experience with MWHoster technical support?</button>
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFive" aria-expanded="false" aria-controls="collapseFive">How can I contact technical support?</button>
                             </h2>
                             <div class="accordion-collapse collapse" id="collapseFive" aria-labelledby="headingFive" data-bs-parent="#accordionExample">
-                                <div class="accordion-body">Most of the time, our customers are satisfied with our technical assistance. They appreciate our support team's expertise, prompt issue resolution, and round-the-clock availability. Our goal is to provide exceptional support to our customers.</div>
+                                <div class="accordion-body">Technical support is available 24/7. Contact our team through a support ticket, WhatsApp or support@mwhoster.com for help with your hosting account.</div>
                             </div>
                         </div>
                         <!-- Item -->
