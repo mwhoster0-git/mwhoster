@@ -299,8 +299,8 @@
                         <div class="support-action d-inline-flex flex-wrap">
                             <a href="mailto:support@mwhoster.com" class="me-3 text-info"><i class="fas fa-comment me-1 text-tertiary"></i>
                                 <span style="color:#fff">support@mwhoster.com</span></a>
-                            <a href="tel:+923436968540" class="mb-0 text-info"><i class="fas fa-phone-alt me-1 text-tertiary"></i>
-                                <span style="color:#fff">+92 343 6968540</span></a>
+                            <a href="tel:+923180049011" class="mb-0 text-info"><i class="fas fa-phone-alt me-1 text-tertiary"></i>
+                                <span style="color:#fff">+92 318 0049011</span></a>
                         </div>
                     </div>
                     <div class="col-md-6 col-lg-4 d-none d-lg-block">

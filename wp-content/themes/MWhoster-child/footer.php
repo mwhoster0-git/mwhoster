@@ -58,7 +58,7 @@
                             <h6 class="font-weight-normal">Contact info</h6>
                             <ul>
                                 <li>
-                                    <a href="tel:+923436968540"><i class="fas fa-phone me-2"></i> +92 343 6968540 </a>
+                                    <a href="tel:+923180049011"><i class="fas fa-phone me-2"></i> +92 318 0049011 </a>
                                 </li>
                                 <li>
 									<a href="mailto:support@mwhoster.com"><i class="fas fa-envelope me-2"></i> support@mwhoster.com</a>
