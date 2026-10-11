@@ -163,7 +163,7 @@ $skip_link_url = apply_filters( 'hello_elementor_skip_link_url', '#content' );
 																	Shared Web Hosting
 																</span>
                                                                 <small class="u-header__promo-text">
-                                                                     Started at
+                                                                     Starting from
                                                                     <strong>$9.99/y</strong>
                                                                 </small>
                                                             </div>
@@ -181,7 +181,7 @@ $skip_link_url = apply_filters( 'hello_elementor_skip_link_url', '#content' );
                                                             <div class="media-body">
                                                                <span class="u-header__promo-title">Wordpress Hosting</span>
                                                                 <small class="u-header__promo-text">
-                                                                      Started at
+                                                                      Starting from
                                                                     <strong>$49.99/y</strong>
                                                                 </small>
                                                             </div>
@@ -199,7 +199,7 @@ $skip_link_url = apply_filters( 'hello_elementor_skip_link_url', '#content' );
                                                             <div class="media-body">
                                                                 <span class="u-header__promo-title">Windows Hosting</span>
                                                                 <small class="u-header__promo-text">
-                                                                      Started at
+                                                                      Starting from
                                                                     <strong>$4.99/y</strong>
                                                                 </small>
                                                             </div>
@@ -474,7 +474,7 @@ $skip_link_url = apply_filters( 'hello_elementor_skip_link_url', '#content' );
                                                     <div class="media-body">
                                                         <span class="u-header__promo-title">Shared Web Hosting</span>
                                                         <small class="u-header__promo-text">
-                                                            Started at
+                                                            Starting from
                                                             <strong>$9.99/y</strong>
                                                         </small>
                                                     </div>
@@ -492,7 +492,7 @@ $skip_link_url = apply_filters( 'hello_elementor_skip_link_url', '#content' );
                                                     <div class="media-body">
                                                         <span class="u-header__promo-title">Wordpress Hosting</span>
                                                         <small class="u-header__promo-text">
-                                                            Started at
+                                                            Starting from
                                                             <strong>$49.99/y</strong>
                                                         </small>
                                                     </div>
@@ -510,7 +510,7 @@ $skip_link_url = apply_filters( 'hello_elementor_skip_link_url', '#content' );
                                                     <div class="media-body">
                                                         <span class="u-header__promo-title"> Windows Hosting</span>
                                                         <small class="u-header__promo-text">
-                                                             Started at
+                                                             Starting from
                                                             <strong>$4.99/y</strong>
                                                         </small>
                                                     </div>
