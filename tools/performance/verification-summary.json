@@ -1,0 +1,907 @@
+{
+  "baselineCommit": "caac75b5b52f4f0fae30c18940ef084dd9d2c6fb",
+  "browserCases": 59,
+  "publicRoutes": [
+    "/",
+    "/best-ecommerce-hosting-for-small-businesses/",
+    "/blog/",
+    "/contact/",
+    "/difference-between-domain-and-web-hosting-know-the-essentials/",
+    "/domain-registration/",
+    "/domain-transfer/",
+    "/guide/",
+    "/how-to-add-domain-to-your-mw-panel/",
+    "/how-to-check-website-hosting-in-pakistan-a-step-by-step-guide/",
+    "/how-to-choose-the-best-domain-name-for-your-business/",
+    "/how-to-connect-domain-with-hosting/",
+    "/how-to-create-an-email-account-in-mw-panel/",
+    "/how-to-create-an-ftp-account-in-mw-panel/",
+    "/how-to-create-subdomain/",
+    "/how-to-install-ssl-certificate-on-your-website/",
+    "/how-to-install-wordpress-with-auto-installer/",
+    "/how-to-migrate-website-from-one-hosting-to-another/",
+    "/how-to-order-shared-web-hosting-package/",
+    "/impact-of-server-location-on-seo-website-performance/",
+    "/privacy-policy/",
+    "/shared-hosting-vs-cloud-hosting/",
+    "/shared-web-hosting/",
+    "/terms-conditions/",
+    "/the-ultimate-guide-to-ecommerce-hosting-for-small-businesses-in-2024/",
+    "/tips-tricks-how-to-install-ssl-certificate/",
+    "/vps-hosting-the-ultimate-guide/",
+    "/what-is-shared-hosting-benefits-and-drawbacks/",
+    "/what-is-ssl-certifcate-why-it-is-important-for-website-security/",
+    "/what-is-web-hosting-and-why-do-you-need-it/",
+    "/what-is-web-hosting/",
+    "/windows-web-hosting/",
+    "/wordpress-web-hosting/"
+  ],
+  "identityDifferences": [],
+  "javascriptErrors": [],
+  "overflows": [
+    {
+      "route": "/wordpress-web-hosting/",
+      "width": 1366,
+      "preexisting": true
+    },
+    {
+      "route": "/the-ultimate-guide-to-ecommerce-hosting-for-small-businesses-in-2024/",
+      "width": 390,
+      "preexisting": true
+    }
+  ],
+  "assets": [
+    {
+      "route": "/privacy-policy/",
+      "jquery": "3.7.1",
+      "jqueryCopies": 1,
+      "owl": false,
+      "unusedWidgetScript": false,
+      "elementorFrontend": true,
+      "kit": true,
+      "css": "http://mwhoster.test/wp-content/themes/MWhoster-child/assets/css/mwhoster-shared.css?ver=1791796335"
+    },
+    {
+      "route": "/",
+      "jquery": "3.7.1",
+      "jqueryCopies": 1,
+      "owl": false,
+      "unusedWidgetScript": false,
+      "elementorFrontend": false,
+      "kit": true,
+      "css": "http://mwhoster.test/wp-content/themes/MWhoster-child/assets/css/mwhoster-hosting.css?ver=1791796335"
+    },
+    {
+      "route": "/windows-web-hosting/",
+      "jquery": "3.7.1",
+      "jqueryCopies": 1,
+      "owl": true,
+      "unusedWidgetScript": false,
+      "elementorFrontend": false,
+      "kit": true,
+      "css": "http://mwhoster.test/wp-content/themes/MWhoster-child/assets/css/mwhoster-carousel.css?ver=1791796335"
+    },
+    {
+      "route": "/shared-web-hosting/",
+      "jquery": "3.7.1",
+      "jqueryCopies": 1,
+      "owl": false,
+      "unusedWidgetScript": false,
+      "elementorFrontend": false,
+      "kit": true,
+      "css": "http://mwhoster.test/wp-content/themes/MWhoster-child/assets/css/mwhoster-hosting.css?ver=1791796335"
+    },
+    {
+      "route": "/wordpress-web-hosting/",
+      "jquery": "3.7.1",
+      "jqueryCopies": 1,
+      "owl": false,
+      "unusedWidgetScript": false,
+      "elementorFrontend": false,
+      "kit": true,
+      "css": "http://mwhoster.test/wp-content/themes/MWhoster-child/assets/css/mwhoster-hosting.css?ver=1791796335"
+    },
+    {
+      "route": "/domain-registration/",
+      "jquery": "3.7.1",
+      "jqueryCopies": 1,
+      "owl": false,
+      "unusedWidgetScript": false,
+      "elementorFrontend": false,
+      "kit": true,
+      "css": "http://mwhoster.test/wp-content/themes/MWhoster-child/assets/css/mwhoster-hosting.css?ver=1791796335"
+    },
+    {
+      "route": "/domain-transfer/",
+      "jquery": "3.7.1",
+      "jqueryCopies": 1,
+      "owl": true,
+      "unusedWidgetScript": false,
+      "elementorFrontend": false,
+      "kit": true,
+      "css": "http://mwhoster.test/wp-content/themes/MWhoster-child/assets/css/mwhoster-carousel.css?ver=1791796335"
+    },
+    {
+      "route": "/terms-conditions/",
+      "jquery": "3.7.1",
+      "jqueryCopies": 1,
+      "owl": false,
+      "unusedWidgetScript": false,
+      "elementorFrontend": true,
+      "kit": true,
+      "css": "http://mwhoster.test/wp-content/themes/MWhoster-child/assets/css/mwhoster-shared.css?ver=1791796335"
+    },
+    {
+      "route": "/guide/",
+      "jquery": "3.7.1",
+      "jqueryCopies": 1,
+      "owl": false,
+      "unusedWidgetScript": false,
+      "elementorFrontend": true,
+      "kit": true,
+      "css": "http://mwhoster.test/wp-content/themes/MWhoster-child/assets/css/mwhoster-shared.css?ver=1791796335"
+    },
+    {
+      "route": "/contact/",
+      "jquery": "3.7.1",
+      "jqueryCopies": 1,
+      "owl": false,
+      "unusedWidgetScript": false,
+      "elementorFrontend": true,
+      "kit": true,
+      "css": "http://mwhoster.test/wp-content/themes/MWhoster-child/assets/css/mwhoster-shared.css?ver=1791796335"
+    },
+    {
+      "route": "/how-to-order-shared-web-hosting-package/",
+      "jquery": "3.7.1",
+      "jqueryCopies": 1,
+      "owl": false,
+      "unusedWidgetScript": false,
+      "elementorFrontend": true,
+      "kit": true,
+      "css": "http://mwhoster.test/wp-content/themes/MWhoster-child/assets/css/mwhoster-shared.css?ver=1791796335"
+    },
+    {
+      "route": "/how-to-install-wordpress-with-auto-installer/",
+      "jquery": "3.7.1",
+      "jqueryCopies": 1,
+      "owl": false,
+      "unusedWidgetScript": false,
+      "elementorFrontend": true,
+      "kit": true,
+      "css": "http://mwhoster.test/wp-content/themes/MWhoster-child/assets/css/mwhoster-shared.css?ver=1791814566"
+    },
+    {
+      "route": "/how-to-install-ssl-certificate-on-your-website/",
+      "jquery": "3.7.1",
+      "jqueryCopies": 1,
+      "owl": false,
+      "unusedWidgetScript": false,
+      "elementorFrontend": true,
+      "kit": true,
+      "css": "http://mwhoster.test/wp-content/themes/MWhoster-child/assets/css/mwhoster-shared.css?ver=1791796335"
+    },
+    {
+      "route": "/how-to-create-an-email-account-in-mw-panel/",
+      "jquery": "3.7.1",
+      "jqueryCopies": 1,
+      "owl": false,
+      "unusedWidgetScript": false,
+      "elementorFrontend": true,
+      "kit": true,
+      "css": "http://mwhoster.test/wp-content/themes/MWhoster-child/assets/css/mwhoster-shared.css?ver=1791796335"
+    },
+    {
+      "route": "/how-to-create-an-ftp-account-in-mw-panel/",
+      "jquery": "3.7.1",
+      "jqueryCopies": 1,
+      "owl": false,
+      "unusedWidgetScript": false,
+      "elementorFrontend": true,
+      "kit": true,
+      "css": "http://mwhoster.test/wp-content/themes/MWhoster-child/assets/css/mwhoster-shared.css?ver=1791796335"
+    },
+    {
+      "route": "/how-to-add-domain-to-your-mw-panel/",
+      "jquery": "3.7.1",
+      "jqueryCopies": 1,
+      "owl": false,
+      "unusedWidgetScript": false,
+      "elementorFrontend": true,
+      "kit": true,
+      "css": "http://mwhoster.test/wp-content/themes/MWhoster-child/assets/css/mwhoster-shared.css?ver=1791796335"
+    },
+    {
+      "route": "/how-to-connect-domain-with-hosting/",
+      "jquery": "3.7.1",
+      "jqueryCopies": 1,
+      "owl": false,
+      "unusedWidgetScript": false,
+      "elementorFrontend": true,
+      "kit": true,
+      "css": "http://mwhoster.test/wp-content/themes/MWhoster-child/assets/css/mwhoster-shared.css?ver=1791796335"
+    },
+    {
+      "route": "/how-to-create-subdomain/",
+      "jquery": "3.7.1",
+      "jqueryCopies": 1,
+      "owl": false,
+      "unusedWidgetScript": false,
+      "elementorFrontend": true,
+      "kit": true,
+      "css": "http://mwhoster.test/wp-content/themes/MWhoster-child/assets/css/mwhoster-shared.css?ver=1791796335"
+    },
+    {
+      "route": "/impact-of-server-location-on-seo-website-performance/",
+      "jquery": "3.7.1",
+      "jqueryCopies": 1,
+      "owl": false,
+      "unusedWidgetScript": false,
+      "elementorFrontend": true,
+      "kit": true,
+      "css": "http://mwhoster.test/wp-content/themes/MWhoster-child/assets/css/mwhoster-shared.css?ver=1791796335"
+    },
+    {
+      "route": "/what-is-web-hosting-and-why-do-you-need-it/",
+      "jquery": "3.7.1",
+      "jqueryCopies": 1,
+      "owl": false,
+      "unusedWidgetScript": false,
+      "elementorFrontend": true,
+      "kit": true,
+      "css": "http://mwhoster.test/wp-content/themes/MWhoster-child/assets/css/mwhoster-shared.css?ver=1791796335"
+    },
+    {
+      "route": "/what-is-ssl-certifcate-why-it-is-important-for-website-security/",
+      "jquery": "3.7.1",
+      "jqueryCopies": 1,
+      "owl": false,
+      "unusedWidgetScript": false,
+      "elementorFrontend": true,
+      "kit": true,
+      "css": "http://mwhoster.test/wp-content/themes/MWhoster-child/assets/css/mwhoster-shared.css?ver=1791796335"
+    },
+    {
+      "route": "/best-ecommerce-hosting-for-small-businesses/",
+      "jquery": "3.7.1",
+      "jqueryCopies": 1,
+      "owl": false,
+      "unusedWidgetScript": false,
+      "elementorFrontend": true,
+      "kit": true,
+      "css": "http://mwhoster.test/wp-content/themes/MWhoster-child/assets/css/mwhoster-shared.css?ver=1791796335"
+    },
+    {
+      "route": "/how-to-migrate-website-from-one-hosting-to-another/",
+      "jquery": "3.7.1",
+      "jqueryCopies": 1,
+      "owl": false,
+      "unusedWidgetScript": false,
+      "elementorFrontend": true,
+      "kit": true,
+      "css": "http://mwhoster.test/wp-content/themes/MWhoster-child/assets/css/mwhoster-shared.css?ver=1791796335"
+    },
+    {
+      "route": "/difference-between-domain-and-web-hosting-know-the-essentials/",
+      "jquery": "3.7.1",
+      "jqueryCopies": 1,
+      "owl": false,
+      "unusedWidgetScript": false,
+      "elementorFrontend": true,
+      "kit": true,
+      "css": "http://mwhoster.test/wp-content/themes/MWhoster-child/assets/css/mwhoster-shared.css?ver=1791796335"
+    },
+    {
+      "route": "/how-to-check-website-hosting-in-pakistan-a-step-by-step-guide/",
+      "jquery": "3.7.1",
+      "jqueryCopies": 1,
+      "owl": false,
+      "unusedWidgetScript": false,
+      "elementorFrontend": true,
+      "kit": true,
+      "css": "http://mwhoster.test/wp-content/themes/MWhoster-child/assets/css/mwhoster-shared.css?ver=1791796335"
+    },
+    {
+      "route": "/blog/",
+      "jquery": "3.7.1",
+      "jqueryCopies": 1,
+      "owl": false,
+      "unusedWidgetScript": false,
+      "elementorFrontend": true,
+      "kit": true,
+      "css": "http://mwhoster.test/wp-content/themes/MWhoster-child/assets/css/mwhoster-shared.css?ver=1791814566"
+    },
+    {
+      "route": "/what-is-shared-hosting-benefits-and-drawbacks/",
+      "jquery": "3.7.1",
+      "jqueryCopies": 1,
+      "owl": false,
+      "unusedWidgetScript": false,
+      "elementorFrontend": true,
+      "kit": true,
+      "css": "http://mwhoster.test/wp-content/themes/MWhoster-child/assets/css/mwhoster-shared.css?ver=1791796335"
+    },
+    {
+      "route": "/tips-tricks-how-to-install-ssl-certificate/",
+      "jquery": "3.7.1",
+      "jqueryCopies": 1,
+      "owl": false,
+      "unusedWidgetScript": false,
+      "elementorFrontend": true,
+      "kit": true,
+      "css": "http://mwhoster.test/wp-content/themes/MWhoster-child/assets/css/mwhoster-shared.css?ver=1791796335"
+    },
+    {
+      "route": "/how-to-choose-the-best-domain-name-for-your-business/",
+      "jquery": "3.7.1",
+      "jqueryCopies": 1,
+      "owl": false,
+      "unusedWidgetScript": false,
+      "elementorFrontend": true,
+      "kit": true,
+      "css": "http://mwhoster.test/wp-content/themes/MWhoster-child/assets/css/mwhoster-shared.css?ver=1791796335"
+    },
+    {
+      "route": "/vps-hosting-the-ultimate-guide/",
+      "jquery": "3.7.1",
+      "jqueryCopies": 1,
+      "owl": false,
+      "unusedWidgetScript": false,
+      "elementorFrontend": true,
+      "kit": true,
+      "css": "http://mwhoster.test/wp-content/themes/MWhoster-child/assets/css/mwhoster-shared.css?ver=1791796335"
+    },
+    {
+      "route": "/the-ultimate-guide-to-ecommerce-hosting-for-small-businesses-in-2024/",
+      "jquery": "3.7.1",
+      "jqueryCopies": 1,
+      "owl": false,
+      "unusedWidgetScript": false,
+      "elementorFrontend": true,
+      "kit": true,
+      "css": "http://mwhoster.test/wp-content/themes/MWhoster-child/assets/css/mwhoster-shared.css?ver=1791796335"
+    },
+    {
+      "route": "/what-is-web-hosting/",
+      "jquery": "3.7.1",
+      "jqueryCopies": 1,
+      "owl": false,
+      "unusedWidgetScript": false,
+      "elementorFrontend": true,
+      "kit": true,
+      "css": "http://mwhoster.test/wp-content/themes/MWhoster-child/assets/css/mwhoster-shared.css?ver=1791796335"
+    },
+    {
+      "route": "/shared-hosting-vs-cloud-hosting/",
+      "jquery": "3.7.1",
+      "jqueryCopies": 1,
+      "owl": false,
+      "unusedWidgetScript": false,
+      "elementorFrontend": true,
+      "kit": true,
+      "css": "http://mwhoster.test/wp-content/themes/MWhoster-child/assets/css/mwhoster-shared.css?ver=1791814566"
+    }
+  ],
+  "metrics": {
+    "before": [
+      {
+        "route": "/",
+        "runs": 3,
+        "score": 0.56,
+        "FCP": 10060.196,
+        "LCP": 10585.427875,
+        "CLS": 0.0017208610122189526,
+        "TBT": 88.5,
+        "bytes": 2391689,
+        "requests": 41
+      },
+      {
+        "route": "/blog/",
+        "runs": 3,
+        "score": 0.54,
+        "FCP": 10205.8716,
+        "LCP": 10655.871600000002,
+        "CLS": 0.003117629882527347,
+        "TBT": 117.5,
+        "bytes": 2801964,
+        "requests": 56
+      },
+      {
+        "route": "/domain-registration/",
+        "runs": 3,
+        "score": 0.53,
+        "FCP": 9757.1223,
+        "LCP": 14631.98565,
+        "CLS": 0.09382133895758786,
+        "TBT": 96,
+        "bytes": 2358472,
+        "requests": 40
+      },
+      {
+        "route": "/guide/",
+        "runs": 3,
+        "score": 0.53,
+        "FCP": 8706.22065,
+        "LCP": 11706.22065,
+        "CLS": 0,
+        "TBT": 177,
+        "bytes": 2967144,
+        "requests": 57
+      },
+      {
+        "route": "/shared-web-hosting/",
+        "runs": 3,
+        "score": 0.56,
+        "FCP": 9906.909899999999,
+        "LCP": 10431.9099,
+        "CLS": 0.01912220116864326,
+        "TBT": 25.5,
+        "bytes": 2368461,
+        "requests": 41
+      },
+      {
+        "route": "/windows-web-hosting/",
+        "runs": 3,
+        "score": 0.55,
+        "FCP": 9907.660799999998,
+        "LCP": 10357.660799999998,
+        "CLS": 0.06847494501118458,
+        "TBT": 72,
+        "bytes": 2353254,
+        "requests": 40
+      },
+      {
+        "route": "/wordpress-web-hosting/",
+        "runs": 3,
+        "score": 0.56,
+        "FCP": 9908.61765,
+        "LCP": 10433.61765,
+        "CLS": 0.01830849048061589,
+        "TBT": 21.5,
+        "bytes": 2366308,
+        "requests": 41
+      }
+    ],
+    "after": [
+      {
+        "route": "/",
+        "runs": 3,
+        "score": 0.61,
+        "FCP": 4657.0023,
+        "LCP": 6232.529925000001,
+        "CLS": 0.0017208610122189526,
+        "TBT": 50,
+        "bytes": 1537704,
+        "requests": 36
+      },
+      {
+        "route": "/blog/",
+        "runs": 3,
+        "score": 0.56,
+        "FCP": 6760.3377,
+        "LCP": 8561.396100000002,
+        "CLS": 0.003117629882527347,
+        "TBT": 59,
+        "bytes": 2354231,
+        "requests": 54
+      },
+      {
+        "route": "/domain-registration/",
+        "runs": 3,
+        "score": 0.61,
+        "FCP": 4509.41465,
+        "LCP": 6160.969499999998,
+        "CLS": 0.00008041887032279207,
+        "TBT": 41.5,
+        "bytes": 1525970,
+        "requests": 35
+      },
+      {
+        "route": "/guide/",
+        "runs": 3,
+        "score": 0.56,
+        "FCP": 6906.616050000001,
+        "LCP": 9307.256850000002,
+        "CLS": 0,
+        "TBT": 61,
+        "bytes": 2365453,
+        "requests": 54
+      },
+      {
+        "route": "/shared-web-hosting/",
+        "runs": 3,
+        "score": 0.62,
+        "FCP": 4508.78625,
+        "LCP": 6083.78625,
+        "CLS": 0.01912220116864326,
+        "TBT": 50,
+        "bytes": 1513738,
+        "requests": 36
+      },
+      {
+        "route": "/windows-web-hosting/",
+        "runs": 3,
+        "score": 0.58,
+        "FCP": 4507.856899999999,
+        "LCP": 6308.316499999999,
+        "CLS": 0.06847494501118458,
+        "TBT": 114.5,
+        "bytes": 1547838,
+        "requests": 36
+      },
+      {
+        "route": "/wordpress-web-hosting/",
+        "runs": 3,
+        "score": 0.64,
+        "FCP": 4508.597,
+        "LCP": 6084.767750000001,
+        "CLS": 0.01830849048061589,
+        "TBT": 15.5,
+        "bytes": 1511557,
+        "requests": 36
+      }
+    ]
+  },
+  "homeMobileHeroRequests": 0,
+  "domainDesktopCLS": {
+    "before": 0.10081123582079224,
+    "after": 0.003358044452518947
+  },
+  "interactions": {
+    "escapeClosesMobile": true,
+    "faq": [
+      "true",
+      "false",
+      "true"
+    ],
+    "keyboardOpensDesktop": true,
+    "escapeClosesDesktop": true,
+    "carousels": [
+      {
+        "slug": "windows-web-hosting",
+        "before": 0,
+        "after": 2,
+        "images": []
+      },
+      {
+        "slug": "domain-transfer",
+        "before": 0,
+        "after": 2,
+        "images": [
+          {
+            "src": "http://mwhoster.test/wp-content/themes/MWhoster-child/assets/img/client-3.jpg",
+            "lazy": "http://mwhoster.test/wp-content/themes/MWhoster-child/assets/img/client-3.jpg",
+            "complete": true,
+            "naturalWidth": 250
+          },
+          {
+            "src": "http://mwhoster.test/wp-content/themes/MWhoster-child/assets/img/client-4.jpg",
+            "lazy": "http://mwhoster.test/wp-content/themes/MWhoster-child/assets/img/client-4.jpg",
+            "complete": true,
+            "naturalWidth": 250
+          }
+        ]
+      }
+    ],
+    "errors": []
+  },
+  "schemaDifferencesExceptModificationDates": [
+    "/how-to-order-shared-web-hosting-package/",
+    "/how-to-install-wordpress-with-auto-installer/",
+    "/how-to-install-ssl-certificate-on-your-website/",
+    "/how-to-create-an-email-account-in-mw-panel/",
+    "/how-to-create-an-ftp-account-in-mw-panel/",
+    "/how-to-add-domain-to-your-mw-panel/",
+    "/how-to-connect-domain-with-hosting/",
+    "/how-to-create-subdomain/"
+  ],
+  "schemaChangesExceptModificationDates": [
+    {
+      "route": "/how-to-order-shared-web-hosting-package/",
+      "path": "/2/@graph/0/thumbnailUrl",
+      "before": "http://mw.bloggerplex.top/wp-content/uploads/2020/08/mwhoster_order.png",
+      "after": "http://mwhoster.test/wp-content/uploads/2020/08/mwhoster_order.png"
+    },
+    {
+      "route": "/how-to-order-shared-web-hosting-package/",
+      "path": "/2/@graph/1/thumbnailUrl",
+      "before": "http://mw.bloggerplex.top/wp-content/uploads/2020/08/mwhoster_order.png",
+      "after": "http://mwhoster.test/wp-content/uploads/2020/08/mwhoster_order.png"
+    },
+    {
+      "route": "/how-to-order-shared-web-hosting-package/",
+      "path": "/2/@graph/2/url",
+      "before": "http://mw.bloggerplex.top/wp-content/uploads/2020/08/mwhoster_order.png",
+      "after": "http://mwhoster.test/wp-content/uploads/2020/08/mwhoster_order.png"
+    },
+    {
+      "route": "/how-to-order-shared-web-hosting-package/",
+      "path": "/2/@graph/2/contentUrl",
+      "before": "http://mw.bloggerplex.top/wp-content/uploads/2020/08/mwhoster_order.png",
+      "after": "http://mwhoster.test/wp-content/uploads/2020/08/mwhoster_order.png"
+    },
+    {
+      "route": "/how-to-order-shared-web-hosting-package/",
+      "path": "/2/@graph/2/width",
+      "after": 628
+    },
+    {
+      "route": "/how-to-order-shared-web-hosting-package/",
+      "path": "/2/@graph/2/height",
+      "after": 359
+    },
+    {
+      "route": "/how-to-order-shared-web-hosting-package/",
+      "path": "/2/@graph/2/caption",
+      "after": "Hosting Plans"
+    },
+    {
+      "route": "/how-to-install-wordpress-with-auto-installer/",
+      "path": "/2/@graph/0/thumbnailUrl",
+      "before": "http://mw.bloggerplex.top/wp-content/uploads/2020/08/wordpress_hosting_1.png",
+      "after": "http://mwhoster.test/wp-content/uploads/2020/08/wordpress_hosting_1.png"
+    },
+    {
+      "route": "/how-to-install-wordpress-with-auto-installer/",
+      "path": "/2/@graph/1/thumbnailUrl",
+      "before": "http://mw.bloggerplex.top/wp-content/uploads/2020/08/wordpress_hosting_1.png",
+      "after": "http://mwhoster.test/wp-content/uploads/2020/08/wordpress_hosting_1.png"
+    },
+    {
+      "route": "/how-to-install-wordpress-with-auto-installer/",
+      "path": "/2/@graph/2/url",
+      "before": "http://mw.bloggerplex.top/wp-content/uploads/2020/08/wordpress_hosting_1.png",
+      "after": "http://mwhoster.test/wp-content/uploads/2020/08/wordpress_hosting_1.png"
+    },
+    {
+      "route": "/how-to-install-wordpress-with-auto-installer/",
+      "path": "/2/@graph/2/contentUrl",
+      "before": "http://mw.bloggerplex.top/wp-content/uploads/2020/08/wordpress_hosting_1.png",
+      "after": "http://mwhoster.test/wp-content/uploads/2020/08/wordpress_hosting_1.png"
+    },
+    {
+      "route": "/how-to-install-wordpress-with-auto-installer/",
+      "path": "/2/@graph/2/width",
+      "after": 497
+    },
+    {
+      "route": "/how-to-install-wordpress-with-auto-installer/",
+      "path": "/2/@graph/2/height",
+      "after": 593
+    },
+    {
+      "route": "/how-to-install-wordpress-with-auto-installer/",
+      "path": "/2/@graph/2/caption",
+      "after": "WordPress Setup"
+    },
+    {
+      "route": "/how-to-install-ssl-certificate-on-your-website/",
+      "path": "/2/@graph/0/thumbnailUrl",
+      "before": "http://mw.bloggerplex.top/wp-content/uploads/2020/08/SSL-1.png",
+      "after": "http://mwhoster.test/wp-content/uploads/2020/08/SSL-1.png"
+    },
+    {
+      "route": "/how-to-install-ssl-certificate-on-your-website/",
+      "path": "/2/@graph/1/thumbnailUrl",
+      "before": "http://mw.bloggerplex.top/wp-content/uploads/2020/08/SSL-1.png",
+      "after": "http://mwhoster.test/wp-content/uploads/2020/08/SSL-1.png"
+    },
+    {
+      "route": "/how-to-install-ssl-certificate-on-your-website/",
+      "path": "/2/@graph/2/url",
+      "before": "http://mw.bloggerplex.top/wp-content/uploads/2020/08/SSL-1.png",
+      "after": "http://mwhoster.test/wp-content/uploads/2020/08/SSL-1.png"
+    },
+    {
+      "route": "/how-to-install-ssl-certificate-on-your-website/",
+      "path": "/2/@graph/2/contentUrl",
+      "before": "http://mw.bloggerplex.top/wp-content/uploads/2020/08/SSL-1.png",
+      "after": "http://mwhoster.test/wp-content/uploads/2020/08/SSL-1.png"
+    },
+    {
+      "route": "/how-to-install-ssl-certificate-on-your-website/",
+      "path": "/2/@graph/2/width",
+      "after": 628
+    },
+    {
+      "route": "/how-to-install-ssl-certificate-on-your-website/",
+      "path": "/2/@graph/2/height",
+      "after": 242
+    },
+    {
+      "route": "/how-to-install-ssl-certificate-on-your-website/",
+      "path": "/2/@graph/2/caption",
+      "after": "Security SSL TLS"
+    },
+    {
+      "route": "/how-to-create-an-email-account-in-mw-panel/",
+      "path": "/2/@graph/0/thumbnailUrl",
+      "before": "http://mw.bloggerplex.top/wp-content/uploads/2020/08/Email-acount-1.png",
+      "after": "http://mwhoster.test/wp-content/uploads/2020/08/Email-acount-1.png"
+    },
+    {
+      "route": "/how-to-create-an-email-account-in-mw-panel/",
+      "path": "/2/@graph/1/thumbnailUrl",
+      "before": "http://mw.bloggerplex.top/wp-content/uploads/2020/08/Email-acount-1.png",
+      "after": "http://mwhoster.test/wp-content/uploads/2020/08/Email-acount-1.png"
+    },
+    {
+      "route": "/how-to-create-an-email-account-in-mw-panel/",
+      "path": "/2/@graph/2/url",
+      "before": "http://mw.bloggerplex.top/wp-content/uploads/2020/08/Email-acount-1.png",
+      "after": "http://mwhoster.test/wp-content/uploads/2020/08/Email-acount-1.png"
+    },
+    {
+      "route": "/how-to-create-an-email-account-in-mw-panel/",
+      "path": "/2/@graph/2/contentUrl",
+      "before": "http://mw.bloggerplex.top/wp-content/uploads/2020/08/Email-acount-1.png",
+      "after": "http://mwhoster.test/wp-content/uploads/2020/08/Email-acount-1.png"
+    },
+    {
+      "route": "/how-to-create-an-email-account-in-mw-panel/",
+      "path": "/2/@graph/2/width",
+      "after": 628
+    },
+    {
+      "route": "/how-to-create-an-email-account-in-mw-panel/",
+      "path": "/2/@graph/2/height",
+      "after": 196
+    },
+    {
+      "route": "/how-to-create-an-email-account-in-mw-panel/",
+      "path": "/2/@graph/2/caption",
+      "after": "Email Setup"
+    },
+    {
+      "route": "/how-to-create-an-ftp-account-in-mw-panel/",
+      "path": "/2/@graph/0/thumbnailUrl",
+      "before": "http://mw.bloggerplex.top/wp-content/uploads/2020/08/FTP-1.png",
+      "after": "http://mwhoster.test/wp-content/uploads/2020/08/FTP-1.png"
+    },
+    {
+      "route": "/how-to-create-an-ftp-account-in-mw-panel/",
+      "path": "/2/@graph/1/thumbnailUrl",
+      "before": "http://mw.bloggerplex.top/wp-content/uploads/2020/08/FTP-1.png",
+      "after": "http://mwhoster.test/wp-content/uploads/2020/08/FTP-1.png"
+    },
+    {
+      "route": "/how-to-create-an-ftp-account-in-mw-panel/",
+      "path": "/2/@graph/2/url",
+      "before": "http://mw.bloggerplex.top/wp-content/uploads/2020/08/FTP-1.png",
+      "after": "http://mwhoster.test/wp-content/uploads/2020/08/FTP-1.png"
+    },
+    {
+      "route": "/how-to-create-an-ftp-account-in-mw-panel/",
+      "path": "/2/@graph/2/contentUrl",
+      "before": "http://mw.bloggerplex.top/wp-content/uploads/2020/08/FTP-1.png",
+      "after": "http://mwhoster.test/wp-content/uploads/2020/08/FTP-1.png"
+    },
+    {
+      "route": "/how-to-create-an-ftp-account-in-mw-panel/",
+      "path": "/2/@graph/2/width",
+      "after": 628
+    },
+    {
+      "route": "/how-to-create-an-ftp-account-in-mw-panel/",
+      "path": "/2/@graph/2/height",
+      "after": 120
+    },
+    {
+      "route": "/how-to-create-an-ftp-account-in-mw-panel/",
+      "path": "/2/@graph/2/caption",
+      "after": "Web Files"
+    },
+    {
+      "route": "/how-to-add-domain-to-your-mw-panel/",
+      "path": "/2/@graph/0/thumbnailUrl",
+      "before": "http://mw.bloggerplex.top/wp-content/uploads/2020/08/Domain-1.png",
+      "after": "http://mwhoster.test/wp-content/uploads/2020/08/Domain-1.png"
+    },
+    {
+      "route": "/how-to-add-domain-to-your-mw-panel/",
+      "path": "/2/@graph/1/thumbnailUrl",
+      "before": "http://mw.bloggerplex.top/wp-content/uploads/2020/08/Domain-1.png",
+      "after": "http://mwhoster.test/wp-content/uploads/2020/08/Domain-1.png"
+    },
+    {
+      "route": "/how-to-add-domain-to-your-mw-panel/",
+      "path": "/2/@graph/2/url",
+      "before": "http://mw.bloggerplex.top/wp-content/uploads/2020/08/Domain-1.png",
+      "after": "http://mwhoster.test/wp-content/uploads/2020/08/Domain-1.png"
+    },
+    {
+      "route": "/how-to-add-domain-to-your-mw-panel/",
+      "path": "/2/@graph/2/contentUrl",
+      "before": "http://mw.bloggerplex.top/wp-content/uploads/2020/08/Domain-1.png",
+      "after": "http://mwhoster.test/wp-content/uploads/2020/08/Domain-1.png"
+    },
+    {
+      "route": "/how-to-add-domain-to-your-mw-panel/",
+      "path": "/2/@graph/2/width",
+      "after": 334
+    },
+    {
+      "route": "/how-to-add-domain-to-your-mw-panel/",
+      "path": "/2/@graph/2/height",
+      "after": 155
+    },
+    {
+      "route": "/how-to-add-domain-to-your-mw-panel/",
+      "path": "/2/@graph/2/caption",
+      "after": "Domain Names"
+    },
+    {
+      "route": "/how-to-connect-domain-with-hosting/",
+      "path": "/2/@graph/0/thumbnailUrl",
+      "before": "http://mw.bloggerplex.top/wp-content/uploads/2020/08/mwhoster-1.png",
+      "after": "http://mwhoster.test/wp-content/uploads/2020/08/mwhoster-1.png"
+    },
+    {
+      "route": "/how-to-connect-domain-with-hosting/",
+      "path": "/2/@graph/1/thumbnailUrl",
+      "before": "http://mw.bloggerplex.top/wp-content/uploads/2020/08/mwhoster-1.png",
+      "after": "http://mwhoster.test/wp-content/uploads/2020/08/mwhoster-1.png"
+    },
+    {
+      "route": "/how-to-connect-domain-with-hosting/",
+      "path": "/2/@graph/2/url",
+      "before": "http://mw.bloggerplex.top/wp-content/uploads/2020/08/mwhoster-1.png",
+      "after": "http://mwhoster.test/wp-content/uploads/2020/08/mwhoster-1.png"
+    },
+    {
+      "route": "/how-to-connect-domain-with-hosting/",
+      "path": "/2/@graph/2/contentUrl",
+      "before": "http://mw.bloggerplex.top/wp-content/uploads/2020/08/mwhoster-1.png",
+      "after": "http://mwhoster.test/wp-content/uploads/2020/08/mwhoster-1.png"
+    },
+    {
+      "route": "/how-to-connect-domain-with-hosting/",
+      "path": "/2/@graph/2/width",
+      "after": 537
+    },
+    {
+      "route": "/how-to-connect-domain-with-hosting/",
+      "path": "/2/@graph/2/height",
+      "after": 537
+    },
+    {
+      "route": "/how-to-connect-domain-with-hosting/",
+      "path": "/2/@graph/2/caption",
+      "after": "Go Daddy"
+    },
+    {
+      "route": "/how-to-create-subdomain/",
+      "path": "/2/@graph/0/thumbnailUrl",
+      "before": "http://mw.bloggerplex.top/wp-content/uploads/2020/08/Subdomain-1.png",
+      "after": "http://mwhoster.test/wp-content/uploads/2020/08/Subdomain-1.png"
+    },
+    {
+      "route": "/how-to-create-subdomain/",
+      "path": "/2/@graph/1/thumbnailUrl",
+      "before": "http://mw.bloggerplex.top/wp-content/uploads/2020/08/Subdomain-1.png",
+      "after": "http://mwhoster.test/wp-content/uploads/2020/08/Subdomain-1.png"
+    },
+    {
+      "route": "/how-to-create-subdomain/",
+      "path": "/2/@graph/2/url",
+      "before": "http://mw.bloggerplex.top/wp-content/uploads/2020/08/Subdomain-1.png",
+      "after": "http://mwhoster.test/wp-content/uploads/2020/08/Subdomain-1.png"
+    },
+    {
+      "route": "/how-to-create-subdomain/",
+      "path": "/2/@graph/2/contentUrl",
+      "before": "http://mw.bloggerplex.top/wp-content/uploads/2020/08/Subdomain-1.png",
+      "after": "http://mwhoster.test/wp-content/uploads/2020/08/Subdomain-1.png"
+    },
+    {
+      "route": "/how-to-create-subdomain/",
+      "path": "/2/@graph/2/width",
+      "after": 628
+    },
+    {
+      "route": "/how-to-create-subdomain/",
+      "path": "/2/@graph/2/height",
+      "after": 111
+    }
+  ]
+}

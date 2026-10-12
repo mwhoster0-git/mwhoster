@@ -162,7 +162,7 @@
                 <div class="row align-items-center justify-content-lg-between">
                     <div class="col-xl-5 col-lg-5 col-12 order-lg-last align-self-center mob-botom">
                         <div class="image-box fadein text-xl-right text-center">
-                            <img src="/wp-content/uploads/2024/03/Ensure-Peak-Server.svg" alt="Web Host Server" class="img-fluid" />
+                            <img src="/wp-content/uploads/2024/03/Ensure-Peak-Server.svg" style="width: 100%; height: auto;" alt="Web Host Server" class="img-fluid" width="2869" height="2800" />
                         </div>
                     </div>
                     <div class="col-xl-6 col-lg-7 col-12 order-xl-first">
@@ -174,7 +174,7 @@
                 <div class="row align-items-center justify-content-lg-between mt-5">
                     <div class="col-xl-5 col-lg-5 col-12 order-lg-last align-self-center mob-botom">
                         <div class="image-box fadein text-xl-right text-center">
-                            <img src="/wp-content/uploads/2024/03/Automatic-Security-and-Effortless-Backups.svg" alt="Hosting Backup"  class="img-fluid" />
+                            <img src="/wp-content/uploads/2024/03/Automatic-Security-and-Effortless-Backups.svg" style="width: 100%; height: auto;" alt="Hosting Backup"  class="img-fluid" width="334" height="355" />
                         </div>
                     </div>
                     <div class="col-xl-6 col-lg-7 col-12 order-xl-last">
@@ -250,7 +250,7 @@ Do you require professional guidance for Windows web hosting in Pakistan? We are
                     </div>
                     <div class="col-md-6 col-lg-4 d-none d-lg-block">
                         <div class="cta-img-wrap text-center">
-                            <img src="/wp-content/uploads/2024/03/Contact-image.svg" alt="Contact Support" width="250" class="img-fluid"  />
+                            <img src="/wp-content/uploads/2024/03/Contact-image.svg" alt="Contact Support" class="img-fluid" width="250" height="204" />
                         </div>
                     </div>
                 </div>

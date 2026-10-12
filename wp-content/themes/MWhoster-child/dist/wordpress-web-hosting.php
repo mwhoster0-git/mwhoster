@@ -156,7 +156,7 @@
                 <div class="row align-items-center justify-content-lg-between">
                     <div class="col-xl-5 col-lg-5 col-12 order-lg-last align-self-center mob-botom">
                         <div class="image-box fadein text-xl-right text-center">
-                            <img src="/wp-content/uploads/2024/03/Automatic-Security-and-Effortless-Backups.svg"  alt="Hosting Backup" class="img-fluid" />
+                            <img src="/wp-content/uploads/2024/03/Automatic-Security-and-Effortless-Backups.svg" style="width: 100%; height: auto;"  alt="Hosting Backup" class="img-fluid" width="334" height="355" />
                         </div>
                     </div>
                     <div class="col-xl-6 col-lg-7 col-12 order-xl-first">
@@ -171,7 +171,7 @@
                 <div class="row align-items-center justify-content-lg-between mt-5">
                     <div class="col-xl-5 col-lg-5 col-12 order-lg-last align-self-center mob-botom">
                         <div class="image-box fadein text-xl-right text-center">
-                            <img src="/wp-content/uploads/2024/03/best-web-hosting-adaptable.svg" alt="Website Hosting Service" class="img-fluid" />
+                            <img src="/wp-content/uploads/2024/03/best-web-hosting-adaptable.svg" style="width: 100%; height: auto;" alt="Website Hosting Service" class="img-fluid" width="655" height="376" />
                         </div>
                     </div>
                     <div class="col-xl-6 col-lg-7 col-12 order-xl-last">
@@ -186,7 +186,7 @@
 				<div class="row align-items-center justify-content-lg-between pt-80">
                     <div class="col-xl-5 col-lg-5 col-12 order-lg-last align-self-center mob-botom">
                         <div class="image-box fadein text-xl-right text-center">
-                            <img src="/wp-content/uploads/2024/03/cheap-wordpress-hosting-dream.svg" alt="WordPress Hosting" class="img-fluid" />
+                            <img src="/wp-content/uploads/2024/03/cheap-wordpress-hosting-dream.svg" style="width: 100%; height: auto;" alt="WordPress Hosting" class="img-fluid" width="404" height="360" />
                         </div>
                     </div>
                     <div class="col-xl-6 col-lg-7 col-12 order-xl-first">
@@ -278,7 +278,7 @@
                     </div>
                     <div class="col-md-6 col-lg-4 d-none d-lg-block">
                         <div class="cta-img-wrap text-center">
-                            <img src="/wp-content/uploads/2024/03/Contact-image.svg" alt="contact" width="250" class="img-fluid" />
+                            <img src="/wp-content/uploads/2024/03/Contact-image.svg" alt="contact" class="img-fluid" width="250" height="204" />
                         </div>
                     </div>
                 </div>

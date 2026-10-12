@@ -27,7 +27,7 @@
                     </div>
                     <div class="col-md-6 col-lg-6">
                         <div class="img-wrap text-lg-end">
-                            <img src="/wp-content/uploads/2024/03/domain-registeration.svg" alt="Domain Setup" width="450px" class="img-fluid">
+                            <img src="/wp-content/uploads/2024/03/domain-registeration.svg" alt="Domain Setup" class="img-fluid mwhoster-eager no-lazyload" loading="eager" fetchpriority="high" width="450" height="450" />
                         </div>
                     </div>
                 </div>
@@ -173,7 +173,7 @@
                 <div class="row align-items-center justify-content-lg-between pb-40">
                     <div class="col-xl-5 col-lg-5 col-12 order-lg-last align-self-center mob-botom">
                         <div class="image-box fadein text-xl-right text-center">
-                            <img src="/wp-content/uploads/2024/03/Confidential-Domain-Privacy-Measures-01.svg" alt="Domain Security"  class="img-fluid" width="400px"/>
+                            <img src="/wp-content/uploads/2024/03/Confidential-Domain-Privacy-Measures-01.svg" alt="Domain Security"  class="img-fluid" width="400" height="378" />
                         </div>
                     </div>
                     <div class="col-xl-6 col-lg-7 col-12 order-xl-first">
@@ -185,7 +185,7 @@
                 <div class="row align-items-center justify-content-lg-between mt-5">
                     <div class="col-xl-5 col-lg-5 col-12 order-lg-last align-self-center mob-botom">
                         <div class="image-box fadein text-xl-right text-center">
-                            <img src="/wp-content/uploads/2024/03/Give-Your-Domain-a-Boost-01.svg" alt="Domain Registration" class="img-fluid" />
+                            <img src="/wp-content/uploads/2024/03/Give-Your-Domain-a-Boost-01.svg" style="width: 100%; height: auto;" alt="Domain Registration" class="img-fluid" width="370" height="281" />
                         </div>
                     </div>
                     <div class="col-xl-6 col-lg-7 col-12 order-xl-last">
@@ -305,7 +305,7 @@
                     </div>
                     <div class="col-md-6 col-lg-4 d-none d-lg-block">
                         <div class="cta-img-wrap text-center">
-                            <img src="/wp-content/uploads/2024/03/Contact-image.svg" alt="contact" width="250" class="img-fluid"  />
+                            <img src="/wp-content/uploads/2024/03/Contact-image.svg" alt="contact" class="img-fluid" width="250" height="204" />
                         </div>
                     </div>
                 </div>
