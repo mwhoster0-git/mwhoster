@@ -23,7 +23,7 @@
 // 13. contact form
 // 14. custom vps hosting plan js
 
-(function ($) {
+jQuery(function ($) {
   "use strict";
 
   // 1. preloader
@@ -32,12 +32,14 @@
   });
 
   // 2. mega menu js
-  $(".js-mega-menu").HSMegaMenu({
-    event: "hover",
-    pageContainer: $(".container"),
-    breakpoint: 767.98,
-    hideTimeOut: 0
-  });
+  if ($(".js-mega-menu").length && typeof $.fn.HSMegaMenu === "function") {
+    $(".js-mega-menu").HSMegaMenu({
+      event: "hover",
+      pageContainer: $(".container"),
+      breakpoint: 767.98,
+      hideTimeOut: 0
+    });
+  }
 
   // Off Canvas Menu Open & Close
   $("#offCanvas").on("click", function () {
@@ -50,22 +52,26 @@
   });
 
   // 3. fixed navbar
-  $(window).on("scroll", function () {
-    // checks if window is scrolled more than 500px, adds/removes solid class
-    if ($(this).scrollTop() > 0) {
-      $(".main-header-menu-wrap").addClass("affix");
-      $(".scroll-to-target").addClass("open");
-    } else {
-      $(".main-header-menu-wrap").removeClass("affix");
-      $(".scroll-to-target").removeClass("open");
+  var scrollPending = false;
+  var previousAffix = null;
+  var previousTop = null;
+  function updateScrollState() {
+    var y = window.scrollY || window.pageYOffset;
+    var affix = y > 0;
+    var top = y > 500;
+    if (affix !== previousAffix) $(".main-header-menu-wrap").toggleClass("affix", affix);
+    if (top !== previousTop) $(".scroll-to-target").toggleClass("open", top);
+    previousAffix = affix;
+    previousTop = top;
+    scrollPending = false;
+  }
+  window.addEventListener("scroll", function () {
+    if (!scrollPending) {
+      scrollPending = true;
+      window.requestAnimationFrame(updateScrollState);
     }
-    // checks if window is scrolled more than 500px, adds/removes top to target class
-    if ($(this).scrollTop() > 500) {
-      $(".scroll-to-target").addClass("open");
-    } else {
-      $(".scroll-to-target").removeClass("open");
-    }
-  });
+  }, { passive: true });
+  updateScrollState();
 
   // 4. back to top
   if ($(".scroll-to-target").length) {
@@ -80,113 +86,125 @@
 
   // 6. tooltip
 
-  $(function () {
-    $('[data-bs-toggle="tooltip"]').tooltip();
-    $('.custom-map-location li span').tooltip('show');
-  });
+  if (window.bootstrap && window.bootstrap.Tooltip) {
+    document.querySelectorAll('[data-bs-toggle="tooltip"], .custom-map-location li span').forEach(function (element) {
+      var tooltip = window.bootstrap.Tooltip.getOrCreateInstance(element);
+      if (element.matches('.custom-map-location li span')) tooltip.show();
+    });
+  }
 
   // 7. our clients logo carousel
-  $(".clients-carousel").owlCarousel({
-    autoplay: true,
-    loop: true,
-    margin: 15,
-    dots: false,
-    slideTransition: "linear",
-    autoplayTimeout: 4500,
-    autoplayHoverPause: true,
-    autoplaySpeed: 4500,
-    responsive: {
-      0: {
-        items: 2
-      },
-      500: {
-        items: 3
-      },
-      600: {
-        items: 4
-      },
-      800: {
-        items: 5
-      },
-      1200: {
-        items: 6
+  if ($(".clients-carousel").length && typeof $.fn.owlCarousel === "function") {
+    $(".clients-carousel").owlCarousel({
+      autoplay: true,
+      loop: true,
+      margin: 15,
+      dots: false,
+      slideTransition: "linear",
+      autoplayTimeout: 4500,
+      autoplayHoverPause: true,
+      autoplaySpeed: 4500,
+      responsive: {
+        0: {
+          items: 2
+        },
+        500: {
+          items: 3
+        },
+        600: {
+          items: 4
+        },
+        800: {
+          items: 5
+        },
+        1200: {
+          items: 6
+        }
       }
-    }
-  });
+    });
+  }
 
   //hero gaming slider
-  $(".custom-indicator-slider").owlCarousel({
-    items: 1,
-    nav: false,
-    dots: true,
-    smartSpeed: 1000,
-    dotsContainer: "#carousel-custom-indicator"
-  });
+  if ($(".custom-indicator-slider").length && typeof $.fn.owlCarousel === "function") {
+    $(".custom-indicator-slider").owlCarousel({
+      items: 1,
+      nav: false,
+      dots: true,
+      smartSpeed: 1000,
+      dotsContainer: "#carousel-custom-indicator"
+    });
+  }
 
   // 8. magnify popup video
-  $(".popup-youtube, .popup-vimeo, .popup-gmaps").magnificPopup({
-    disableOn: 700,
-    type: "iframe",
-    mainClass: "mfp-fade",
-    removalDelay: 160,
-    preloader: false,
-    fixedContentPos: false
-  });
+  if ($(".popup-youtube, .popup-vimeo, .popup-gmaps").length && typeof $.fn.magnificPopup === "function") {
+    $(".popup-youtube, .popup-vimeo, .popup-gmaps").magnificPopup({
+      disableOn: 700,
+      type: "iframe",
+      mainClass: "mfp-fade",
+      removalDelay: 160,
+      preloader: false,
+      fixedContentPos: false
+    });
+  }
 
   // 9. client-testimonial one item carousel
-  $(".client-testimonial-1").owlCarousel({
-    loop: true,
-    nav: false,
-    dots: true,
-    responsiveClass: true,
-    autoplay: true,
-    autoplayHoverPause: true,
-    lazyLoad: true,
-    responsive: {
-      0: {
-        items: 1
-      },
-      500: {
-        items: 2
-      },
-      600: {
-        items: 2
-      },
-      800: {
-        items: 3
-      },
-      1200: {
-        items: 3
+  if ($(".client-testimonial-1").length && typeof $.fn.owlCarousel === "function") {
+    $(".client-testimonial-1").owlCarousel({
+      loop: true,
+      nav: false,
+      dots: true,
+      responsiveClass: true,
+      autoplay: true,
+      autoplayHoverPause: true,
+      lazyLoad: true,
+      responsive: {
+        0: {
+          items: 1
+        },
+        500: {
+          items: 2
+        },
+        600: {
+          items: 2
+        },
+        800: {
+          items: 3
+        },
+        1200: {
+          items: 3
+        }
       }
-    }
-  });
+    });
+  }
   // 10. client-testimonial one item carousel
-  $(".client-testimonial-2").owlCarousel({
-    loop: true,
-    nav: false,
-    dots: true,
-    responsiveClass: true,
-    autoplay: true,
-    autoplayHoverPause: true,
-    lazyLoad: true,
-    responsive: {
-      0: {
-        items: 1
-      },
-      500: {
-        items: 1
-      },
-      600: {
-        items: 1
-      },
-      800: {
-        items: 2
-      },
-      1200: {
-        items: 2
+  if ($(".client-testimonial-2").length && typeof $.fn.owlCarousel === "function") {
+    $(".client-testimonial-2").owlCarousel({
+      loop: true,
+      nav: false,
+      dots: true,
+      responsiveClass: true,
+      autoplay: true,
+      autoplayHoverPause: true,
+      lazyLoad: true,
+      responsive: {
+        0: {
+          items: 1
+        },
+        500: {
+          items: 1
+        },
+        600: {
+          items: 1
+        },
+        800: {
+          items: 2
+        },
+        1200: {
+          items: 2
+        }
       }
-    }
-  });
+    });
+  }
   // 11. monthly and yearly pricing switch
   $("#js-contcheckbox").change(function () {
     if (this.checked) {
@@ -225,10 +243,10 @@
       }
     }, 1000);
   }
-  countDown();
+  if ($(".counter-days, .counter-hours, .counter-minutes, .counter-seconds").length) countDown();
 
   // 13. contact form
-  if ($("#contactForm").length) {
+  if ($("#contactForm").length && typeof $.fn.validator === "function") {
     setCsrf();
     $("#contactForm").validator().on("submit", function (event) {
       if (event.isDefaultPrevented()) {
@@ -407,7 +425,7 @@
     vpsWHmcsUrl: "https://whmcs.themetags.com/cart.php?a=add&pid=32"
   }];
   var cPlan = $("#c-plan");
-  if (cPlan.length) {
+  if (cPlan.length && typeof $.fn.slider === "function") {
     cPlan.slider({
       tooltip: "always"
     });
@@ -446,18 +464,21 @@
   }
 
   // 16. hero slider one
-  $(".hero-slider-one").owlCarousel({
-    loop: true,
-    autoplay: true,
-    dots: true,
-    margin: 0,
-    autoplayHoverPause: true,
-    items: 1,
-    smartSpeed: 1000,
-    animateOut: "slideOutLeft",
-    animateIn: "slideInRight"
-  });
+  if ($(".hero-slider-one").length && typeof $.fn.owlCarousel === "function") {
+    $(".hero-slider-one").owlCarousel({
+      loop: true,
+      autoplay: true,
+      dots: true,
+      margin: 0,
+      autoplayHoverPause: true,
+      items: 1,
+      smartSpeed: 1000,
+      animateOut: "slideOutLeft",
+      animateIn: "slideInRight"
+    });
+  }
 
+  if ($(".theme-setting").length) {
   //  theme switcher
   $('#themeSettingShow').on('click', function (e) {
     e.preventDefault();
@@ -511,4 +532,5 @@
     ThemeSettingBody.find('.theme-color.active').removeClass("active");
     $("#theme-3").addClass("active");
   }
-})(jQuery); // JQuery end
+  }
+}); // WordPress jQuery, noConflict-compatible DOM-ready callback.

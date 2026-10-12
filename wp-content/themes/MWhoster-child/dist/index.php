@@ -35,7 +35,10 @@
                 </div>
                 <div class="col-md-6 col-sm-12 col-lg-6">
                     <div class="img-wrap text-end text-sm-center">
-                        <img src="/wp-content/uploads/2024/03/Hero-image.svg" alt="Web Server" class="img-fluid mob-hide" width="500px">
+                        <picture class="no-lazyload">
+                            <source media="(max-width: 767px)" srcset="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMSIgaGVpZ2h0PSIxIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjwvc3ZnPg==">
+                            <img src="/wp-content/uploads/2024/03/Hero-image.svg" alt="Web Server" class="img-fluid mob-hide mwhoster-eager no-lazyload" loading="eager" fetchpriority="high" width="500" height="553" />
+                        </picture>
                     </div>
                 </div>
             </div>
@@ -267,7 +270,7 @@
                 <div class="col-lg-4 col-md-6 col-sm-8">
                     <div class="text-center bg-white single-pricing-pack-2 mt-4 rounded border gray-light-bg">
                         <div class="pricing-icon mob-hide">
-                            <img src="/wp-content/uploads/2023/11/shared-web-hosting.png" width="200px" alt="Shared Website Hosting" />
+                            <img src="<?php echo esc_url( mwhoster_image_url( 'assets/img/optimized/shared-web-hosting-327.webp' ) ); ?>" alt="Shared Website Hosting" width="200" height="86" />
                         </div>
                         <h4 class="package-title h4">Shared Web Hosting</h4>
                         <p class="mb-3">Affordable Linux hosting for business websites, blogs, and portfolios. Get NVMe SSD storage, MySQL databases, business email, and free SSL with a control panel that simplifies everyday management.
@@ -279,7 +282,7 @@
                 <div class="col-lg-4 col-md-6 col-sm-8">
                     <div class="popular-price text-center bg-white single-pricing-pack-2 mt-4 rounded border gray-light-bg">
                         <div class="pricing-icon mob-hide">
-                            <img src="/wp-content/uploads/2023/11/wordpress-hosting.png" width="200px" alt="WordPress Website Hosting" />
+                            <img src="<?php echo esc_url( mwhoster_image_url( 'assets/img/optimized/wordpress-hosting-327.webp' ) ); ?>" alt="WordPress Website Hosting" width="200" height="86" />
                         </div>
                         <h4 class="package-title h4">Wordpress Hosting</h4>
                         <p class="mb-3">Power your WordPress website with NVMe SSD performance, one-click installation, automatic updates, and backups. A hosting environment tailored to WordPress, with technical support to help keep your site running smoothly.
@@ -291,7 +294,7 @@
                 <div class="col-lg-4 col-md-6 col-sm-8">
                     <div class="text-center bg-white single-pricing-pack-2 mt-4 rounded border gray-light-bg">
                         <div class="pricing-icon mob-hide">
-                            <img src="/wp-content/uploads/2023/11/window-web-hosting.png" width="200px" alt="Windows Website Hosting" />
+                            <img src="<?php echo esc_url( mwhoster_image_url( 'assets/img/optimized/window-web-hosting-327.webp' ) ); ?>" alt="Windows Website Hosting" width="200" height="86" />
                         </div>
                         <h4 class="package-title h4">Windows Web Hosting</h4>
                         <p class="mb-3">Host websites and applications that require a Windows server environment. Combine NVMe SSD storage with flexible hosting plans and technical support for your application’s hosting requirements.
@@ -326,7 +329,7 @@
                 </div>
                 <div class="col-md-5 col-lg-4">
                     <div class="cta-img-wrap text-center">
-                        <img src="/wp-content/uploads/2024/03/Your-Security-image.svg" alt="Security Servers" class="img-fluid" >
+                        <img src="/wp-content/uploads/2024/03/Your-Security-image.svg" style="width: 100%; height: auto;" alt="Security Servers" class="img-fluid" width="974" height="549" />
                     </div>
                 </div>
             </div>
@@ -463,14 +466,14 @@
                 </div>
                 <div class="col-md-5 col-lg-6 d-none d-md-block d-lg-block">
                     <div class="feature-img-wrap text-center">
-                        <img src="/wp-content/uploads/2024/03/Auto-Script-Installers.svg" alt="1 click install" width="550px" class="img-fluid" >
+                        <img src="/wp-content/uploads/2024/03/Auto-Script-Installers.svg" alt="1 click install" class="img-fluid" width="550" height="503" />
                     </div>
                 </div>
             </div>
             <div class="row align-items-center justify-content-between mt-5">
                 <div class="col-md-5 col-lg-6 d-none d-md-block d-lg-block">
                     <div class="feature-img-wrap text-center">
-                        <img src="/wp-content/uploads/2024/03/Load-Balancing-Server.svg" alt="Load Balancing Server" class="img-fluid" >
+                        <img src="/wp-content/uploads/2024/03/Load-Balancing-Server.svg" style="width: 100%; height: auto;" alt="Load Balancing Server" class="img-fluid" width="963" height="488" />
                     </div>
                 </div>
                 <div class="col-md-7 col-lg-5">
@@ -515,7 +518,7 @@
                 </div>
                 <div class="col-md-6 col-lg-4 d-none d-lg-block">
                     <div class="cta-img-wrap text-center">
-                        <img src="/wp-content/uploads/2024/03/Contact-image.svg" alt="Contact Us" width="300" class="img-fluid"  />
+                        <img src="/wp-content/uploads/2024/03/Contact-image.svg" alt="Contact Us" class="img-fluid" width="300" height="245" />
                     </div>
                 </div>
             </div>
@@ -620,7 +623,7 @@ Make the transition to MWHoster stress-free with our exceptional website transfe
             <div class="row">
                 <div class="col-md-12">
                     <div class="network-map-wrap">
-                        <img src="/wp-content/uploads/2024/03/map-location.png" alt="MW Hoster Map" class="img-fluid">
+                        <img src="/wp-content/uploads/2024/03/map-location.png" srcset="/wp-content/uploads/2024/03/map-location-300x183.png 300w, /wp-content/uploads/2024/03/map-location-768x467.png 768w, /wp-content/uploads/2024/03/map-location-1024x623.png 1024w, /wp-content/uploads/2024/03/map-location.png 1218w" sizes="(min-width: 1280px) 1218px, calc(100vw - 30px)" alt="MW Hoster Map" class="img-fluid" width="1218" height="741" />
                     </div>
                 </div>
             </div>

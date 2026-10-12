@@ -1,0 +1,30 @@
+[
+  {
+    "source": "wp-content/uploads/2024/06/logo-mw.png",
+    "sourceBytes": 31654,
+    "output": "wp-content/themes/MWhoster-child/assets/img/optimized/logo-mw-600.webp",
+    "width": 600,
+    "bytes": 14008
+  },
+  {
+    "source": "wp-content/uploads/2023/11/shared-web-hosting.png",
+    "sourceBytes": 5224,
+    "output": "wp-content/themes/MWhoster-child/assets/img/optimized/shared-web-hosting-327.webp",
+    "width": 327,
+    "bytes": 4430
+  },
+  {
+    "source": "wp-content/uploads/2023/11/wordpress-hosting.png",
+    "sourceBytes": 11504,
+    "output": "wp-content/themes/MWhoster-child/assets/img/optimized/wordpress-hosting-327.webp",
+    "width": 327,
+    "bytes": 4052
+  },
+  {
+    "source": "wp-content/uploads/2023/11/window-web-hosting.png",
+    "sourceBytes": 9671,
+    "output": "wp-content/themes/MWhoster-child/assets/img/optimized/window-web-hosting-327.webp",
+    "width": 327,
+    "bytes": 3608
+  }
+]

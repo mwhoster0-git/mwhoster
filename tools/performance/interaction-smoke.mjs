@@ -1,0 +1,35 @@
+import fs from 'node:fs/promises';
+import {chromium} from 'playwright';
+const browser=await chromium.launch({executablePath:'C:/Program Files/Google/Chrome/Application/chrome.exe',headless:true,args:['--no-proxy-server','--host-resolver-rules=MAP mwhoster.test 127.0.0.1']});
+const context=await browser.newContext({viewport:{width:390,height:900},serviceWorkers:'block'});
+await context.route('**/*',r=>{const u=new URL(r.request().url());return !/clientarea|whmcs/i.test(u.href)&&(u.hostname==='mwhoster.test'||['fonts.googleapis.com','fonts.gstatic.com'].includes(u.hostname))?r.continue():r.abort();});
+const page=await context.newPage();const errors=[];page.on('pageerror',e=>errors.push(e.message));const result={};
+await page.goto('http://mwhoster.test/',{waitUntil:'load'});
+await page.locator('[data-bs-target="#offcanvasLeft"]').click();await page.waitForTimeout(400);
+await page.keyboard.press('Escape');await page.waitForTimeout(400);
+result.escapeClosesMobile=await page.locator('#offcanvasLeft').evaluate(e=>!e.classList.contains('show'));
+const faq=page.locator('.accordion [data-bs-toggle="collapse"]').first();
+result.faq=[await faq.getAttribute('aria-expanded')];
+await faq.click();await page.waitForTimeout(400);result.faq.push(await faq.getAttribute('aria-expanded'));
+await faq.click();await page.waitForTimeout(400);result.faq.push(await faq.getAttribute('aria-expanded'));
+await page.setViewportSize({width:1366,height:900});await page.reload({waitUntil:'load'});
+await page.evaluate(()=>scrollTo(0,0));await page.waitForTimeout(400);
+await page.locator('#hostingMegaMenu').focus();await page.keyboard.press('ArrowDown');await page.waitForTimeout(400);
+result.keyboardOpensDesktop=await page.locator('[aria-labelledby="hostingMegaMenu"]').isVisible();
+await page.keyboard.press('Escape');await page.waitForTimeout(400);
+result.escapeClosesDesktop=await page.locator('[aria-labelledby="hostingMegaMenu"]').isHidden();
+result.carousels=[];
+for(const slug of ['windows-web-hosting','domain-transfer']){
+ await page.goto('http://mwhoster.test/'+slug+'/',{waitUntil:'load'});
+ const carousel=page.locator('.client-testimonial-2');await carousel.scrollIntoViewIfNeeded();await page.waitForTimeout(2000);
+ const before=await carousel.evaluate(e=>jQuery(e).data('owl.carousel').relative(jQuery(e).data('owl.carousel').current()));
+ await carousel.locator('.owl-dot').nth(1).click();await page.waitForTimeout(800);
+ const after=await carousel.evaluate(e=>jQuery(e).data('owl.carousel').relative(jQuery(e).data('owl.carousel').current()));
+ const images=await carousel.locator('.owl-item.active img').evaluateAll(es=>es.map(e=>({src:e.currentSrc,lazy:e.dataset.src,complete:e.complete,naturalWidth:e.naturalWidth})));
+ result.carousels.push({slug,before,after,images});
+ await page.screenshot({path:`artifacts/after-final/${slug}-carousel.png`});
+}
+result.errors=errors;
+await fs.writeFile('artifacts/after-final/interaction-smoke.json',JSON.stringify(result,null,2));console.log(JSON.stringify(result));
+await browser.close();
+if(errors.length||!result.escapeClosesMobile||!result.keyboardOpensDesktop||!result.escapeClosesDesktop||result.faq.join(',')!=='true,false,true'||result.carousels.some(c=>c.before===c.after))process.exitCode=1;

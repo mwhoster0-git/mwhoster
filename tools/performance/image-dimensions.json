@@ -1,0 +1,338 @@
+[
+    {
+        "file": "header.php",
+        "url": "/wp-content/uploads/2024/06/logo-mw.png",
+        "intrinsic": [
+            600,
+            224
+        ],
+        "rendered_attributes": [
+            600,
+            224
+        ]
+    },
+    {
+        "file": "header.php",
+        "url": "/wp-content/uploads/2024/03/Ensure-Peak-Server.svg",
+        "intrinsic": [
+            2868.72,
+            2800
+        ],
+        "rendered_attributes": [
+            250,
+            244
+        ]
+    },
+    {
+        "file": "footer.php",
+        "url": "/wp-content/uploads/2024/06/logo-mw.png",
+        "intrinsic": [
+            600,
+            224
+        ],
+        "rendered_attributes": [
+            600,
+            224
+        ]
+    },
+    {
+        "file": "footer.php",
+        "url": "/wp-content/uploads/2024/03/PaymentMethods.webp",
+        "intrinsic": [
+            396,
+            40
+        ],
+        "rendered_attributes": [
+            300,
+            30
+        ]
+    },
+    {
+        "file": "dist/index.php",
+        "url": "/wp-content/uploads/2024/03/Hero-image.svg",
+        "intrinsic": [
+            1696.7,
+            1876.8
+        ],
+        "rendered_attributes": [
+            500,
+            553
+        ]
+    },
+    {
+        "file": "dist/index.php",
+        "url": "/wp-content/uploads/2023/11/shared-web-hosting.png",
+        "intrinsic": [
+            327,
+            141
+        ],
+        "rendered_attributes": [
+            200,
+            86
+        ]
+    },
+    {
+        "file": "dist/index.php",
+        "url": "/wp-content/uploads/2023/11/wordpress-hosting.png",
+        "intrinsic": [
+            327,
+            141
+        ],
+        "rendered_attributes": [
+            200,
+            86
+        ]
+    },
+    {
+        "file": "dist/index.php",
+        "url": "/wp-content/uploads/2023/11/window-web-hosting.png",
+        "intrinsic": [
+            327,
+            141
+        ],
+        "rendered_attributes": [
+            200,
+            86
+        ]
+    },
+    {
+        "file": "dist/index.php",
+        "url": "/wp-content/uploads/2024/03/Your-Security-image.svg",
+        "intrinsic": [
+            973.6,
+            548.8
+        ],
+        "rendered_attributes": [
+            974,
+            549
+        ]
+    },
+    {
+        "file": "dist/index.php",
+        "url": "/wp-content/uploads/2024/03/Auto-Script-Installers.svg",
+        "intrinsic": [
+            872.6,
+            798.3
+        ],
+        "rendered_attributes": [
+            550,
+            503
+        ]
+    },
+    {
+        "file": "dist/index.php",
+        "url": "/wp-content/uploads/2024/03/Load-Balancing-Server.svg",
+        "intrinsic": [
+            962.7,
+            488.2
+        ],
+        "rendered_attributes": [
+            963,
+            488
+        ]
+    },
+    {
+        "file": "dist/index.php",
+        "url": "/wp-content/uploads/2024/03/Contact-image.svg",
+        "intrinsic": [
+            1217.2,
+            993.7
+        ],
+        "rendered_attributes": [
+            300,
+            245
+        ]
+    },
+    {
+        "file": "dist/index.php",
+        "url": "/wp-content/uploads/2024/03/map-location.png",
+        "intrinsic": [
+            1218,
+            741
+        ],
+        "rendered_attributes": [
+            1218,
+            741
+        ]
+    },
+    {
+        "file": "dist/shared-web-hosting.php",
+        "url": "/wp-content/uploads/2024/03/Benefits-of-Shared-Web-Hosting.svg",
+        "intrinsic": [
+            125.79,
+            104.65
+        ],
+        "rendered_attributes": [
+            126,
+            105
+        ]
+    },
+    {
+        "file": "dist/shared-web-hosting.php",
+        "url": "/wp-content/uploads/2024/03/Web-Hosting-Migrations.svg",
+        "intrinsic": [
+            3414.65,
+            3698.35
+        ],
+        "rendered_attributes": [
+            3415,
+            3699
+        ]
+    },
+    {
+        "file": "dist/shared-web-hosting.php",
+        "url": "/wp-content/uploads/2024/03/Take-Advantage.svg",
+        "intrinsic": [
+            2005.27,
+            1098.2
+        ],
+        "rendered_attributes": [
+            2005,
+            1098
+        ]
+    },
+    {
+        "file": "dist/shared-web-hosting.php",
+        "url": "/wp-content/uploads/2024/03/Contact-image.svg",
+        "intrinsic": [
+            1217.2,
+            993.7
+        ],
+        "rendered_attributes": [
+            250,
+            204
+        ]
+    },
+    {
+        "file": "dist/wordpress-web-hosting.php",
+        "url": "/wp-content/uploads/2024/03/Automatic-Security-and-Effortless-Backups.svg",
+        "intrinsic": [
+            333.87,
+            355.11
+        ],
+        "rendered_attributes": [
+            334,
+            355
+        ]
+    },
+    {
+        "file": "dist/wordpress-web-hosting.php",
+        "url": "/wp-content/uploads/2024/03/best-web-hosting-adaptable.svg",
+        "intrinsic": [
+            654.66,
+            375.89
+        ],
+        "rendered_attributes": [
+            655,
+            376
+        ]
+    },
+    {
+        "file": "dist/wordpress-web-hosting.php",
+        "url": "/wp-content/uploads/2024/03/cheap-wordpress-hosting-dream.svg",
+        "intrinsic": [
+            403.9,
+            359.85
+        ],
+        "rendered_attributes": [
+            404,
+            360
+        ]
+    },
+    {
+        "file": "dist/wordpress-web-hosting.php",
+        "url": "/wp-content/uploads/2024/03/Contact-image.svg",
+        "intrinsic": [
+            1217.2,
+            993.7
+        ],
+        "rendered_attributes": [
+            250,
+            204
+        ]
+    },
+    {
+        "file": "dist/windows-web-hosting.php",
+        "url": "/wp-content/uploads/2024/03/Ensure-Peak-Server.svg",
+        "intrinsic": [
+            2868.72,
+            2800
+        ],
+        "rendered_attributes": [
+            2869,
+            2800
+        ]
+    },
+    {
+        "file": "dist/windows-web-hosting.php",
+        "url": "/wp-content/uploads/2024/03/Automatic-Security-and-Effortless-Backups.svg",
+        "intrinsic": [
+            333.87,
+            355.11
+        ],
+        "rendered_attributes": [
+            334,
+            355
+        ]
+    },
+    {
+        "file": "dist/windows-web-hosting.php",
+        "url": "/wp-content/uploads/2024/03/Contact-image.svg",
+        "intrinsic": [
+            1217.2,
+            993.7
+        ],
+        "rendered_attributes": [
+            250,
+            204
+        ]
+    },
+    {
+        "file": "dist/domain-registration.php",
+        "url": "/wp-content/uploads/2024/03/domain-registeration.svg",
+        "intrinsic": [
+            1200,
+            1200
+        ],
+        "rendered_attributes": [
+            450,
+            450
+        ]
+    },
+    {
+        "file": "dist/domain-registration.php",
+        "url": "/wp-content/uploads/2024/03/Confidential-Domain-Privacy-Measures-01.svg",
+        "intrinsic": [
+            2912.26,
+            2749.89
+        ],
+        "rendered_attributes": [
+            400,
+            378
+        ]
+    },
+    {
+        "file": "dist/domain-registration.php",
+        "url": "/wp-content/uploads/2024/03/Give-Your-Domain-a-Boost-01.svg",
+        "intrinsic": [
+            370.14,
+            281.43
+        ],
+        "rendered_attributes": [
+            370,
+            281
+        ]
+    },
+    {
+        "file": "dist/domain-registration.php",
+        "url": "/wp-content/uploads/2024/03/Contact-image.svg",
+        "intrinsic": [
+            1217.2,
+            993.7
+        ],
+        "rendered_attributes": [
+            250,
+            204
+        ]
+    }
+]

@@ -220,7 +220,7 @@ add_filter( 'wpseo_schema_webpage', static function ( $data ) use ( $shared_titl
                 <div class="row align-items-center justify-content-lg-between">
                     <div class="col-xl-5 col-lg-5 col-12 order-lg-last align-self-center">
                         <div class="image-box fadein text-xl-right text-center">
-                            <img src="/wp-content/uploads/2024/03/Benefits-of-Shared-Web-Hosting.svg" alt="Shared Website Hosting" class="img-fluid" />
+                            <img src="/wp-content/uploads/2024/03/Benefits-of-Shared-Web-Hosting.svg" style="width: 100%; height: auto;" alt="Shared Website Hosting" class="img-fluid" width="126" height="105" />
                         </div>
                     </div>
                     <div class="col-xl-6 col-lg-7 col-12 order-xl-first">
@@ -240,7 +240,7 @@ add_filter( 'wpseo_schema_webpage', static function ( $data ) use ( $shared_titl
                 <div class="row align-items-center justify-content-lg-between mt-5">
                     <div class="col-xl-5 col-lg-5 col-12 order-lg-last align-self-center mob-botom">
                         <div class="image-box fadein text-xl-right text-center ">
-                            <img src="/wp-content/uploads/2024/03/Web-Hosting-Migrations.svg" alt="Hosting Transfer" class="img-fluid" />
+                            <img src="/wp-content/uploads/2024/03/Web-Hosting-Migrations.svg" style="width: 100%; height: auto;" alt="Hosting Transfer" class="img-fluid" width="3415" height="3699" />
                         </div>
                     </div>
                     <div class="col-xl-6 col-lg-7 col-12 order-xl-last">
@@ -259,7 +259,7 @@ add_filter( 'wpseo_schema_webpage', static function ( $data ) use ( $shared_titl
 				<div class="row align-items-center justify-content-lg-between pt-80">
                     <div class="col-xl-5 col-lg-5 col-12 order-lg-last align-self-center mob-botom">
                         <div class="image-box fadein text-xl-right text-center">
-                            <img src="/wp-content/uploads/2024/03/Take-Advantage.svg" alt="benefits hosting" class="img-fluid" />
+                            <img src="/wp-content/uploads/2024/03/Take-Advantage.svg" style="width: 100%; height: auto;" alt="benefits hosting" class="img-fluid" width="2005" height="1098" />
                         </div>
                     </div>
                     <div class="col-xl-6 col-lg-7 col-12 order-xl-first">
@@ -361,7 +361,7 @@ add_filter( 'wpseo_schema_webpage', static function ( $data ) use ( $shared_titl
                     </div>
                     <div class="col-md-6 col-lg-4 d-none d-lg-block">
                         <div class="cta-img-wrap text-center">
-                            <img src="/wp-content/uploads/2024/03/Contact-image.svg" alt="contact us" width="250" class="img-fluid" />
+                            <img src="/wp-content/uploads/2024/03/Contact-image.svg" alt="contact us" class="img-fluid" width="250" height="204" />
                         </div>
                     </div>
                 </div>

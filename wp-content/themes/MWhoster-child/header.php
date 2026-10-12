@@ -23,28 +23,11 @@ $skip_link_url = apply_filters( 'hello_elementor_skip_link_url', '#content' );
 	<meta http-equiv="X-UA-Compatible" content="ie=edge" />
 	<meta name="google-site-verification" content="PbW5CGLu_eW89f2qss6FuqokTXb4ifp3oy_yTtOwIZk" />
 	<link rel="profile" href="https://gmpg.org/xfn/11">
-    <link rel="shortcut icon" href="<?php echo get_stylesheet_directory_uri(); ?>/favicon.ico"> 
-
-    <!--build:css-->
-    <link id="theme-style" href="<?php echo get_stylesheet_directory_uri(); ?>/assets/css/main.css" as="style" rel="stylesheet" />
+    <link rel="shortcut icon" href="<?php echo get_stylesheet_directory_uri(); ?>/favicon.ico">
 	
 	
 
 
-<!-- Google tag (gtag.js) -->
-
-	
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-4CV2FZ1SCP"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-4CV2FZ1SCP');
-</script>
-	
-	
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -131,13 +114,13 @@ $skip_link_url = apply_filters( 'hello_elementor_skip_link_url', '#content' );
                 <nav class="js-mega-menu navbar navbar-expand-md header-nav">
                     <!--logo start-->
                     <a class="navbar-brand pt-0 mw-logo" href="/">
-                        <img src="/wp-content/uploads/2024/06/logo-mw.png" alt="logo" />
+                        <img src="<?php echo esc_url( mwhoster_image_url( 'assets/img/optimized/logo-mw-600.webp' ) ); ?>" alt="logo" class="mwhoster-eager no-lazyload" loading="eager" width="600" height="224" />
                     </a>
 <!-- 					<a href="/" class="logo-text"><span>MW</span>HOSTER</a> -->
                     <!--logo end-->
 
                     <!--responsive toggle button start-->
-                    <button type="button" class="navbar-toggler btn" data-bs-toggle="offcanvas" data-bs-target="#offcanvasLeft">
+                    <button type="button" class="navbar-toggler btn" data-bs-toggle="offcanvas" data-bs-target="#offcanvasLeft" aria-label="Open navigation">
                         <span id="hamburgerTrigger">
             <span class="fas fa-bars"></span>
                         </span>
@@ -155,7 +138,7 @@ $skip_link_url = apply_filters( 'hello_elementor_skip_link_url', '#content' );
                             </li>
                             <!--hosting start-->
                             <li class="nav-item hs-has-mega-menu custom-nav-item position-relative" data-position="center">
-                                <a id="hostingMegaMenu" class="nav-link custom-nav-link main-link-toggle" aria-haspopup="true" aria-expanded="false">
+                                <a id="hostingMegaMenu" class="nav-link custom-nav-link main-link-toggle" role="button" tabindex="0" aria-haspopup="true" aria-expanded="false">
                                     Hosting
                                 </a>
                                 <!-- Demos - Mega Menu -->
@@ -228,7 +211,7 @@ $skip_link_url = apply_filters( 'hello_elementor_skip_link_url', '#content' );
 <div class="col-md-6 col-sm-6 gray-light-bg custom-radius-right">
                                             <div class="menu-item-wrap p-4">
 <!--                                                 <h6>#1 Web Hosting Company</h6> -->
-												<img src="/wp-content/uploads/2024/03/Ensure-Peak-Server.svg" class="img-fluid" width="250px">
+												<img src="/wp-content/uploads/2024/03/Ensure-Peak-Server.svg" class="img-fluid" width="250" height="244" />
 <!--                                                 <ul class="list-unstyled tech-feature-list">
                                                     <li class="py-1">
                                                         <a href="/pk">
@@ -323,7 +306,7 @@ $skip_link_url = apply_filters( 'hello_elementor_skip_link_url', '#content' );
                             <!--hosting end-->
                             <!--domain start-->
                             <li class="nav-item hs-has-mega-menu custom-nav-item position-relative" data-position="center">
-                                <a id="domainMegaMenu" class="nav-link custom-nav-link main-link-toggle" aria-haspopup="true" aria-expanded="false">
+                                <a id="domainMegaMenu" class="nav-link custom-nav-link main-link-toggle" role="button" tabindex="0" aria-haspopup="true" aria-expanded="false">
                                     Domain
                                 </a>
                                 <!-- Demos - Mega Menu -->

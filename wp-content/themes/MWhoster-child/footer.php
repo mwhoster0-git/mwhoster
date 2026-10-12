@@ -13,7 +13,7 @@
             <div class="row">
                 <div class="col-md-12 col-lg-4 mb-4 mb-md-4 mb-sm-4 mb-lg-0">
                     <a class="navbar-brand pt-0 mw-logo" href="/">
-                        <img src="/wp-content/uploads/2024/06/logo-mw.png" alt="logo" />
+                        <img src="<?php echo esc_url( mwhoster_image_url( 'assets/img/optimized/logo-mw-600.webp' ) ); ?>" alt="logo" width="600" height="224" />
                     </a>
 <!-- 					<a href="/" class="logo-text"><span>MW</span>HOSTER</a> -->
                     <br />
@@ -98,7 +98,7 @@
                 </div>
                 <div class="col-md-6 col-lg-5">
                     <div class="text-lg-end text-md-end text-start">
-                        <img src="/wp-content/uploads/2024/03/PaymentMethods.webp" alt="payment" class="img-fluid" width="300px">
+                        <img src="/wp-content/uploads/2024/03/PaymentMethods.webp" alt="payment" class="img-fluid" width="300" height="30" />
                     </div>
                 </div>
             </div>
@@ -114,34 +114,11 @@
     </div>
     <!--scroll bottom to top button end-->
 
-    <!--build:js-->
-    <script src="<?php echo get_stylesheet_directory_uri(); ?>/assets/js/vendors/jquery-3.6.0.min.js"></script>
-    <script src="<?php echo get_stylesheet_directory_uri(); ?>/assets/js/vendors/bootstrap.bundle.min.js"></script>
-    <script src="<?php echo get_stylesheet_directory_uri(); ?>/assets/js/vendors/bootstrap-slider.min.js"></script>
-    <script src="<?php echo get_stylesheet_directory_uri(); ?>/assets/js/vendors/owl.carousel.min.js"></script>
-<!--    <script src="<?php// echo get_stylesheet_directory_uri(); ?>/assets/js/vendors/magnific-popup.min.js"></script>  -->
-<!--      <script src="<?php// echo get_stylesheet_directory_uri(); ?>/assets/js/vendors/validator.min.js"></script>  -->
-    <script src="<?php echo get_stylesheet_directory_uri(); ?>/assets/js/vendors/hs.megamenu.js"></script>
-    <script src="<?php echo get_stylesheet_directory_uri(); ?>/assets/js/app.js"></script>
-    <!--endbuild-->
-
 
 <?php wp_footer(); ?>
 
 
-<!--Start of Tawk.to Script-->
-<script type="text/javascript">
-var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
-(function(){
-var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
-s1.async=true;
-s1.src='https://embed.tawk.to/5db18300df22d91339a0d428/default';
-s1.charset='UTF-8';
-s1.setAttribute('crossorigin','*');
-s0.parentNode.insertBefore(s1,s0);
-})();
-</script>
-<!--End of Tawk.to Script-->
+
 
 </body>
 </html>

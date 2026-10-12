@@ -75,3 +75,5 @@ add_action( 'wp_enqueue_scripts', 'orbisius_ct_hello_elementor_child_theme_child
 function orbisius_ct_hello_elementor_child_theme_example_function() {
     // put some code here
 }
+// Public WordPress performance integration.
+require_once get_stylesheet_directory() . '/inc/performance.php';
