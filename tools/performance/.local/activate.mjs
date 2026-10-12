@@ -1,0 +1,13 @@
+import fs from 'node:fs/promises';
+const theme='../../wp-content/themes/MWhoster-child/';
+let header=await fs.readFile(theme+'header.php','utf8');
+header=header.replace(/\s*<!--build:css-->\s*<link id="theme-style"[^>]+>/,'');
+header=header.replace(/<!-- Google tag \(gtag\.js\) -->[\s\S]*?(?=<script type="application\/ld\+json">)/,'');
+header=header.replace('<span id="hamburgerTrigger">','<span id="hamburgerTrigger">');
+await fs.writeFile(theme+'header.php',header);
+let footer=await fs.readFile(theme+'footer.php','utf8');
+footer=footer.replace(/\s*<!--build:js-->[\s\S]*?<!--endbuild-->/,'');
+footer=footer.replace(/<!--Start of Tawk\.to Script-->[\s\S]*?<!--End of Tawk\.to Script-->/,'');
+await fs.writeFile(theme+'footer.php',footer);
+await fs.appendFile(theme+'functions.php',"\n// Public WordPress performance integration.\nrequire_once get_stylesheet_directory() . '/inc/performance.php';\n");
+await fs.copyFile('.local/app-after.js',theme+'assets/js/app.js');
