@@ -60,6 +60,19 @@ $skip_link_url = apply_filters( 'hello_elementor_skip_link_url', '#content' );
   ]
 }
 </script>	
+<?php if ( is_page_template( 'dist/shared-web-hosting.php' ) ) : ?>
+<script type="application/ld+json">
+<?php echo wp_json_encode( array(
+    '@context' => 'https://schema.org',
+    '@type' => 'Service',
+    'name' => 'Shared Web Hosting',
+    'serviceType' => 'Shared Web Hosting',
+    'description' => 'Shared web hosting with NVMe SSD storage, free SSL, DDoS protection and technical support.',
+    'url' => get_permalink(),
+    'provider' => array( '@type' => 'Organization', 'name' => 'MWHoster', 'url' => home_url( '/' ) ),
+) ); ?>
+</script>
+<?php else : ?>
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -101,6 +114,7 @@ $skip_link_url = apply_filters( 'hello_elementor_skip_link_url', '#content' );
   }
 }
 </script>
+<?php endif; ?>
 	
 	<?php wp_head(); ?>
 </head>
