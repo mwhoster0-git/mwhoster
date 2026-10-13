@@ -3,9 +3,14 @@ import lighthouse from 'lighthouse';
 import {launch} from 'chrome-launcher';
 const phase=process.argv[2]||'before';
 const runs=Number(process.env.MW_RUNS||3);
-const routes=['/','/shared-web-hosting/','/wordpress-web-hosting/','/windows-web-hosting/','/domain-registration/','/blog/','/guide/'];
+if(!Number.isInteger(runs)||runs<1||runs>3)throw Error('Use one to three runs per route/phase');
+const allowed=['/','/shared-web-hosting/','/wordpress-web-hosting/','/windows-web-hosting/','/domain-registration/','/blog/','/guide/'];
+const routes=process.env.MW_ROUTES?process.env.MW_ROUTES.split(','):allowed;
+if(routes.some(r=>!allowed.includes(r))||new Set(routes).size!==routes.length)throw Error('Route outside public test allowlist');
+if(!/^[a-z0-9-]+$/.test(phase))throw Error('Invalid phase');
 const output=`artifacts/${phase}/lighthouse`;
 await fs.mkdir(output,{recursive:true});
+try{await fs.access(`${output}/summary.json`);throw Error('Phase already measured; preserve existing runs');}catch(e){if(e.code!=='ENOENT')throw e;}
 const chrome=await launch({chromePath:'C:/Program Files/Google/Chrome/Application/chrome.exe',chromeFlags:['--headless=new','--no-proxy-server','--host-resolver-rules=MAP mwhoster.test 127.0.0.1']});
 const results=[];
 try {

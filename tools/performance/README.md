@@ -20,6 +20,14 @@ Icon class names are collected from every child PHP template, including inactive
 
 Images are lossless WebP derivatives from explicitly listed existing PNGs. Existing SVG artwork and original images remain available.
 
+## Bounded Inter experiment (14 October 2026)
+
+The scoped homepage/shared-hosting local-font candidate was **rejected and reverted**. Inlining the 35 captured font-face declarations removed the external stylesheet but worsened simulated local LCP; adding one Latin font preload duplicated that font request and did not improve it. The existing child asset integration and hosting CSS are restored unchanged. No new font loading behavior is active.
+
+Candidate build/source/manifest/scope-test files and the downloaded font/license package are preserved under ignored `artifacts/font-path-rejected-material/`. The runtime patch is recorded at `artifacts/font-path-final/rejected-runtime.patch`. The archived tests/build scripts describe the candidate, not the currently active integration; do not deploy the archive or run its scope test against the reverted runtime. Fonts were downloaded under [Inter's SIL OFL license](https://github.com/google/fonts/blob/main/ofl/inter/OFL.txt); no package was installed.
+
+The focused check used `MW_IDS=7,13,82`, `MW_WIDTHS=390,1366` and the existing browser runner. Lighthouse used `MW_ROUTES=/,/shared-web-hosting/`: three before runs per page, three intermediate no-preload runs per page, then one corrected-candidate confirmation per page (**14 total**). No phase exceeded three runs. The runner now rejects more than three or overwriting a measured phase. All before/intermediate/corrected artifacts remain in their separate folders; `node font-path-summary.mjs` produces the tracked compact summary. No additional score-driven optimization or measurements followed the rejection.
+
 ## Local verification
 
 `local-db-inventory.php` uses SELECTs only, checks a loopback DB host and local `home`/`siteurl`, and never prints credentials. Its output and browser artifacts are ignored by Git. PHP scripts must be run with the Laragon PHP executable when PHP is not on PATH.

@@ -2,7 +2,34 @@
 
 The implementation session used branch `performance/wordpress-mobile`, starting from clean commit `caac75b5b52f4f0fae30c18940ef084dd9d2c6fb`. The attached audit was treated as evidence and checked against the current checkout. The newer shared-hosting content was preserved. That session did not commit, push, merge or deploy. Subsequent repository activity recorded the implementation in Git and merged it into `main` at `f8ee5873bcdde8c4f79405f6b4afa68ddc331af0`; a Git merge does not establish deployment.
 
-Repository housekeeping on **13 October 2026** uses `codex/performance-repository-cleanup`, created from that HEAD. Only the local tooling directories are removed from the Git index and the two reports are corrected. The removals are staged and await an owner-reviewed commit; no commit, push, history rewrite or deployment was performed during housekeeping. Runtime implementation files remain tracked and unchanged. All measurements below are saved results from the earlier implementation session; no performance tests or database checks were rerun for housekeeping.
+Repository housekeeping on **13 October 2026** used `codex/performance-repository-cleanup`, created from that HEAD. The agent untracked local tooling and corrected the reports without committing or pushing. Subsequent repository activity committed the cleanup as `ae5d4dfcfce0a48df4c557ffc3a462ad15102938` and merged it into `main` at `3a5977ac0047023ab4871ae708f7501b4f00609d`. Cleanup is recorded in the current tree; no history rewrite or deployment is established. The original measurements below are saved implementation-session results; the bounded 14 October font-path check is reported separately.
+
+## 14 October 2026: bounded font-path experiment — rejected
+
+Branch `codex/home-shared-font-path` was created from current `main` at `3a5977ac0047023ab4871ae708f7501b4f00609d`. No applicable AGENTS.md was found. Source inspection was limited to the child asset integration, reviewed CSS build/input and performance scripts; dependency/generated directories were excluded from source scans. Existing evidence was read through explicit artifact paths.
+
+The candidate changed only confirmed static `/` and `/shared-web-hosting/`: local Inter WOFF2s and inline font-face declarations replaced the external Inter stylesheet. The captured Chrome stylesheet's 35 normal face declarations, five weights, language ranges and `font-display: swap` were retained. All seven downloaded binaries/license were pinned by SHA-256. Hosting CSS was left at 381,238 bytes with its original cascade, icons and interaction states. Builder/preview/global-content and missing-asset guards kept the original external path; ten CLI-stub scope/fallback cases passed without WP bootstrap or DB access.
+
+The first candidate removed one stylesheet request but **regressed simulated local LCP**. A single correction preloaded just the Latin file used by the English hero paragraph. It caused **two downloads of the same 48,256-byte font** in both browser and Lighthouse evidence and further regressed LCP. The candidate was rejected; `inc/performance.php` was restored exactly to the current-main baseline. **No runtime performance improvement is retained from this experiment.** No further optimization attempt or performance run followed the rejection.
+
+Conditions: `http://mwhoster.test/` and `http://mwhoster.test/shared-web-hosting/`, Chrome 152, Lighthouse 13.0.1, Node 24.19, PHP 8.3.16, mobile 390×844/DPR 1, simulated throttling, cold browser cache per run, bypassed local page cache and uncompressed local responses. The existing local MU/CSP setup blocked production analytics, outbound WP HTTP/mail/cron and submissions. Browser/Lighthouse rules denied excluded endpoints. No package installation, DB/settings operation, server change, commit, push or deployment occurred.
+
+| Local route | Phase / runs | FCP (s) | LCP (s) | CLS | TBT (ms) | Transfer (MiB) | Requests |
+|---|---|---:|---:|---:|---:|---:|---:|
+| `/` | Before / median of 3 | 4.66 | 6.23 | 0.00172 | 53.0 | 1.47 | 36 |
+| `/` | Local fonts, no preload / median of 3 | 4.96 | 6.68 | 0.00172 | 31.5 | 1.48 | 35 |
+| `/` | Single-font preload correction / 1 run | 4.96 | 6.99 | 0.00220 | 91.0 | 1.52 | 38 |
+| `/shared-web-hosting/` | Before / median of 3 | 4.51 | 6.08 | 0.01912 | 25.5 | 1.44 | 36 |
+| `/shared-web-hosting/` | Local fonts, no preload / median of 3 | 4.81 | 6.53 | 0.01912 | 47.0 | 1.45 | 35 |
+| `/shared-web-hosting/` | Single-font preload correction / 1 run | 4.81 | 6.83 | 0.01912 | 39.0 | 1.50 | 36 |
+
+There were **14 total Lighthouse runs**: three per page for the before and no-preload phases, then one per page for the correction. No phase exceeded three runs. The correction has no three-run median or statistical confidence claim. Homepage before LCP ranged 6.23–9.10s; shared before was 6.080–6.082s. CPU/TTFB varied. These are isolated local measurements, not live performance or field INP/CWV evidence. Google chooses font variants by user agent: the browser-captured Latin binary was 48,256 bytes; mobile Lighthouse's external variant was 48,432 bytes. Binary equality is asserted only against the captured source URLs, not every browser's Google variant.
+
+Before and candidate checks covered both targets plus Elementor `/guide/` at **390 and 1366px**. Mobile offcanvas/dropdown/close, desktop menu, FAQ true→false→true and pricing anchors worked. All six cases returned 200 with zero JS page errors and no overflow. Hero text/font styles/dimensions, titles, canonicals, headings, links/forms and script assets matched. Guide retained its external Inter/Elementor styles with no local font preload. Its existing `global.css` 404 remains. The desktop homepage baseline screenshot had a delayed/missing SVG rendering while the candidate screenshot showed it; artwork markup/loading attributes were not changed, and pixel-identical image capture is not claimed. No authenticated Elementor editor or live marketing delivery was tested.
+
+Evidence: tracked `tools/performance/font-path-summary.json` and its summary script; ignored `artifacts/font-path-before`, `font-path-after`, `font-path-final` (including screenshots, network inventories, Lighthouse JSON and `rejected-runtime.patch`). Candidate source/build/manifest/scope-test files and fonts/license are preserved in ignored `artifacts/font-path-rejected-material/`. They are not deployed or active. Rollback restored the exact baseline source; additional post-rollback browser runs were not performed.
+
+Current reviewable diff is report corrections, bounded runner improvements and the compact experiment summary; runtime theme assets, MU plugins and Elementor upload CSS are unchanged. The font-loading goal remains unresolved. A future separately authorized step should examine a reviewed structural CSS split and the compressed live font/render dependency chain, including preload reuse, before selecting another font delivery approach. Existing field/marketing/Elementor/editor and article-baseline priorities below remain open.
 
 ## Implemented changes
 
@@ -123,7 +150,7 @@ Detailed machine-readable evidence: `tools/performance/verification-summary.json
 ## File inventory
 
 <!-- FILES -->
-The historical implementation inventory comprised 43 created reviewable files and 9 modified existing files, listed below. All 52 are now tracked and retained. The cleanup branch stages index-only removal of 953 previously tracked files under `tools/performance/.local/`, 461 under `tools/performance/artifacts/` and 14,108 under `tools/performance/node_modules/` (**15,522 files total**). Their local files remain in place. Source/build scripts, package manifests, generated runtime assets and compact verification summaries stay tracked. The cleanup changes these two reports and does not modify runtime code, MU plugins or tracked Elementor upload CSS. `PERFORMANCE-HANDOFF.md` remains preserved as an existing untracked handoff.
+The historical implementation inventory comprised 43 created reviewable files and 9 modified existing files, listed below. All 52 are tracked and retained. The committed cleanup removed 953 files under `tools/performance/.local/`, 461 under `tools/performance/artifacts/` and 14,108 under `tools/performance/node_modules/` (**15,522 files total**) from tracking. Their local files remain in place. Source/build scripts, package manifests, generated runtime assets and compact verification summaries stay tracked. Cleanup did not modify runtime code, MU plugins or tracked Elementor upload CSS. `PERFORMANCE-HANDOFF.md` is now also tracked and preserved as a historical handoff.
 
 ### Created files
 
@@ -184,7 +211,7 @@ The historical implementation inventory comprised 43 created reviewable files an
 - `wp-content/themes/MWhoster-child/header.php`
 <!-- /FILES -->
 
-Local-only folders remain on disk: `tools/performance/.local/` (baseline theme snapshot, local DB inventory, WP-CLI, Python dependencies and migration backups), `tools/performance/node_modules/`, and `tools/performance/artifacts/` (screenshots, HTML and raw Lighthouse output). The existing `tools/performance/.gitignore` rules apply after index removal, so new files there are ignored. This removes them from the proposed next Git tree, not from earlier commits or GitHub history. The owner must commit/review this branch before the repository records the cleanup. Do not deploy these directories or the checkout wholesale.
+Local-only folders remain on disk: `tools/performance/.local/` (baseline theme snapshot, local DB inventory, WP-CLI, Python dependencies and migration backups), `tools/performance/node_modules/`, and `tools/performance/artifacts/` (screenshots, HTML and raw Lighthouse output). The existing `tools/performance/.gitignore` rules now exclude them, and the cleanup is committed in the current tree. Earlier commits and GitHub history retain the old material. Do not deploy these directories or the checkout wholesale.
 
 The complete `.local` and `artifacts` directories are additionally preserved outside both the repository and public web root at `C:\Users\user\MWHoster-Performance-Backups\2026-10-13-cleanup-f8ee5873\.local` and `C:\Users\user\MWHoster-Performance-Backups\2026-10-13-cleanup-f8ee5873\artifacts`. Backup verification compares relative file paths and sizes without inspecting backup contents. A metadata-only `backup-manifest.json` is stored alongside them. Guide rollback data is preserved in the original local `.local/guide-media-final.json` and the external backup's matching path. The actual eight-guide database migration remains a local-only change; tracking or copying its backup does not apply it to production. No database access or migration took place during housekeeping.
 
