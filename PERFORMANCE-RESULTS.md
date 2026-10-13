@@ -1,6 +1,8 @@
 # MWHoster local performance implementation report
 
-Local work completed on branch `performance/wordpress-mobile`, starting from clean commit `caac75b5b52f4f0fae30c18940ef084dd9d2c6fb`. The attached audit was treated as evidence and checked against the current checkout. The newer shared-hosting content was preserved. No commits, push, merge or deployment were made.
+The implementation session used branch `performance/wordpress-mobile`, starting from clean commit `caac75b5b52f4f0fae30c18940ef084dd9d2c6fb`. The attached audit was treated as evidence and checked against the current checkout. The newer shared-hosting content was preserved. That session did not commit, push, merge or deploy. Subsequent repository activity recorded the implementation in Git and merged it into `main` at `f8ee5873bcdde8c4f79405f6b4afa68ddc331af0`; a Git merge does not establish deployment.
+
+Repository housekeeping on **13 October 2026** uses `codex/performance-repository-cleanup`, created from that HEAD. Only the local tooling directories are removed from the Git index and the two reports are corrected. The removals are staged and await an owner-reviewed commit; no commit, push, history rewrite or deployment was performed during housekeeping. Runtime implementation files remain tracked and unchanged. All measurements below are saved results from the earlier implementation session; no performance tests or database checks were rerun for housekeeping.
 
 ## Implemented changes
 
@@ -121,7 +123,7 @@ Detailed machine-readable evidence: `tools/performance/verification-summary.json
 ## File inventory
 
 <!-- FILES -->
-43 new reviewable files and 9 modified existing files. No staged changes or commits. All tracked changes are inside the child theme; new reviewable files are limited to that theme, performance tooling and these two root reports. Git status/name inventory shows no changed excluded files.
+The historical implementation inventory comprised 43 created reviewable files and 9 modified existing files, listed below. All 52 are now tracked and retained. The cleanup branch stages index-only removal of 953 previously tracked files under `tools/performance/.local/`, 461 under `tools/performance/artifacts/` and 14,108 under `tools/performance/node_modules/` (**15,522 files total**). Their local files remain in place. Source/build scripts, package manifests, generated runtime assets and compact verification summaries stay tracked. The cleanup changes these two reports and does not modify runtime code, MU plugins or tracked Elementor upload CSS. `PERFORMANCE-HANDOFF.md` remains preserved as an existing untracked handoff.
 
 ### Created files
 
@@ -182,6 +184,12 @@ Detailed machine-readable evidence: `tools/performance/verification-summary.json
 - `wp-content/themes/MWhoster-child/header.php`
 <!-- /FILES -->
 
-Local-only generated folders: `tools/performance/.local/` (baseline theme snapshot, local DB inventory, WP-CLI, Python dependencies and migration backups), `tools/performance/node_modules/`, and `tools/performance/artifacts/` (screenshots, HTML and raw Lighthouse output). These are Git-ignored and must not be deployed. Temporary local test isolation and generated upload CSS are cleaned up after verification; the pre-existing local cache MU plugin is preserved.
+Local-only folders remain on disk: `tools/performance/.local/` (baseline theme snapshot, local DB inventory, WP-CLI, Python dependencies and migration backups), `tools/performance/node_modules/`, and `tools/performance/artifacts/` (screenshots, HTML and raw Lighthouse output). The existing `tools/performance/.gitignore` rules apply after index removal, so new files there are ignored. This removes them from the proposed next Git tree, not from earlier commits or GitHub history. The owner must commit/review this branch before the repository records the cleanup. Do not deploy these directories or the checkout wholesale.
+
+The complete `.local` and `artifacts` directories are additionally preserved outside both the repository and public web root at `C:\Users\user\MWHoster-Performance-Backups\2026-10-13-cleanup-f8ee5873\.local` and `C:\Users\user\MWHoster-Performance-Backups\2026-10-13-cleanup-f8ee5873\artifacts`. Backup verification compares relative file paths and sizes without inspecting backup contents. A metadata-only `backup-manifest.json` is stored alongside them. Guide rollback data is preserved in the original local `.local/guide-media-final.json` and the external backup's matching path. The actual eight-guide database migration remains a local-only change; tracking or copying its backup does not apply it to production. No database access or migration took place during housekeeping.
+
+Both local MU plugins are unchanged and remain installed: `wp-content/mu-plugins/mwhoster-performance-test.php` blocks outbound WordPress HTTP/mail/cron plus browser analytics/chat/form submission when its local-host/loopback guards activate; `mwhoster-local-cache.php` preserves the existing local page-cache bypass. Normal local marketing/chat/form delivery is therefore still unverified under the test setup. Later, after explicitly authorized test completion and a safe analytics test setup, remove only the temporary test-isolation MU plugin; preserve the cache plugin. Neither local MU plugin should be deployed.
+
+The tracked Elementor upload CSS `wp-content/uploads/elementor/css/post-3.css` and `post-82.css` is retained unchanged. The earlier plan to delete these generated files is superseded; any later regeneration must be a separately reviewed WordPress operation. Authenticated editor/preview, remaining article-width coverage, live/cache/marketing verification and the pre-existing issues listed above remain outstanding. Housekeeping does not complete those checks.
 
 For exact release, migration, rollback, cache scope and live smoke-test steps, see `PERFORMANCE-DEPLOYMENT.md`.
