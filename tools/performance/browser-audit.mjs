@@ -16,11 +16,12 @@ const results=[];
 for (const post of selected) {
   const route = post.ID==='7' ? '/' : `/${post.post_name}/`;
   if (/clientarea|whmcs/i.test(route)) throw Error('Out-of-scope route');
-  const widths = post.post_type==='page' || ['4521','5121'].includes(post.ID) ? [390,768,1366] : [390];
+  const widths = process.env.MW_WIDTHS?process.env.MW_WIDTHS.split(',').map(Number):post.post_type==='page' || ['4521','5121'].includes(post.ID) ? [390,768,1366] : [390];
+  if(widths.some(w=>![390,768,1366].includes(w)))throw Error('Unsupported audit width');
   for (const width of widths) {
     const context=await browser.newContext({viewport:{width,height:900},deviceScaleFactor:1, reducedMotion:'reduce',serviceWorkers:'block'});
     const page=await context.newPage();
-    const errors=[], failed=[], responses=[], blocked=[];
+    const errors=[], failed=[], responses=[], blocked=[],fontSources=[];
     await page.route('**/*', async r => {
       const u=new URL(r.request().url());
       if (/clientarea|whmcs/i.test(u.pathname+u.hostname)) { blocked.push(u.href); return r.abort(); }
@@ -33,6 +34,7 @@ for (const post of selected) {
     page.on('pageerror',e=>errors.push(e.message));
     page.on('requestfailed',r=>failed.push({url:r.url(),error:r.failure()?.errorText}));
     page.on('response',r=>{if(r.status()>=400) responses.push({url:r.url(),status:r.status()});});
+    page.on('response',r=>{if(new URL(r.url()).hostname==='fonts.googleapis.com'&&r.ok())fontSources.push(r.text());});
     await page.addInitScript(()=>{
       window.__shifts=[];
       new PerformanceObserver(l=>{for(const e of l.getEntries())if(!e.hadRecentInput)window.__shifts.push({value:e.value,sources:e.sources?.map(s=>({tag:s.node?.tagName,class:s.node?.className,previous:s.previousRect,current:s.currentRect}))});}).observe({type:'layout-shift',buffered:true});
@@ -40,25 +42,39 @@ for (const post of selected) {
     const response=await page.goto(base+route,{waitUntil:'load',timeout:60000});
     await page.evaluate(()=>document.fonts.ready);
     await page.waitForTimeout(600);
+    const isolation=response.headers()['content-security-policy']||'';
+    if(!isolation.includes("script-src 'self' 'unsafe-inline' 'unsafe-eval'")||!isolation.includes("form-action 'none'"))throw Error('Local test isolation is missing');
+    if(fontSources.length)await fs.writeFile(path.join(out,`inter-${post.post_name}-${width}.css`),(await Promise.all(fontSources)).join('\n'));
     const stem=`${post.post_name}-${width}`;
     if(width===390) await fs.writeFile(path.join(out,post.post_name+'.html'),await page.content());
     await page.screenshot({path:path.join(out,stem+'.png'),fullPage:true});
     const snapshot=await page.evaluate(()=>({
       title:document.title,canonical:document.querySelector('link[rel=canonical]')?.href,bodyClass:document.body.className,
+      hero:[...document.querySelectorAll('section:first-child h1,section:first-child p.lead')].map(e=>{const s=getComputedStyle(e),r=e.getBoundingClientRect();return {text:e.textContent.trim(),font:s.fontFamily,weight:s.fontWeight,size:s.fontSize,lineHeight:s.lineHeight,width:r.width,height:r.height};}),
       headings:[...document.querySelectorAll('h1,h2,h3')].map(e=>e.textContent.trim()),
       elementor:[...document.querySelectorAll('[data-elementor-id]')].map(e=>e.dataset.elementorId),
       styles:[...document.querySelectorAll('link[rel=stylesheet]')].map(e=>({id:e.id,url:e.href})),
+      preloads:[...document.querySelectorAll('link[rel=preload]')].map(e=>({url:e.href,as:e.as,crossorigin:e.crossOrigin})),
       scripts:[...document.scripts].filter(e=>e.src).map(e=>({id:e.id,url:e.src,defer:e.defer})),
       links:[...document.querySelectorAll('a[href]')].map(e=>e.getAttribute('href')),
       forms:[...document.forms].map(f=>({action:f.getAttribute('action'),method:f.getAttribute('method'),inputs:[...f.querySelectorAll('input,button,select,textarea')].map(e=>({name:e.name,type:e.type,value:e.getAttribute('value')}))})),
       images:[...document.images].map(e=>({src:e.getAttribute('src'),lazy:e.getAttribute('data-src'),width:e.getAttribute('width'),height:e.getAttribute('height'),complete:e.complete,natural:[e.naturalWidth,e.naturalHeight],box:[e.getBoundingClientRect().width,e.getBoundingClientRect().height],priority:e.fetchPriority})),
       fonts:[...new Set([...document.querySelectorAll('h1,h2,p,a,button,input')].filter(e=>e.getBoundingClientRect().height).map(e=>getComputedStyle(e).fontFamily+' / '+getComputedStyle(e).fontWeight))],
+      interFaces:[...document.fonts].filter(f=>f.family.includes('Inter')).map(f=>({family:f.family,weight:f.weight,status:f.status,range:f.unicodeRange})),
       overflow:document.documentElement.scrollWidth>innerWidth,
       jquery:window.jQuery?.fn.jquery,carousel:document.querySelectorAll('.owl-loaded').length,
       shifts:window.__shifts,
       resources:performance.getEntriesByType('resource').map(e=>({url:e.name,bytes:e.transferSize,duration:e.duration}))
     }));
     const interactions={};
+    const faq=page.locator('.accordion [data-bs-toggle="collapse"]').first();
+    if(await faq.count()){
+      interactions.faqStates=[await faq.getAttribute('aria-expanded')];
+      await faq.click();await page.waitForTimeout(400);interactions.faqStates.push(await faq.getAttribute('aria-expanded'));
+      await page.screenshot({path:path.join(out,stem+'-faq.png')});
+      await faq.click();await page.waitForTimeout(400);interactions.faqStates.push(await faq.getAttribute('aria-expanded'));
+      await page.evaluate(()=>scrollTo(0,0));await page.waitForTimeout(300);
+    }
     if (width===390) {
       const toggle=page.locator('[data-bs-target="#offcanvasLeft"]');
       if(await toggle.count()) {
@@ -69,13 +85,6 @@ for (const post of selected) {
         await page.screenshot({path:path.join(out,stem+'-menu.png')});
         await page.locator('#offcanvasLeft [data-bs-dismiss="offcanvas"]').click(); await page.waitForTimeout(400);
         interactions.offcanvasClosed=await page.locator('#offcanvasLeft').evaluate(e=>!e.classList.contains('show'));
-      }
-      const faq=page.locator('.accordion [data-bs-toggle="collapse"]').first();
-      if(await faq.count()) {
-        await faq.click();await page.waitForTimeout(400);
-        interactions.faq=await faq.getAttribute('aria-expanded');
-        await page.screenshot({path:path.join(out,stem+'-faq.png')});
-        await faq.click();
       }
       const pricing=page.locator('a[href="#pricing"]').first();
       if(await pricing.count()) {await pricing.click();interactions.pricing=await page.evaluate(()=>location.hash);}
@@ -95,6 +104,7 @@ for (const post of selected) {
       await page.screenshot({path:path.join(out,stem+'-loaded.png'),fullPage:true});
     }
     if(width===1366) {
+      await page.evaluate(()=>scrollTo(0,0));await page.waitForTimeout(300);
       await page.locator('#hostingMegaMenu').hover();await page.waitForTimeout(300);
       interactions.desktopMenu=await page.locator('[aria-labelledby="hostingMegaMenu"]').isVisible();
       await page.screenshot({path:path.join(out,stem+'-menu.png')});

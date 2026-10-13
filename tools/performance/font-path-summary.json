@@ -1,0 +1,306 @@
+{
+  "baseCommit": "3a5977ac0047023ab4871ae708f7501b4f00609d",
+  "branch": "codex/home-shared-font-path",
+  "date": "2026-10-14",
+  "scope": [
+    "/",
+    "/shared-web-hosting/"
+  ],
+  "elementorControl": "/guide/",
+  "environment": {
+    "url": "http://mwhoster.test",
+    "Chrome": 152,
+    "Lighthouse": "13.0.1",
+    "Node": "24.19.0",
+    "PHP": "8.3.16",
+    "viewport": "390x844",
+    "DPR": 1,
+    "throttling": "simulate",
+    "browserCache": "cold per run",
+    "localPageCache": "bypassed",
+    "compression": "none",
+    "productionAnalyticsAndSubmissions": "blocked by existing local MU/CSP and browser/Lighthouse rules"
+  },
+  "cases": [
+    {
+      "route": "/",
+      "width": 390,
+      "status": 200,
+      "passed": false,
+      "contentPreserved": true,
+      "heroTypographyAndGeometryIdentical": true,
+      "scriptsIdentical": true,
+      "builderStylesPreserved": true,
+      "interactions": {
+        "faqStates": [
+          "true",
+          "false",
+          "true"
+        ],
+        "offcanvas": true,
+        "dropdown": true,
+        "offcanvasClosed": true,
+        "pricing": "#pricing"
+      },
+      "errors": [],
+      "existingHTTPFailures": [],
+      "localFontRequests": 2,
+      "localFontPreloads": 1,
+      "externalInterStylesheets": 0,
+      "mobileHeroRequests": 0
+    },
+    {
+      "route": "/",
+      "width": 1366,
+      "status": 200,
+      "passed": false,
+      "contentPreserved": true,
+      "heroTypographyAndGeometryIdentical": true,
+      "scriptsIdentical": true,
+      "builderStylesPreserved": true,
+      "interactions": {
+        "faqStates": [
+          "true",
+          "false",
+          "true"
+        ],
+        "desktopMenu": true,
+        "scrolledHeader": {
+          "class": "main-header-menu-wrap bg-transparent1 fixed-top1 affix",
+          "display": "none"
+        }
+      },
+      "errors": [],
+      "existingHTTPFailures": [],
+      "localFontRequests": 2,
+      "localFontPreloads": 1,
+      "externalInterStylesheets": 0
+    },
+    {
+      "route": "/shared-web-hosting/",
+      "width": 390,
+      "status": 200,
+      "passed": false,
+      "contentPreserved": true,
+      "heroTypographyAndGeometryIdentical": true,
+      "scriptsIdentical": true,
+      "builderStylesPreserved": true,
+      "interactions": {
+        "faqStates": [
+          "true",
+          "false",
+          "true"
+        ],
+        "offcanvas": true,
+        "dropdown": true,
+        "offcanvasClosed": true,
+        "pricing": "#pricing"
+      },
+      "errors": [],
+      "existingHTTPFailures": [],
+      "localFontRequests": 2,
+      "localFontPreloads": 1,
+      "externalInterStylesheets": 0
+    },
+    {
+      "route": "/shared-web-hosting/",
+      "width": 1366,
+      "status": 200,
+      "passed": false,
+      "contentPreserved": true,
+      "heroTypographyAndGeometryIdentical": true,
+      "scriptsIdentical": true,
+      "builderStylesPreserved": true,
+      "interactions": {
+        "faqStates": [
+          "true",
+          "false",
+          "true"
+        ],
+        "desktopMenu": true,
+        "scrolledHeader": {
+          "class": "main-header-menu-wrap bg-transparent1 fixed-top1 affix",
+          "display": "none"
+        }
+      },
+      "errors": [],
+      "existingHTTPFailures": [],
+      "localFontRequests": 2,
+      "localFontPreloads": 1,
+      "externalInterStylesheets": 0
+    },
+    {
+      "route": "/guide/",
+      "width": 390,
+      "status": 200,
+      "passed": true,
+      "contentPreserved": true,
+      "heroTypographyAndGeometryIdentical": true,
+      "scriptsIdentical": true,
+      "builderStylesPreserved": true,
+      "interactions": {
+        "offcanvas": true,
+        "dropdown": true,
+        "offcanvasClosed": true
+      },
+      "errors": [],
+      "existingHTTPFailures": [
+        {
+          "url": "http://mwhoster.test/wp-content/uploads/elementor/css/global.css?ver=1746600877",
+          "status": 404
+        }
+      ],
+      "localFontRequests": 0,
+      "localFontPreloads": 0,
+      "externalInterStylesheets": 1
+    },
+    {
+      "route": "/guide/",
+      "width": 1366,
+      "status": 200,
+      "passed": true,
+      "contentPreserved": true,
+      "heroTypographyAndGeometryIdentical": true,
+      "scriptsIdentical": true,
+      "builderStylesPreserved": true,
+      "interactions": {
+        "desktopMenu": true,
+        "scrolledHeader": {
+          "class": "main-header-menu-wrap bg-transparent1 fixed-top1 affix",
+          "display": "none"
+        }
+      },
+      "errors": [],
+      "existingHTTPFailures": [
+        {
+          "url": "http://mwhoster.test/wp-content/uploads/elementor/css/global.css?ver=1746600877",
+          "status": 404
+        }
+      ],
+      "localFontRequests": 0,
+      "localFontPreloads": 0,
+      "externalInterStylesheets": 1
+    }
+  ],
+  "measurements": {
+    "before": [
+      {
+        "route": "/",
+        "runs": 3,
+        "FCP": 4658.156200000001,
+        "LCP": 6234.2828500000005,
+        "CLS": 0.0017208610122189526,
+        "TBT": 53,
+        "bytes": 1537747,
+        "requests": 36,
+        "LCPRange": [
+          6232.362050000001,
+          9099.3853
+        ]
+      },
+      {
+        "route": "/shared-web-hosting/",
+        "runs": 3,
+        "FCP": 4506.9847,
+        "LCP": 6082.1763,
+        "CLS": 0.01912220116864326,
+        "TBT": 25.5,
+        "bytes": 1513862,
+        "requests": 36,
+        "LCPRange": [
+          6080.07975,
+          6082.262949999999
+        ]
+      }
+    ],
+    "after": [
+      {
+        "route": "/",
+        "runs": 3,
+        "FCP": 4956.9609,
+        "LCP": 6681.960900000001,
+        "CLS": 0.0017208610122189526,
+        "TBT": 31.5,
+        "bytes": 1548563,
+        "requests": 35,
+        "LCPRange": [
+          6681.902099999999,
+          6682.190850000001
+        ]
+      },
+      {
+        "route": "/shared-web-hosting/",
+        "runs": 3,
+        "FCP": 4807.31415,
+        "LCP": 6532.314149999999,
+        "CLS": 0.01912220116864326,
+        "TBT": 47,
+        "bytes": 1524676,
+        "requests": 35,
+        "LCPRange": [
+          6531.4155,
+          6533.184899999999
+        ]
+      }
+    ],
+    "final": [
+      {
+        "route": "/",
+        "runs": 1,
+        "FCP": 4961.09925,
+        "LCP": 6986.09925,
+        "CLS": 0.002197400524471598,
+        "TBT": 91,
+        "bytes": 1598298,
+        "requests": 38,
+        "LCPRange": [
+          6986.09925,
+          6986.09925
+        ]
+      },
+      {
+        "route": "/shared-web-hosting/",
+        "runs": 1,
+        "FCP": 4806.03885,
+        "LCP": 6831.038850000001,
+        "CLS": 0.01912220116864326,
+        "TBT": 39,
+        "bytes": 1572677,
+        "requests": 36,
+        "LCPRange": [
+          6831.038850000001,
+          6831.038850000001
+        ]
+      }
+    ]
+  },
+  "fonts": {
+    "faces": 35,
+    "weights": [
+      "300",
+      "400",
+      "500",
+      "600",
+      "700"
+    ],
+    "files": 7,
+    "bytes": 218512,
+    "inlineCSSBytes": 9576,
+    "fontDisplay": "swap",
+    "baselineCapture": "font-path-before/inter-home-390.css"
+  },
+  "limits": [
+    "Final phase has one confirmation run per page; no three-run final median claim.",
+    "Intermediate phase records self-hosting without preload, which regressed simulated LCP and was corrected once.",
+    "Google selects font binaries by user agent; local assets pin the captured Chrome stylesheet variant.",
+    "Existing Elementor global.css 404 on guide remains.",
+    "No live/field performance or marketing-delivery claim."
+  ],
+  "retainedRuntimeChange": false,
+  "disposition": "Rejected and reverted: simulated local LCP regressed; single-font preload duplicated downloads. Existing asset integration restored exactly.",
+  "totalLighthouseRuns": 14,
+  "candidateArchive": "artifacts/font-path-rejected-material",
+  "behaviorChecksPassed": true,
+  "candidateAcceptancePassed": false,
+  "additionalLimit": "Desktop home baseline screenshot showed delayed/missing hero SVG while candidate showed it; markup was unchanged. No pixel-identical image claim."
+}
