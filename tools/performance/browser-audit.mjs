@@ -42,15 +42,31 @@ for (const post of selected) {
     const response=await page.goto(base+route,{waitUntil:'load',timeout:60000});
     await page.evaluate(()=>document.fonts.ready);
     await page.waitForTimeout(600);
+    if(process.env.MW_SCROLL_ALL==='1'){
+      for(let y=0;y<await page.evaluate(()=>document.documentElement.scrollHeight);y+=650){await page.evaluate(y=>scrollTo(0,y),y);await page.waitForTimeout(150);}
+      // Revisit visible lazy images skipped during fast scrolling; observe the
+      // existing loader rather than changing image attributes or forcing loads.
+      const lazy=page.locator('img[data-src]');
+      for(let i=0;i<await lazy.count();i++){
+        const img=lazy.nth(i);
+        if(!await img.isVisible())continue;
+        if(await img.evaluate(e=>e.getAttribute('src')?.startsWith('data:'))){
+          await img.scrollIntoViewIfNeeded();
+          await img.evaluate(e=>new Promise((resolve,reject)=>{const deadline=Date.now()+15000;const check=()=>{if(!e.getAttribute('src')?.startsWith('data:')&&e.complete&&e.naturalWidth)return resolve();if(Date.now()>deadline)return reject(Error('Visible lazy image did not settle: '+e.getAttribute('data-src')));setTimeout(check,100);};check();}));
+        }
+      }
+      await page.waitForTimeout(500);await page.evaluate(()=>scrollTo(0,0));await page.waitForTimeout(300);
+    }
     const isolation=response.headers()['content-security-policy']||'';
     if(!isolation.includes("script-src 'self' 'unsafe-inline' 'unsafe-eval'")||!isolation.includes("form-action 'none'"))throw Error('Local test isolation is missing');
     if(fontSources.length)await fs.writeFile(path.join(out,`inter-${post.post_name}-${width}.css`),(await Promise.all(fontSources)).join('\n'));
     const stem=`${post.post_name}-${width}`;
     if(width===390) await fs.writeFile(path.join(out,post.post_name+'.html'),await page.content());
     await page.screenshot({path:path.join(out,stem+'.png'),fullPage:true});
-    const snapshot=await page.evaluate(()=>({
+    const snapshot=await page.evaluate(includeStructure=>({
       title:document.title,canonical:document.querySelector('link[rel=canonical]')?.href,bodyClass:document.body.className,
       hero:[...document.querySelectorAll('section:first-child h1,section:first-child p.lead')].map(e=>{const s=getComputedStyle(e),r=e.getBoundingClientRect();return {text:e.textContent.trim(),font:s.fontFamily,weight:s.fontWeight,size:s.fontSize,lineHeight:s.lineHeight,width:r.width,height:r.height};}),
+      structure:includeStructure?[...document.querySelectorAll('.header-main *, .main *, footer *')].filter(e=>e.getBoundingClientRect().width&&e.getBoundingClientRect().height&&!e.closest('.hs-mega-menu,.offcanvas,.joinchat')).map(e=>{const r=e.getBoundingClientRect(),s=getComputedStyle(e);return {tag:e.tagName,class:e.className,text:e.children.length?'':e.textContent.trim(),box:[r.x,r.y,r.width,r.height].map(n=>Math.round(n*10)/10),font:[s.fontFamily,s.fontSize,s.fontWeight,s.lineHeight],color:s.color,background:s.backgroundColor,display:s.display};}):undefined,
       headings:[...document.querySelectorAll('h1,h2,h3')].map(e=>e.textContent.trim()),
       elementor:[...document.querySelectorAll('[data-elementor-id]')].map(e=>e.dataset.elementorId),
       styles:[...document.querySelectorAll('link[rel=stylesheet]')].map(e=>({id:e.id,url:e.href})),
@@ -65,7 +81,7 @@ for (const post of selected) {
       jquery:window.jQuery?.fn.jquery,carousel:document.querySelectorAll('.owl-loaded').length,
       shifts:window.__shifts,
       resources:performance.getEntriesByType('resource').map(e=>({url:e.name,bytes:e.transferSize,duration:e.duration}))
-    }));
+    }),process.env.MW_SCROLL_ALL==='1');
     const interactions={};
     const faq=page.locator('.accordion [data-bs-toggle="collapse"]').first();
     if(await faq.count()){

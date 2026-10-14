@@ -4,6 +4,49 @@ The implementation session used branch `performance/wordpress-mobile`, starting 
 
 Repository housekeeping on **13 October 2026** used `codex/performance-repository-cleanup`, created from that HEAD. The agent untracked local tooling and corrected the reports without committing or pushing. Subsequent repository activity committed the cleanup as `ae5d4dfcfce0a48df4c557ffc3a462ad15102938` and merged it into `main` at `3a5977ac0047023ab4871ae708f7501b4f00609d`. Cleanup is recorded in the current tree; no history rewrite or deployment is established. The original measurements below are saved implementation-session results; the bounded 14 October font-path check is reported separately.
 
+## 14 October 2026: bounded blocking-CSS candidate
+
+The active candidate reduces the blocking child-theme stylesheet only on `http://mwhoster.test/` and `http://mwhoster.test/shared-web-hosting/`. Branch `codex/home-shared-css` preserves the clean starting HEAD `7595953ef0abe5d01161e0e9b41265b67aef2a7d`, including the committed rejected-font report/tooling. Local `main` remains at `3a5977ac0047023ab4871ae708f7501b4f00609d`; this branch was created from the existing checkout HEAD to preserve that newer work. No applicable AGENTS.md was found. No commit, push, deployment, package installation, database/settings/server change or agent delegation occurred.
+
+The existing CSS/source-map build now produces `mwhoster-home-shared.css`. Structural review uses the complete header, footer, both PHP templates and child style source, including below-fold markup and inactive examples. It removes **1,214 simple single-class generated Bootstrap utility rules** absent from this inventory and the dynamic utility safelist, plus the unused login/signup and theme-switcher source groups. Components, grids, compound/unknown selectors, responsive media conditions, header/footer, pricing, forms, FAQs, helpers, animations, theme overrides and accessibility/interaction states retain their order. No initial-viewport coverage purge or deferred first-paint CSS is used. None of the removed utility classes appeared in the captured complete rendered DOM, including hidden menu markup.
+
+The six-line enqueue addition selects this profile only for the matching homepage/shared route and assigned template after the existing static-content/Elementor guards. Missing profile files retain hosting CSS; other templates, builder content, global builder integrations, preview/editor and unknown routes retain their existing fallback behavior. External Inter delivery, Font Awesome faces/files, JavaScript/dependencies, marketing/consent configuration, images, content and outgoing targets are unchanged. Both local MU plugins and tracked Elementor upload CSS retain their previous hashes.
+
+| CSS body size | Before | Candidate | Reduction |
+|---|---:|---:|---:|
+| Uncompressed bytes | 381,238 | 302,975 | 78,263 / 20.5% |
+| gzip level 9 bytes | 52,420 | 44,738 | 7,682 / 14.7% |
+| Brotli quality 11 bytes | 39,712 | 36,466 | 3,246 / 8.2% |
+
+Compressed figures are offline body-size estimates, not observed live transfers. Local Apache delivered uncompressed CSS; measured hosting CSS transfer fell from 381,644 to 303,381 bytes including HTTP overhead. The number of blocking stylesheet requests is unchanged.
+
+Conditions matched: logged-out local WordPress, Chrome 152, Lighthouse 13.0.1, Node 24.19, PHP 8.3.16, mobile 390×844/DPR 1, simulated throttling, cold browser storage/cache per run, existing local page-cache bypass and identical isolation. Production analytics/chat, outbound WP HTTP/mail/cron and submissions remained blocked by the unchanged local MU/CSP plus test rules. Excluded endpoints were denied; no external submission occurred.
+
+| Local route | Phase / runs | FCP (s) | LCP (s) | CLS | TBT (ms) | Transfer bytes | Requests |
+|---|---|---:|---:|---:|---:|---:|---:|
+| `/` | Before / median of 2 | 5.11 | 9.09 | 0.00172 | 147.25 | 1,538,985 | 38 |
+| `/` | Candidate / median of 3 | 4.81 | 9.36 | 0.00172 | 132.5 | 1,460,725 | 38 |
+| `/shared-web-hosting/` | Before / 1 run | 4.51 | 6.08 | 0.01912 | 46.5 | 1,513,016 | 36 |
+| `/shared-web-hosting/` | Candidate / 1 run | 4.21 | 5.63 | 0.01912 | 20.5 | 1,435,607 | 36 |
+
+**Seven Lighthouse runs total.** The homepage baseline was repeated once because its first LCP differed materially from earlier saved evidence; the two current baseline runs were stable at 9.083–9.087s. The after phase was repeated to check LCP and the 61–218ms TBT variance; its third/final run gave LCP 8.634s and TBT 132.5ms. After LCP ranged 8.634–9.359s. No route/phase exceeded three runs. Shared hosting has single-run point comparisons, not a three-run median or statistical confidence claim. Both runs attributed mobile LCP to the hero paragraph. First paint improved on both targets and shared LCP improved in its point comparison, but homepage median LCP was **0.27s worse**. Retained as a tested smaller blocking-CSS candidate; an overall LCP improvement is not established. Local TBT is not INP and these results do not establish live/field Core Web Vitals.
+
+Before/after screenshots and interactions cover both targets and Elementor control `http://mwhoster.test/guide/` at **390 and 1366px**. All six cases returned 200 with zero JS page errors, no new HTTP asset errors or overflow. Mobile menu open/dropdown/close, desktop hosting dropdown, FAQ true→false→true and pricing anchors passed. Existing `.affix` header behavior remained. Full scrolling exercised below-fold content. The first after shared desktop capture retained one lazy placeholder; a focused recheck observed the existing loader settle, without changing its attributes or code. The settled capture supersedes that case. All **1,944 visible structure nodes** matched geometry, typography, colors and display after normalizing only transient image-loader classes. Hero geometry, images, titles, canonical URLs, headings, links/forms, script/style dependencies and preloads matched. Menu/FAQ and hero/mid-page/footer comparison sheets were visually reviewed, including icons. Guide retained its original shared/Elementor styles; its existing `global.css` 404 remains. Its transient Joinchat system-font UI varied in the raw font inventory; all theme/Elementor typography and Inter faces matched.
+
+PHP syntax, JS tool syntax, CSS parsing and a hash-identical focused CSS rebuild passed. The original CSS/source map, existing generated profiles, fonts/images, runtime JS, MU plugins and Elementor upload CSS are unchanged. Scoped diff/ignore validation excludes all WHMCS/clientarea changes. Source scans excluded dependencies/generated evidence; explicitly named local artifacts were read for comparison.
+
+Created reviewable additions (currently untracked; no staging/commit performed):
+
+- `wp-content/themes/MWhoster-child/assets/css/mwhoster-home-shared.css`
+- `tools/performance/home-shared-css-review.json`
+- `tools/performance/home-shared-css-build-report.json`
+- `tools/performance/home-shared-css-summary.mjs`
+- `tools/performance/home-shared-css-summary.json`
+
+Modified existing files: `wp-content/themes/MWhoster-child/inc/performance.php`, `tools/performance/build.mjs`, `browser-audit.mjs`, `lighthouse.mjs`, `README.md`, and the root `PERFORMANCE-RESULTS.md` / `PERFORMANCE-DEPLOYMENT.md`. Runtime diff is only the new CSS and scoped selector; remaining changes are source/build/test/report material. The Lighthouse runner can explicitly append while preserving saved runs and enforcing three total per route/phase. New raw captures stay ignored under `tools/performance/artifacts/css-profile-baseline`, `css-profile-after`, `css-profile-after-settled`, `css-profile-qa`; an auxiliary initial browser baseline is in `css-profile-before`. Temporary structural-review/contact-sheet helpers remain ignored under `.local`. Existing historical evidence and guide rollback backups are preserved. This session did not send these changes to GitHub.
+
+Remaining checks: tablet/intermediate widths, authenticated editor/preview, live compressed cold/warm-cache comparison, and normal consent/marketing delivery under an approved test setup. Homepage LCP remains unresolved; do not resume font work or expand this candidate without separate authorization. Prior all-article/live coverage and guide production migration remain independent outstanding owner-run work. The earlier cleanup is already committed; there is no cleanup awaiting commit. This candidate changes no DB records and cannot carry the earlier local guide migration through Git.
+
 ## 14 October 2026: bounded font-path experiment — rejected
 
 Branch `codex/home-shared-font-path` was created from current `main` at `3a5977ac0047023ab4871ae708f7501b4f00609d`. No applicable AGENTS.md was found. Source inspection was limited to the child asset integration, reviewed CSS build/input and performance scripts; dependency/generated directories were excluded from source scans. Existing evidence was read through explicit artifact paths.
@@ -29,7 +72,7 @@ Before and candidate checks covered both targets plus Elementor `/guide/` at **3
 
 Evidence: tracked `tools/performance/font-path-summary.json` and its summary script; ignored `artifacts/font-path-before`, `font-path-after`, `font-path-final` (including screenshots, network inventories, Lighthouse JSON and `rejected-runtime.patch`). Candidate source/build/manifest/scope-test files and fonts/license are preserved in ignored `artifacts/font-path-rejected-material/`. They are not deployed or active. Rollback restored the exact baseline source; additional post-rollback browser runs were not performed.
 
-Current reviewable diff is report corrections, bounded runner improvements and the compact experiment summary; runtime theme assets, MU plugins and Elementor upload CSS are unchanged. The font-loading goal remains unresolved. A future separately authorized step should examine a reviewed structural CSS split and the compressed live font/render dependency chain, including preload reuse, before selecting another font delivery approach. Existing field/marketing/Elementor/editor and article-baseline priorities below remain open.
+The rejected font session's reviewable diff comprised report corrections, bounded runner improvements and its compact experiment summary; it retained no runtime change. The later CSS-only candidate above supersedes that diff description and keeps the restored font delivery. The font-loading goal remains unresolved. Any future font experiment needs separate authorization and evidence from the compressed live dependency path. Existing field/marketing/Elementor/editor and article-baseline priorities below remain open.
 
 ## Implemented changes
 

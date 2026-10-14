@@ -1,0 +1,15 @@
+{
+  "templates": ["dist/index.php", "dist/shared-web-hosting.php"],
+  "markupSources": ["header.php", "footer.php", "dist/index.php", "dist/shared-web-hosting.php", "style.css"],
+  "method": "Review complete static template/header/footer/style sources, including below-fold markup and inactive examples. Prune only simple single-class rules mapped to Bootstrap's generated utility mixin. Retain every component, grid, state, compound selector and unknown source; keep source order and all media conditions.",
+  "generatedUtilitySource": "/bootstrap/scss/mixins/_utilities.scss",
+  "utilitySafelist": ["d-none", "d-block", "d-flex", "d-inline", "d-inline-block", "d-inline-flex", "visible", "invisible", "text-success", "text-danger", "position-relative", "position-absolute", "w-100", "h-100", "w-auto", "h-auto", "m-0", "p-0", "pe-auto", "pe-none", "user-select-none", "user-select-auto"],
+  "preservedStateFamilies": ["show", "hide", "fade", "collapsed", "collapsing", "active", "disabled", "focus", "focus-visible", "open", "on", "affix", "dropdown", "offcanvas", "tooltip", "accordion", "backdrop"],
+  "dynamicClassReview": "Existing app initialization toggles open/on/affix/show/active, text-success, d-none/d-block and alert-success/alert-danger. Bootstrap/HSMegaMenu interaction classes are in retained component/vendor sources; dynamic utility classes are safelisted. No JavaScript is modified.",
+  "excludedThemeSources": {
+    "/pages/_login-signup.scss": "No login/signup form/wrapper or error-content markup on either target or shared chrome. Login links remain intact.",
+    "/themes/_theme-switcher.scss": "No theme-setting/customize-color markup on either target or shared chrome; existing app initializer is DOM-guarded. Base colors remain in retained color/background sources."
+  },
+  "preservedThemeSources": "All other theme source groups, including blog/utility/pricing generic selectors, hero, map, forms, accordion, header/footer, offcanvas, helpers, animations and responsive rules.",
+  "fontPolicy": "Reuse the existing reviewed Font Awesome icon inventory and fonts without regenerating subsets. Inter import removal/direct enqueue remains exactly as before."
+}

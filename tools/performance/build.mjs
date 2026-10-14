@@ -3,14 +3,22 @@ import path from 'node:path';
 import crypto from 'node:crypto';
 import postcss from 'postcss';
 import {SourceMapConsumer} from 'source-map';
+import {gzipSync,brotliCompressSync,constants as zlibConstants} from 'node:zlib';
 
+const focused=process.argv.includes('--home-shared-only');
+const review=JSON.parse(await fs.readFile('home-shared-css-review.json','utf8'));
 const theme=path.resolve('../../wp-content/themes/MWhoster-child');
 const source=await fs.readFile(path.join(theme,'assets/css/main.css'),'utf8');
 const parsed=postcss.parse(source);
 const consumer=await new SourceMapConsumer(JSON.parse(await fs.readFile(path.join(theme,'assets/css/main.css.map'),'utf8')));
-const phpFiles=['header.php','footer.php','404.php',...(await fs.readdir(path.join(theme,'dist'))).filter(f=>f.endsWith('.php')).map(f=>'dist/'+f)];
+const phpFiles=focused?review.markupSources:['header.php','footer.php','404.php',...(await fs.readdir(path.join(theme,'dist'))).filter(f=>f.endsWith('.php')).map(f=>'dist/'+f)];
 const markup=(await Promise.all(phpFiles.map(f=>fs.readFile(path.join(theme,f),'utf8')))).join('\n');
-const icons=new Set([...markup.matchAll(/\bfa-[a-z0-9-]+\b/g)].map(m=>m[0]));
+const icons=focused?new Set(JSON.parse(await fs.readFile('build-report.json','utf8')).icons):new Set([...markup.matchAll(/\bfa-[a-z0-9-]+\b/g)].map(m=>m[0]));
+const targetMarkup=(await Promise.all(review.markupSources.map(f=>fs.readFile(path.join(theme,f),'utf8')))).join('\n');
+// All source tokens are conservative: comments and CSS selectors may retain extra
+// classes. This is a complete-template inventory, never initial-viewport coverage.
+const targetClasses=new Set([...targetMarkup.matchAll(/[A-Za-z_][A-Za-z0-9_-]*/g)].map(m=>m[0]));
+review.utilitySafelist.forEach(c=>targetClasses.add(c));
 const unicode=new Set();
 const profiles={};
 const report={sourceBytes:Buffer.byteLength(source),sourceSHA256:crypto.createHash('sha256').update(source).digest('hex'),icons:[...icons].sort(),profiles:{}};
@@ -35,9 +43,28 @@ function iconNode(node,subset) {
   return n;
 }
 
-for(const profile of ['shared','hosting','carousel','full']) {
+function trimGeneratedUtilities(node,removed) {
+  node.walkRules?.(rule=>{
+    const origin=consumer.originalPositionFor({line:rule.source.start.line,column:rule.source.start.column-1}).source||'';
+    const single=rule.selector.match(/^\.([A-Za-z_][A-Za-z0-9_-]*)$/);
+    if(origin.endsWith(review.generatedUtilitySource)&&single&&!targetClasses.has(single[1])){
+      removed.push({selector:rule.selector,bytes:Buffer.byteLength(rule.toString()),source:origin});rule.remove();
+    }
+  });
+  // A top-level utility rule has no descendant rules.
+  if(node.type==='rule'){
+    const origin=consumer.originalPositionFor({line:node.source.start.line,column:node.source.start.column-1}).source||'';
+    const single=node.selector.match(/^\.([A-Za-z_][A-Za-z0-9_-]*)$/);
+    if(origin.endsWith(review.generatedUtilitySource)&&single&&!targetClasses.has(single[1])){removed.push({selector:node.selector,bytes:Buffer.byteLength(node.toString()),source:origin});return null;}
+  }
+  node.walkAtRules?.(n=>{if(n.nodes&&!n.nodes.length)n.remove();});
+  return node.nodes&&!node.nodes.length?null:node;
+}
+
+for(const profile of focused?['home-shared']:['shared','hosting','carousel','full','home-shared']) {
   const out=postcss.root();
   const removed={};
+  const utilities=[];
   for(const n of parsed.nodes) {
     const origin=origins.get(n);
     if(n.type==='atrule' && n.name==='import') continue;
@@ -46,11 +73,13 @@ for(const profile of ['shared','hosting','carousel','full']) {
     if(profile!=='full') {
       omit=widgetVendor.test(origin) && !(profile==='carousel' && /vendors\/owl\./.test(origin));
       if(profile==='shared' && hostingOnly.test(origin)) omit=true;
+      if(profile==='home-shared'&&Object.keys(review.excludedThemeSources).some(s=>origin.endsWith(s)))omit=true;
     }
     if(omit) {removed[origin]=(removed[origin]||0)+n.toString().length;continue;}
-    const subset=profile==='hosting'||profile==='carousel';
-    const clone=/vendors\/fontawesome/.test(origin)?iconNode(n,subset):n.clone();
+    const subset=profile==='hosting'||profile==='carousel'||profile==='home-shared';
+    let clone=/vendors\/fontawesome/.test(origin)?iconNode(n,subset):n.clone();
     if(!clone)continue;
+    if(profile==='home-shared'){clone=trimGeneratedUtilities(clone,utilities);if(!clone)continue;}
     // Generated CSS lives beside its reviewed source so relative URLs retain their meaning.
     out.append(clone);
     if(subset) clone.walkDecls?.('content',d=>{
@@ -65,9 +94,16 @@ for(const profile of ['shared','hosting','carousel','full']) {
   const css=out.toString();
   profiles[profile]=css;
   report.profiles[profile]={bytes:Buffer.byteLength(css),removedSources:removed};
+  if(profile==='home-shared'){
+    const baseline=await fs.readFile(path.join(theme,'assets/css/mwhoster-hosting.css'));
+    const sizes=b=>({raw:b.length,gzipLevel9:gzipSync(b,{level:9}).length,brotliQuality11:brotliCompressSync(b,{params:{[zlibConstants.BROTLI_PARAM_QUALITY]:11}}).length});
+    const faces=root=>root.nodes.filter(n=>n.type==='atrule'&&n.name==='font-face').map(n=>n.toString());
+    if(JSON.stringify(faces(postcss.parse(baseline)))!==JSON.stringify(faces(out)))throw Error('Font-face declarations changed');
+    report.profiles[profile]={...report.profiles[profile],baselineSHA256:crypto.createHash('sha256').update(baseline).digest('hex'),outputSHA256:crypto.createHash('sha256').update(css).digest('hex'),sizes:{before:sizes(baseline),after:sizes(Buffer.from(css))},removedUtilityRules:utilities,sourceClasses:[...targetClasses].sort(),review,fontFacesIdentical:true};
+  }
   await fs.writeFile(path.join(theme,`assets/css/mwhoster-${profile}.css`),css);
 }
 consumer.destroy();
-await fs.writeFile(path.join(theme,'assets/fonts/subset-unicodes.txt'),[...unicode].sort((a,b)=>a-b).map(n=>'U+'+n.toString(16).toUpperCase()).join(','));
-await fs.writeFile('build-report.json',JSON.stringify(report,null,2)+'\n');
+if(!focused)await fs.writeFile(path.join(theme,'assets/fonts/subset-unicodes.txt'),[...unicode].sort((a,b)=>a-b).map(n=>'U+'+n.toString(16).toUpperCase()).join(','));
+await fs.writeFile(focused?'home-shared-css-build-report.json':'build-report.json',JSON.stringify(report,null,2)+'\n');
 console.log(JSON.stringify({source:report.sourceBytes,profiles:Object.fromEntries(Object.entries(report.profiles).map(([k,v])=>[k,v.bytes])),glyphs:unicode.size}));

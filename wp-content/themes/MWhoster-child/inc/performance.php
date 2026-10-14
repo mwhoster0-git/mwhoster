@@ -41,6 +41,12 @@ function mwhoster_enqueue_public_assets() {
     $profile = 'full'; // Unknown templates keep the complete theme vocabulary.
     if ( mwhoster_static_template_assets() ) {
         $profile = $carousel ? 'carousel' : 'hosting';
+        // Complete-template utility inventory is valid only for these two routes.
+        $home_shared = ( is_front_page() && 'dist/index.php' === $template )
+            || ( is_page( 'shared-web-hosting' ) && 'dist/shared-web-hosting.php' === $template );
+        if ( $home_shared && is_readable( get_stylesheet_directory() . '/assets/css/mwhoster-home-shared.css' ) ) {
+            $profile = 'home-shared';
+        }
     } elseif ( ! $template && ( is_singular( 'post' ) || is_page( array( 'blog', 'guide', 'contact', 'privacy-policy', 'terms-conditions' ) ) ) ) {
         $profile = 'shared';
     }
