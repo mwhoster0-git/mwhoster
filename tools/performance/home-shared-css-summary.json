@@ -1,0 +1,397 @@
+{
+  "date": "2026-10-14",
+  "branch": "codex/home-shared-css",
+  "baseCommit": "7595953ef0abe5d01161e0e9b41265b67aef2a7d",
+  "scope": [
+    "http://mwhoster.test/",
+    "http://mwhoster.test/shared-web-hosting/"
+  ],
+  "elementorControl": "http://mwhoster.test/guide/",
+  "environment": {
+    "Chrome": 152,
+    "Lighthouse": "13.0.1",
+    "Node": "24.19.0",
+    "PHP": "8.3.16",
+    "viewport": "390x844",
+    "DPR": 1,
+    "throttling": "simulate",
+    "browserCache": "cold per run",
+    "localPageCache": "bypassed",
+    "compression": "none",
+    "productionAnalyticsAndSubmissions": "blocked by unchanged local MU/CSP and browser/Lighthouse rules"
+  },
+  "css": {
+    "sizes": {
+      "before": {
+        "raw": 381238,
+        "gzipLevel9": 52420,
+        "brotliQuality11": 39712
+      },
+      "after": {
+        "raw": 302975,
+        "gzipLevel9": 44738,
+        "brotliQuality11": 36466
+      }
+    },
+    "removedUtilityRules": 1214,
+    "excludedThemeSources": {
+      "/pages/_login-signup.scss": "No login/signup form/wrapper or error-content markup on either target or shared chrome. Login links remain intact.",
+      "/themes/_theme-switcher.scss": "No theme-setting/customize-color markup on either target or shared chrome; existing app initializer is DOM-guarded. Base colors remain in retained color/background sources."
+    },
+    "fontFacesIdentical": true,
+    "sourceSHA256": "2eb0ca48066ba7faf9bb009e28f52b4e05f525f77174a68a4724d132335fcada",
+    "baselineSHA256": "e630ec2225e3f1342fec8fd8a4d8db8942356b1bc156e9b26a060e4f81ff12e8",
+    "outputSHA256": "4fdb5bed6f2083c595780b8e71669b102d697c1e5a31f272e8f77ceadc3c92f0",
+    "compressionNote": "Offline gzip level 9 / Brotli quality 11 estimates for CSS body only; not observed live transfers."
+  },
+  "cases": [
+    {
+      "route": "/",
+      "width": 390,
+      "status": 200,
+      "contentPreserved": true,
+      "heroTypographyAndGeometryIdentical": true,
+      "structureNodesBefore": 454,
+      "structureNodesAfter": 454,
+      "structureDifferenceCount": 0,
+      "structureDifferences": [],
+      "transientImageClassDifferences": 0,
+      "fontsIdentical": true,
+      "imagesIdentical": true,
+      "scriptsIdentical": true,
+      "preloadsIdentical": true,
+      "otherStylesIdentical": true,
+      "layoutBefore": "http://mwhoster.test/wp-content/themes/MWhoster-child/assets/css/mwhoster-hosting.css?ver=1791828120",
+      "layoutAfter": "http://mwhoster.test/wp-content/themes/MWhoster-child/assets/css/mwhoster-home-shared.css?ver=1791927391",
+      "interactions": {
+        "faqStates": [
+          "true",
+          "false",
+          "true"
+        ],
+        "offcanvas": true,
+        "dropdown": true,
+        "offcanvasClosed": true,
+        "pricing": "#pricing"
+      },
+      "errors": [],
+      "existingHTTPFailures": [],
+      "newHTTPFailures": [],
+      "overflow": false,
+      "mobileHeroRequests": 0,
+      "rawFontInventoryIdentical": true,
+      "passed": true
+    },
+    {
+      "route": "/",
+      "width": 1366,
+      "status": 200,
+      "contentPreserved": true,
+      "heroTypographyAndGeometryIdentical": true,
+      "structureNodesBefore": 505,
+      "structureNodesAfter": 505,
+      "structureDifferenceCount": 0,
+      "structureDifferences": [],
+      "transientImageClassDifferences": 6,
+      "fontsIdentical": true,
+      "imagesIdentical": true,
+      "scriptsIdentical": true,
+      "preloadsIdentical": true,
+      "otherStylesIdentical": true,
+      "layoutBefore": "http://mwhoster.test/wp-content/themes/MWhoster-child/assets/css/mwhoster-hosting.css?ver=1791828120",
+      "layoutAfter": "http://mwhoster.test/wp-content/themes/MWhoster-child/assets/css/mwhoster-home-shared.css?ver=1791927391",
+      "interactions": {
+        "faqStates": [
+          "true",
+          "false",
+          "true"
+        ],
+        "desktopMenu": true,
+        "scrolledHeader": {
+          "class": "main-header-menu-wrap bg-transparent1 fixed-top1 affix",
+          "display": "none"
+        }
+      },
+      "errors": [],
+      "existingHTTPFailures": [],
+      "newHTTPFailures": [],
+      "overflow": false,
+      "rawFontInventoryIdentical": true,
+      "passed": true
+    },
+    {
+      "route": "/shared-web-hosting/",
+      "width": 390,
+      "status": 200,
+      "contentPreserved": true,
+      "heroTypographyAndGeometryIdentical": true,
+      "structureNodesBefore": 421,
+      "structureNodesAfter": 421,
+      "structureDifferenceCount": 0,
+      "structureDifferences": [],
+      "transientImageClassDifferences": 1,
+      "fontsIdentical": true,
+      "imagesIdentical": true,
+      "scriptsIdentical": true,
+      "preloadsIdentical": true,
+      "otherStylesIdentical": true,
+      "layoutBefore": "http://mwhoster.test/wp-content/themes/MWhoster-child/assets/css/mwhoster-hosting.css?ver=1791828120",
+      "layoutAfter": "http://mwhoster.test/wp-content/themes/MWhoster-child/assets/css/mwhoster-home-shared.css?ver=1791927391",
+      "interactions": {
+        "faqStates": [
+          "true",
+          "false",
+          "true"
+        ],
+        "offcanvas": true,
+        "dropdown": true,
+        "offcanvasClosed": true,
+        "pricing": "#pricing"
+      },
+      "errors": [],
+      "existingHTTPFailures": [],
+      "newHTTPFailures": [],
+      "overflow": false,
+      "rawFontInventoryIdentical": true,
+      "passed": true
+    },
+    {
+      "route": "/shared-web-hosting/",
+      "width": 1366,
+      "status": 200,
+      "contentPreserved": true,
+      "heroTypographyAndGeometryIdentical": true,
+      "structureNodesBefore": 439,
+      "structureNodesAfter": 439,
+      "structureDifferenceCount": 0,
+      "structureDifferences": [],
+      "transientImageClassDifferences": 1,
+      "fontsIdentical": true,
+      "imagesIdentical": true,
+      "scriptsIdentical": true,
+      "preloadsIdentical": true,
+      "otherStylesIdentical": true,
+      "layoutBefore": "http://mwhoster.test/wp-content/themes/MWhoster-child/assets/css/mwhoster-hosting.css?ver=1791828120",
+      "layoutAfter": "http://mwhoster.test/wp-content/themes/MWhoster-child/assets/css/mwhoster-home-shared.css?ver=1791927391",
+      "interactions": {
+        "faqStates": [
+          "true",
+          "false",
+          "true"
+        ],
+        "desktopMenu": true,
+        "scrolledHeader": {
+          "class": "main-header-menu-wrap bg-transparent1 fixed-top1 affix",
+          "display": "none"
+        }
+      },
+      "errors": [],
+      "existingHTTPFailures": [],
+      "newHTTPFailures": [],
+      "overflow": false,
+      "rawFontInventoryIdentical": true,
+      "passed": true
+    },
+    {
+      "route": "/guide/",
+      "width": 390,
+      "status": 200,
+      "contentPreserved": true,
+      "heroTypographyAndGeometryIdentical": true,
+      "structureNodesBefore": 55,
+      "structureNodesAfter": 55,
+      "structureDifferenceCount": 0,
+      "structureDifferences": [],
+      "transientImageClassDifferences": 0,
+      "fontsIdentical": true,
+      "imagesIdentical": true,
+      "scriptsIdentical": true,
+      "preloadsIdentical": true,
+      "otherStylesIdentical": true,
+      "layoutBefore": "http://mwhoster.test/wp-content/themes/MWhoster-child/assets/css/mwhoster-shared.css?ver=1791828120",
+      "layoutAfter": "http://mwhoster.test/wp-content/themes/MWhoster-child/assets/css/mwhoster-shared.css?ver=1791828120",
+      "interactions": {
+        "offcanvas": true,
+        "dropdown": true,
+        "offcanvasClosed": true
+      },
+      "errors": [],
+      "existingHTTPFailures": [
+        {
+          "url": "http://mwhoster.test/wp-content/uploads/elementor/css/global.css?ver=1746600877",
+          "status": 404
+        }
+      ],
+      "newHTTPFailures": [],
+      "overflow": false,
+      "rawFontInventoryIdentical": false,
+      "rawFontInventoryNote": {
+        "before": [
+          "Inter, Helvetica, sans-serif / 400",
+          "Inter, sans-serif / 500",
+          "Inter, sans-serif / 600"
+        ],
+        "after": [
+          "Inter, Helvetica, sans-serif / 400",
+          "Inter, sans-serif / 500",
+          "Inter, sans-serif / 600",
+          "-apple-system, blinkmacsystemfont, \"Segoe UI\", roboto, oxygen-sans, ubuntu, cantarell, \"Helvetica Neue\", sans-serif / 400"
+        ],
+        "reason": "Joinchat transient system-font UI varies; all theme/Elementor structure-node typography and Inter faces match."
+      },
+      "passed": true
+    },
+    {
+      "route": "/guide/",
+      "width": 1366,
+      "status": 200,
+      "contentPreserved": true,
+      "heroTypographyAndGeometryIdentical": true,
+      "structureNodesBefore": 70,
+      "structureNodesAfter": 70,
+      "structureDifferenceCount": 0,
+      "structureDifferences": [],
+      "transientImageClassDifferences": 0,
+      "fontsIdentical": true,
+      "imagesIdentical": true,
+      "scriptsIdentical": true,
+      "preloadsIdentical": true,
+      "otherStylesIdentical": true,
+      "layoutBefore": "http://mwhoster.test/wp-content/themes/MWhoster-child/assets/css/mwhoster-shared.css?ver=1791828120",
+      "layoutAfter": "http://mwhoster.test/wp-content/themes/MWhoster-child/assets/css/mwhoster-shared.css?ver=1791828120",
+      "interactions": {
+        "desktopMenu": true,
+        "scrolledHeader": {
+          "class": "main-header-menu-wrap bg-transparent1 fixed-top1 affix",
+          "display": "none"
+        }
+      },
+      "errors": [],
+      "existingHTTPFailures": [
+        {
+          "url": "http://mwhoster.test/wp-content/uploads/elementor/css/global.css?ver=1746600877",
+          "status": 404
+        }
+      ],
+      "newHTTPFailures": [],
+      "overflow": false,
+      "rawFontInventoryIdentical": true,
+      "passed": true
+    }
+  ],
+  "measurements": {
+    "baseline": [
+      {
+        "route": "/",
+        "runs": 2,
+        "FCP": 5113.649925,
+        "LCP": 9085.111074999999,
+        "CLS": 0.0017208610122189526,
+        "TBT": 147.25,
+        "bytes": 1538985,
+        "requests": 38,
+        "LCPRange": [
+          9082.806199999999,
+          9087.415949999999
+        ],
+        "individualLCP": [
+          9082.806199999999,
+          9087.415949999999
+        ],
+        "individualTBT": [
+          131.5,
+          163
+        ],
+        "LCPSelector": "div.row > div.col-md-12 > div.hero-slider-content > p.lead"
+      },
+      {
+        "route": "/shared-web-hosting/",
+        "runs": 1,
+        "FCP": 4505.1892,
+        "LCP": 6080.206,
+        "CLS": 0.01912220116864326,
+        "TBT": 46.5,
+        "bytes": 1513016,
+        "requests": 36,
+        "LCPRange": [
+          6080.206,
+          6080.206
+        ],
+        "individualLCP": [
+          6080.206
+        ],
+        "individualTBT": [
+          46.5
+        ],
+        "LCPSelector": "div.row > div.col-md-9 > div.section-heading > p"
+      }
+    ],
+    "after": [
+      {
+        "route": "/",
+        "runs": 3,
+        "FCP": 4808.8317,
+        "LCP": 9356.0608,
+        "CLS": 0.0017208610122189526,
+        "TBT": 132.5,
+        "bytes": 1460725,
+        "requests": 38,
+        "LCPRange": [
+          8634.0458,
+          9358.699
+        ],
+        "individualLCP": [
+          9356.0608,
+          9358.699,
+          8634.0458
+        ],
+        "individualTBT": [
+          61,
+          218,
+          132.5
+        ],
+        "LCPSelector": "div.row > div.col-md-12 > div.hero-slider-content > p.lead"
+      },
+      {
+        "route": "/shared-web-hosting/",
+        "runs": 1,
+        "FCP": 4205.7351,
+        "LCP": 5630.735099999999,
+        "CLS": 0.01912220116864326,
+        "TBT": 20.5,
+        "bytes": 1435607,
+        "requests": 36,
+        "LCPRange": [
+          5630.735099999999,
+          5630.735099999999
+        ],
+        "individualLCP": [
+          5630.735099999999
+        ],
+        "individualTBT": [
+          20.5
+        ],
+        "LCPSelector": "div.row > div.col-md-9 > div.section-heading > p"
+      }
+    ]
+  },
+  "passed": true,
+  "limits": [
+    "Isolated local lab timings; no live, field CWV or marketing delivery claim. TBT is not INP.",
+    "Existing Elementor global.css 404 remains; authenticated editor/preview not tested.",
+    "390/1366px only; full source/media retention protects intermediate widths but tablet browser coverage remains pending.",
+    "No DB/settings/server/font/JS/image change; prior guide migration remains local-only and independent."
+  ],
+  "totalLighthouseRuns": 7,
+  "captureNote": "Shared desktop after-settled replaces the initial placeholder capture; normalize only transient lazy-image classes. Guide mobile raw font inventory includes transient Joinchat UI after, but its theme/Elementor typography and Inter faces are identical.",
+  "renderedDOMClassReview": [
+    {
+      "slug": "home",
+      "removedUtilitiesMatchingRenderedDOM": []
+    },
+    {
+      "slug": "shared-web-hosting",
+      "removedUtilitiesMatchingRenderedDOM": []
+    }
+  ]
+}

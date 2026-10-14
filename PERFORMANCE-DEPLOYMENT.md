@@ -8,6 +8,29 @@ The **14 October homepage/shared-hosting font experiment was rejected and revert
 
 ## 1. Tracked-file release
 
+### Current bounded CSS candidate — 14 October 2026
+
+Branch `codex/home-shared-css` starts at preserved checkout HEAD `7595953ef0abe5d01161e0e9b41265b67aef2a7d`; local `main` is still `3a5977ac0047023ab4871ae708f7501b4f00609d`. This session leaves uncommitted changes and five new untracked reviewable files. The previous cleanup is already committed; no cleanup is awaiting commit. No push or deployment occurred. Review `PERFORMANCE-RESULTS.md` and `tools/performance/home-shared-css-summary.json` before choosing to release: first paint improved, shared-hosting's single-run LCP improved, but homepage median LCP was 0.27s worse. Compressed CSS sizes are estimates; live gains remain unverified.
+
+The only new runtime release files for this candidate are:
+
+- `wp-content/themes/MWhoster-child/inc/performance.php` (six-line scoped profile selection)
+- `wp-content/themes/MWhoster-child/assets/css/mwhoster-home-shared.css` (302,975 bytes)
+
+Keep all existing theme assets available for fallback. Review/build additions are `tools/performance/home-shared-css-review.json`, `home-shared-css-build-report.json`, `home-shared-css-summary.mjs` and `home-shared-css-summary.json`, with updates to the existing build/browser/Lighthouse scripts and README. Raw evidence remains ignored/local; do not deploy tooling, `.local`, artifacts, dependencies or MU plugins. Fonts, runtime JS, analytics/consent and images are unchanged.
+
+Rebuild only this candidate using the existing installed dependencies, from `tools/performance`:
+
+```sh
+node build.mjs --home-shared-only
+```
+
+No font/image build, plugin setting or DB migration is needed. The build reads the original CSS/source map and the complete two-template/header/footer/style inventory; update its utility safelist if future markup/JS introduces new generated utility classes. Do not select this restricted profile for another route without a new structural review.
+
+Owner-run release steps, after review: save the currently deployed child integration, publish the generated CSS first, then the reviewed `inc/performance.php`. Purge only WordPress HTML caches for `/` and `/shared-web-hosting/` and their new versioned child CSS URL where a WordPress-scoped asset cache exists. Keep server/account-wide cache/compression policy unchanged. Check 390px/1366px hero, icons, all below-fold sections, mobile menu/dropdowns/close, desktop dropdown, FAQ both states and pricing anchors; verify one Elementor guide retains its existing styles. Confirm unchanged external Inter, scripts, preloads and no mobile hidden-hero request. Retest compressed live cold/warm caches and approved consent/marketing behavior. Tablet and authenticated editor/preview checks remain pending.
+
+Candidate rollback: restore the saved prior `inc/performance.php` and purge those two WordPress HTML caches; the original hosting/full/shared profiles remain available. After cached HTML no longer references the candidate, its CSS may be removed. This is independent of the older guide-media DB rollback. The earlier eight-guide migration remains local-only; this CSS task neither accessed nor changed the DB and a Git release will not carry those edits. Both existing local MU plugins and tracked Elementor upload CSS remain unchanged; their effects/removal procedure below still apply.
+
 Review the child-theme and `tools/performance` diff. Keep the newer shared-hosting content in the baseline. Release the changed child PHP/JS and **all** new child CSS, subset fonts and optimized images together. The existing parent theme, plugins, WordPress core, original image/font assets and old `main.css` remain untouched. The old 283-byte `main.min.css` is not used.
 
 The child integration uses WordPress enqueue dependencies, `filemtime` asset versions and the defer strategy available since WordPress 6.3. Local WordPress is 7.1.2; verify the live version before release. Do not copy `wp-config.php`, the local database, `tools/performance/.local`, `tools/performance/artifacts`, `node_modules`, or local MU plugins to production. Tooling and reports are review/build material; only the child-theme files are needed at runtime. Keep migration tooling outside public access when running it on the server, or remove it after use. No server runtime dependency on Node/Python is added.
