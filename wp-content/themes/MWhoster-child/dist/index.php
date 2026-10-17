@@ -47,7 +47,7 @@ add_filter( 'wpseo_schema_webpage', static function ( $data ) use ( $home_title,
 
                         <div class="action-btns mt-4">
                             <a href="<?php echo esc_url( home_url( '/#pricing' ) ); ?>" class="btn btn-tertiary btn-lg">Compare Hosting Plans</a>
-                            <a href="<?php echo esc_url( home_url( '/contact/' ) ); ?>" class="btn btn-outline-light btn-lg">Move My Website</a>
+                            <a href="https://api.whatsapp.com/send/?phone=923180049011&text=Need+Help%3F&type=phone_number&app_absent=0" class="btn btn-outline-light btn-lg" target="_blank">Move My Website</a>
                         </div>
                     </div>
                 </div>
@@ -646,7 +646,7 @@ Their services are of the highest quality, achieving an ideal harmony between ex
                     <div class="section-heading  mb-5">
                         <h2 class="text-center mb-4">Launch with Confidence. Grow on Autoscaling Cloud Hosting.</h2>
                         <p>Give your next website a technical foundation for real visitors and real transactions: NVMe SSD storage, scalable CPU and RAM, free SSL and technical support. Choose a shared cloud plan for a new project, or bring your existing website over with free migration assistance.</p>
-                        <div class="action-btns mt-4"><a href="<?php echo esc_url( home_url( '/#pricing' ) ); ?>" class="btn btn-primary">Compare Hosting Plans</a> <a href="<?php echo esc_url( home_url( '/contact/' ) ); ?>" class="btn btn-outline-primary">Move My Website</a></div>
+                        <div class="action-btns mt-4"><a href="<?php echo esc_url( home_url( '/#pricing' ) ); ?>" class="btn btn-primary">Compare Hosting Plans</a> <a href="https://api.whatsapp.com/send/?phone=923180049011&text=Need+Help%3F&type=phone_number&app_absent=0" class="btn btn-outline-primary" target="_blank">Move My Website</a></div>
                     </div>
                 </div>
 
