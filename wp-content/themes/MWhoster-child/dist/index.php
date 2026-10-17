@@ -4,32 +4,50 @@
 */
 ?>
 
+<?php
+// Page-specific SEO uses the existing Yoast filters and canonical handling.
+$home_title = 'NVMe Cloud Hosting with Autoscaling CPU & RAM | MWHoster';
+$home_description = 'Launch on NVMe cloud hosting with autoscaling CPU and RAM, free SSL, DDoS protection and migration assistance. Explore MWHoster hosting plans.';
+foreach ( array( 'wpseo_title', 'wpseo_opengraph_title', 'wpseo_twitter_title', 'pre_get_document_title' ) as $home_filter ) {
+    add_filter( $home_filter, static function () use ( $home_title ) { return $home_title; } );
+}
+foreach ( array( 'wpseo_metadesc', 'wpseo_opengraph_desc', 'wpseo_twitter_description' ) as $home_filter ) {
+    add_filter( $home_filter, static function () use ( $home_description ) { return $home_description; } );
+}
+add_filter( 'wpseo_schema_webpage', static function ( $data ) use ( $home_title, $home_description ) {
+    $data['name'] = $home_title;
+    $data['description'] = $home_description;
+    return $data;
+} );
+?>
+
 <?php get_header(); ?>
 
-<div class="main">
+<style>
+.mwhoster-home-page .action-btns { display: flex; flex-wrap: wrap; gap: 12px; }
+</style>
 
-    <!--hero section start-->
+<div class="main mwhoster-home-page">
+
     <section class="ptb-20 overflow-hidden primary-bg sm-mt-3">
         <div class="container">
             <div class="row align-items-center justify-content-lg-between justify-content-md-center justify-content-sm-center">
                 <div class="col-md-12 col-lg-5">
                     <div class="hero-slider-content text-white py-5">
-<!--                             <div class="headline mb-4">
-                            <p class="mb-0"><i class="fas fa-bell rounded-circle mr-2"></i> <span class="fw-bold">30% Discount
-                    </span> first annual purchase</p>
-                        </div> -->
-                        <h1 class="text-white">Fast, Secure & Scalable Cloud Hosting</h1>
+
+                        <h1 class="text-white">Fast Cloud Hosting with Autoscaling CPU &amp; RAM</h1>
                         <ul>
-                            <li><i class="fas fa-check"></i> Premium Grade NVMe SSD Storage</li>
-                            <li><i class="fas fa-check"></i> FREE SSL Certificate Included</li>
-                            <li><i class="fas fa-check"></i> One Click Wordpress Installation</li>
-                            <li><i class="fas fa-check"></i> 99.99% Uptime Guarantee</li>
-                            <li><i class="fas fa-check"></i> Affordable & Premium Web Hosting and Domains</li>
+                            <li><i class="fas fa-check" aria-hidden="true"></i> NVMe SSD storage</li>
+                            <li><i class="fas fa-check" aria-hidden="true"></i> Autoscaling CPU and RAM</li>
+                            <li><i class="fas fa-check" aria-hidden="true"></i> Shared cloud with no fixed LVE CPU or RAM caps</li>
+                            <li><i class="fas fa-check" aria-hidden="true"></i> Free SSL certificates</li>
+                            <li><i class="fas fa-check" aria-hidden="true"></i> Free website migration assistance</li>
                         </ul>
-                        <p class="lead">Power your website with NVMe SSD performance, effortless WordPress setup, and hosting that grows with you. Start with the resources you need and upgrade as your traffic and business expand.</p>
+                        <p class="lead">Build on NVMe SSD storage and a shared cloud platform that scales processing power and memory with demand. Give your business website, WordPress project or online store capacity for more simultaneous activity, backed by DDoS protection and technical support.</p>
 
                         <div class="action-btns mt-4">
-                            <a href="#pricing" class="btn btn-tertiary btn-lg">Get started now </a>
+                            <a href="<?php echo esc_url( home_url( '/#pricing' ) ); ?>" class="btn btn-tertiary btn-lg">Compare Hosting Plans</a>
+                            <a href="<?php echo esc_url( home_url( '/contact/' ) ); ?>" class="btn btn-outline-light btn-lg">Move My Website</a>
                         </div>
                     </div>
                 </div>
@@ -42,52 +60,51 @@
                     </div>
                 </div>
             </div>
-            <!--end of row-->
+
         </div>
-        <!--end of container-->
+
     </section>
-    <!--hero section end-->
-    <!--pricing section start-->
+
     <section id="pricing" class="pricing-section ptb-80 ">
         <div class="container">
             <div class="row justify-content-center">
                 <div class="col-md-9 col-lg-9">
                     <div class="section-heading text-center mb-4">
-                        <h2>Choose the Right NVMe Cloud Hosting Plan</h2>
-                        <p>Power your website with fast NVMe SSD storage, free SSL, and expert technical support. Compare storage, bandwidth, and website capacity to find your fit—with flexible upgrades as your requirements grow.</p>
+                        <h2>Choose Your Plan. Get the Same Autoscaling Foundation.</h2>
+                        <p>Every shared cloud plan includes CPU and RAM autoscaling, NVMe SSD storage and free SSL. Choose the storage, websites, email accounts and data transfer your project needs.</p>
                     </div>
                 </div>
             </div>
+            <p class="text-center">Included across these plans: autoscaling CPU and RAM without fixed account-wide CloudLinux LVE caps.</p>
             <div class="row align-items-center justify-content-md-center justify-content-center">
                 <div class="col-lg-3 col-md-6 col-sm-8">
                     <div class="popular-price bg-white pricing-new-wrapper mt-4 shadow-sm border">
                         <div class="pricing-price d-flex justify-content-between align-items-center pb-4">
                             <span class="p-icon">
-                                <i class="fa-solid fa-volleyball color-secondary"></i>
-                                </span>
+                            <i class="fa-solid fa-volleyball color-secondary"></i>
+                            </span>
                             <div class="h2 mb-0 text-dark"> Rs.2999<span class="price-cycle h5">/year</span>
                             </div>
                         </div>
                         <div class="pricing-info">
-                            <h4>Starter Cloud</h4>
-                            <p class="text-muted"> For Personal Websites, Resume and portfolio </p>
+                            <h3 class="h4">Starter Cloud</h3>
+                            <p class="text-muted">For a personal website, professional portfolio or new blog.</p>
                         </div>
                         <div class="pricing-content">
                             <ul class="list-unstyled pricing-feature-list-2 mt-4 mb-3">
                                 <li> <i class="far fa-hdd me-2"></i> <p><strong>5GB</strong> NVMe SSD Storage</p> </li>
-                                <li> <i class="fas fa-route me-2"></i> <p><strong>20GB</strong> bandwidth</p> </li>
-                                <li> <i class="fas fa-cloud me-2"></i> <p> <strong>2</strong> Websites Host</p> </li>
+                                <li> <i class="fas fa-route me-2"></i> <p><strong>20GB</strong> Bandwidth</p> </li>
+                                <li> <i class="fas fa-cloud me-2"></i> <p> <strong>2</strong> Websites</p> </li>
                                 <li> <i class="fas fa-mail-bulk me-2"> </i> <p><strong>5</strong> Email Accounts </p> </li>
-                                <!-- <li> <i class="fas fa-globe me-2"></i> <p><strong>No</strong> Domain Name</p> </li> -->
+
                                 <li> <i class="fas fa-earth me-2"></i> <p><strong>5</strong> Subdomains </p> </li>
                                 <li> <i class="fas fa-server me-2"></i> <p><strong>5</strong> MySQL Databases (1 GB Each)</p> </li>
-                                <li> <i class="fas fa-lock me-2"></i><p><strong>Free</strong> SSL</p> </li>
+                                <li> <i class="fas fa-lock me-2"></i>
+                                    <p><strong>Free</strong> SSL</p> </li>
                                 <li> <i class="fas fa-headset me-2"></i> <p><strong>Free</strong> Technical Support </p> </li>
                             </ul>
-<!--                                 <a href="pricing-specifications.html" class="mb-4 d-block read-more-link">Full specifications <i
-                class="fas fa-arrow-right ps-2"></i>
-                            </a> -->
-                            <a href="https://mwhoster.com/clientarea/index.php?rp=/store/shared-linux-hosting/shared-starter" class="btn btn-primary btn-block" target="_blank">Order Now</a>
+
+                            <a href="https://mwhoster.com/clientarea/index.php?rp=/store/shared-linux-hosting/shared-starter" class="btn btn-primary btn-block" target="_blank">Choose Plan</a>
                         </div>
                     </div>
                 </div>
@@ -95,31 +112,30 @@
                     <div class="popular-price bg-white pricing-new-wrapper mt-4  shadow-sm border">
                         <div class="pricing-price d-flex justify-content-between align-items-center pb-4">
                             <span class="p-icon">
-                                <i class="fa-solid  fa-heart-circle-check color-secondary"></i>
+                            <i class="fa-solid  fa-heart-circle-check color-secondary"></i>
                             </span>
                             <div class="h2 mb-0 text-dark"> Rs.4999<span class="price-cycle h5">/year</span>
                             </div>
                         </div>
                         <div class="pricing-info">
-                            <h4>Alpha Cloud</h4>
-                            <p class="text-muted"> For Small Businesses </p>
+                            <h3 class="h4">Alpha Cloud</h3>
+                            <p class="text-muted">For business websites and several active projects.</p>
                         </div>
                         <div class="pricing-content">
                             <ul class="list-unstyled pricing-feature-list-2 mt-4 mb-3">
                                 <li> <i class="far fa-hdd me-2"></i> <p><strong>20GB</strong> NVMe SSD Storage</p> </li>
-                                <li> <i class="fas fa-route me-2"></i> <p><strong>50GB</strong> bandwidth</p> </li>
-                                <li> <i class="fas fa-cloud me-2"></i> <p> <strong>5</strong> Websites Host</p> </li>
+                                <li> <i class="fas fa-route me-2"></i> <p><strong>50GB</strong> Bandwidth</p> </li>
+                                <li> <i class="fas fa-cloud me-2"></i> <p> <strong>5</strong> Websites</p> </li>
                                 <li> <i class="fas fa-mail-bulk me-2"> </i> <p><strong>20</strong> Email Accounts </p> </li>
-                                <!-- <li> <i class="fas fa-globe me-2"></i> <p><strong>No</strong> Domain Name</p> </li> -->
+
                                 <li> <i class="fas fa-earth me-2"></i> <p><strong>10</strong> Subdomains </p> </li>
                                 <li> <i class="fas fa-server me-2"></i> <p><strong>10</strong> MySQL Databases (1 GB Each)</p> </li>
-                                <li> <i class="fas fa-lock me-2"></i><p><strong>Free</strong> SSL</p> </li>
+                                <li> <i class="fas fa-lock me-2"></i>
+                                    <p><strong>Free</strong> SSL</p> </li>
                                 <li> <i class="fas fa-headset me-2"></i> <p><strong>Free</strong> Technical Support </p> </li>
                             </ul>
-<!--                                 <a href="pricing-specifications.html" class="mb-4 d-block read-more-link">Full specifications <i
-                class="fas fa-arrow-right ps-2"></i>
-                            </a> -->
-                            <a href="https://mwhoster.com/clientarea/index.php?rp=/store/shared-linux-hosting/shared-alpha-cloud" class="btn btn-primary btn-block" target="_blank">Order Now</a>
+
+                            <a href="https://mwhoster.com/clientarea/index.php?rp=/store/shared-linux-hosting/shared-alpha-cloud" class="btn btn-primary btn-block" target="_blank">Choose Plan</a>
                         </div>
                     </div>
                 </div>
@@ -127,97 +143,49 @@
                     <div class="popular-price bg-white pricing-new-wrapper mt-4  shadow-sm border">
                         <div class="pricing-price d-flex justify-content-between align-items-center pb-4">
                             <span class="p-icon">
-                <i class="fas fa-space-shuttle color-secondary"></i>
-            </span>
+                            <i class="fas fa-space-shuttle color-secondary"></i>
+                            </span>
                             <div class="h2 mb-0 text-dark"> Rs.9999<span class="price-cycle h5">/year</span>
                             </div>
                         </div>
                         <div class="pricing-info">
-                            <h4>Beta Cloud</h4>
-                            <p class="text-muted"> Best for Bloggers/Freelancers & high-range traffic </p>
+                            <h3 class="h4">Beta Cloud</h3>
+                            <p class="text-muted">For freelancers and publishers managing a larger collection of websites.</p>
                         </div>
                         <div class="pricing-content">
                             <ul class="list-unstyled pricing-feature-list-2 mt-4 mb-3">
                                 <li> <i class="far fa-hdd me-2"></i> <p><strong>30GB</strong> NVMe SSD Storage</p> </li>
-                                <li> <i class="fas fa-route me-2"></i> <p><strong>Unlimited</strong> bandwidth</p> </li>
-                                <li> <i class="fas fa-cloud me-2"></i> <p> <strong>10</strong> Websites Host</p> </li>
+                                <li> <i class="fas fa-route me-2"></i> <p><strong>Unlimited</strong> Bandwidth</p> </li>
+                                <li> <i class="fas fa-cloud me-2"></i> <p> <strong>10</strong> Websites</p> </li>
                                 <li> <i class="fas fa-mail-bulk me-2"> </i> <p><strong>Unlimited</strong> Email Accounts </p> </li>
                                 <li> <i class="fas fa-globe me-2"></i> <p><strong>Free</strong> Domain (1 year)</p> </li>
                                 <li> <i class="fas fa-earth me-2"></i> <p><strong>Unlimited</strong> Subdomains </p> </li>
                                 <li> <i class="fas fa-server me-2"></i> <p><strong>40</strong> MySQL Databases (1 GB Each)</p> </li>
-                                <li> <i class="fas fa-lock me-2"></i><p><strong>Free</strong> SSL</p> </li>
+                                <li> <i class="fas fa-lock me-2"></i>
+                                    <p><strong>Free</strong> SSL</p> </li>
                                 <li> <i class="fas fa-headset me-2"></i> <p><strong>Free</strong> Technical Support </p> </li>
                             </ul>
-<!--                                 <a href="pricing-specifications.html" class="mb-4 d-block read-more-link">Full specifications <i
-                class="fas fa-arrow-right ps-2"></i>
-                            </a> -->
-                            <a href="https://mwhoster.com/clientarea/index.php?rp=/store/shared-linux-hosting/shared-beta-cloud" class="btn btn-primary btn-block" target="_blank">Order Now</a>
+
+                            <a href="https://mwhoster.com/clientarea/index.php?rp=/store/shared-linux-hosting/shared-beta-cloud" class="btn btn-primary btn-block" target="_blank">Choose Plan</a>
                         </div>
                     </div>
                 </div>
-<!--                    <div class="col-lg-3 col-md-6 col-sm-8">-->
-<!--                        <div class="popular-price bg-white pricing-new-wrapper mt-4 shadow-sm border">-->
-<!--                            <div class="pricing-price d-flex justify-content-between align-items-center pb-4">-->
-<!--                                <span class="p-icon">-->
-<!--                  <i class="fas fa-medal color-secondary"></i>-->
-<!--                </span>-->
-<!--                                <div class="h2 mb-0 text-dark"> $99.99 <span class="price-cycle h5">/year</span>-->
-<!--                                </div>-->
-<!--                            </div>-->
-<!--                            <div class="pricing-info">-->
-<!--                                <h4>Gamma Cloud</h4>-->
-<!--                                <p class="text-muted"> For Software houses, Freelancers & E-Commerce </p>-->
-<!--                            </div>-->
-<!--                            <div class="pricing-content">-->
-<!--                                <ul class="list-unstyled pricing-feature-list-2 mt-4 mb-3">-->
-<!--                                    <li> <i class="far fa-hdd me-2"></i> <p><strong>Unlimited</strong> SSD Disk Space</p> </li>-->
-<!--                                    <li> <i class="fas fa-route me-2"></i> <p><strong>Unlimited</strong> bandwidth</p> </li>-->
-<!--                                    <li> <i class="fas fa-cloud me-2"></i> <p> <strong>Unlimited</strong> Websites Host</p> </li>-->
-<!--                                    <li> <i class="fas fa-mail-bulk me-2"> </i> <p><strong>Unlimited</strong> Email Accounts </p> </li>-->
-<!--                                    <li> <i class="fas fa-globe me-2"></i> <p><strong>Free</strong> Domain (1 year)</p> </li>-->
-<!--							        <li> <i class="fas fa-earth me-2"></i> <p><strong>Unlimited</strong> Subdomains </p> </li>-->
-<!--									<li> <i class="fas fa-server me-2"></i> <p><strong>Unlimited</strong> MySQL Databases (1 GB Each) </p> </li>-->
-<!--									<li> <i class="fas fa-lock me-2"></i><p><strong>Free</strong> SSL</p> </li>-->
-<!--                                    <li> <i class="fas fa-headset me-2"></i> <p><strong>Free</strong> Technical Support </p> </li>-->
-<!--                                </ul>-->
-<!--                                 <a href="pricing-specifications.html" class="mb-4 d-block read-more-link">Full specifications <i
-<!--                    class="fas fa-arrow-right ps-2"></i>-->
-<!--                                </a> -->-->
-<!--                                <a href="http://mwhoster.com/clientarea/index.php?rp=/store/shared-linux-hosting/shared-gamma-cloud" class="btn btn-primary btn-block" target="_blank">Order Now</a>-->
-<!--                            </div>-->
-<!--                        </div>-->
-<!--                    </div>-->
-<!--                     <div class="col-12">
-                    <div class="support-cta text-center mt-5">
-                        <a href="pricing-comparision.html" target="_blank">
-                            <h5 class="mb-1">
-                                <span class="fas fa-rotate-left color-primary me-2"></span>Compare Hosting Plans
-                            </h5>
-                        </a>
-                    </div>
-                </div> -->
-            </div>
-        </div>
-    </section> <!--pricing section end-->
 
-    <!--domain search promo start-->
+            </div>
+            <div class="support-cta text-center mt-5"><a href="<?php echo esc_url( home_url( '/shared-web-hosting/' ) ); ?>" class="btn btn-primary">Explore Shared Cloud Hosting</a></div>
+        </div>
+    </section>
+
     <section class="position-relative zindex-2">
         <div class="container">
             <div class="row justify-content-center">
                 <div class="col-md-9 col-lg-8 col-12">
                     <div class="domain-search-wrap border gray-light-bg">
-                        <h3 class="text-center">Looking For Domain Name?</h3>
+                        <h2 class="text-center h3">Find the Domain Your Business Will Be Known For</h2>
                         <form action="https://mwhoster.com/clientarea/domainchecker.php" method="POST" class="domain-search-form my-4">
                             <input type="text" name="domain" id="domain" class="form-control" placeholder="yourdomainname.com" />
                             <div class="select-group">
-<!--                                     <select name="domainType" class="form-control">
-                                    <option value="com" selected>.com</option>
-                                    <option value="net">.net</option>
-                                    <option value="io">.io</option>
-                                    <option value="info">.info</option>
-                                    <option value="store">.store</option>
-                                    <option value="store">.org</option>
-                                </select> -->
+
                                 <button type="submit" class="btn btn-primary"><i class="fas fa-search pe-1"></i> Search
                                 </button>
                             </div>
@@ -251,18 +219,14 @@
             </div>
         </div>
     </section>
-    <!--domain search promo end-->
 
-    <!-- pricing section start -->
     <section class="pricing-section ptb-80">
         <div class="container">
             <div class="row justify-content-center">
                 <div class="col-md-9 col-lg-9">
                     <div class="section-heading text-center mb-4">
-                        <h2>The Right Hosting Platform for Your Website</h2>
-                        <p>
-                            Choose from Linux shared hosting, optimized WordPress hosting, and Windows hosting—all powered by NVMe SSD storage. Find the environment that fits your website, applications, and technical requirements.
-                        </p>
+                        <h2>Match Your Website to the Right Hosting Platform</h2>
+                        <p>Start with the environment your application needs. Explore Linux shared hosting, our WordPress hosting range or Windows hosting, all with NVMe SSD storage.</p>
                     </div>
                 </div>
             </div>
@@ -272,11 +236,10 @@
                         <div class="pricing-icon mob-hide">
                             <img src="<?php echo esc_url( mwhoster_image_url( 'assets/img/optimized/shared-web-hosting-327.webp' ) ); ?>" alt="Shared Website Hosting" width="200" height="86" />
                         </div>
-                        <h4 class="package-title h4">Shared Web Hosting</h4>
-                        <p class="mb-3">Affordable Linux hosting for business websites, blogs, and portfolios. Get NVMe SSD storage, MySQL databases, business email, and free SSL with a control panel that simplifies everyday management.
-</p>
+                        <h3 class="package-title h4">Shared Web Hosting</h3>
+                        <p class="mb-3">Run business websites, blogs and portfolios on autoscaling Linux cloud hosting. Get MySQL databases, domain email and free SSL, with CPU and RAM capacity that responds to demand.</p>
 
-                        <a href="/shared-web-hosting/" class="btn btn-primary mt-3">Get Started Now</a>
+                        <a href="<?php echo esc_url( home_url( '/shared-web-hosting/' ) ); ?>" class="btn btn-primary mt-3">Explore Shared Hosting</a>
                     </div>
                 </div>
                 <div class="col-lg-4 col-md-6 col-sm-8">
@@ -284,11 +247,9 @@
                         <div class="pricing-icon mob-hide">
                             <img src="<?php echo esc_url( mwhoster_image_url( 'assets/img/optimized/wordpress-hosting-327.webp' ) ); ?>" alt="WordPress Website Hosting" width="200" height="86" />
                         </div>
-                        <h4 class="package-title h4">Wordpress Hosting</h4>
-                        <p class="mb-3">Power your WordPress website with NVMe SSD performance, one-click installation, automatic updates, and backups. A hosting environment tailored to WordPress, with technical support to help keep your site running smoothly.
-
-</p>
-                        <a href="/wordpress-web-hosting/" class="btn btn-primary mt-3">Get Started Now</a>
+                        <h3 class="package-title h4">WordPress Hosting</h3>
+                        <p class="mb-3">Choose a hosting range built around WordPress websites. Bring together NVMe SSD storage, straightforward installation and technical support for your next blog, business website or online store.</p>
+                        <a href="<?php echo esc_url( home_url( '/wordpress-web-hosting/' ) ); ?>" class="btn btn-primary mt-3">Explore WordPress Hosting</a>
                     </div>
                 </div>
                 <div class="col-lg-4 col-md-6 col-sm-8">
@@ -296,34 +257,26 @@
                         <div class="pricing-icon mob-hide">
                             <img src="<?php echo esc_url( mwhoster_image_url( 'assets/img/optimized/window-web-hosting-327.webp' ) ); ?>" alt="Windows Website Hosting" width="200" height="86" />
                         </div>
-                        <h4 class="package-title h4">Windows Web Hosting</h4>
-                        <p class="mb-3">Host websites and applications that require a Windows server environment. Combine NVMe SSD storage with flexible hosting plans and technical support for your application’s hosting requirements.
-
-</p>
-                        <a href="/windows-web-hosting/" class="btn btn-primary mt-3">Get Started Now</a>
+                        <h3 class="package-title h4">Windows Web Hosting</h3>
+                        <p class="mb-3">Host websites and applications that need a Windows server environment. Combine NVMe SSD storage with hosting plans and technical support for your application's requirements.</p>
+                        <a href="<?php echo esc_url( home_url( '/windows-web-hosting/' ) ); ?>" class="btn btn-primary mt-3">Explore Windows Hosting</a>
                     </div>
                 </div>
             </div>
         </div>
     </section>
-    <!--pricing section end-->
-    
-        
-    
-    
-    
-    <!--call to action start-->
+
     <section class="ptb-60 primary-bg">
         <div class="container">
             <div class="row align-items-center justify-content-between">
                 <div class="col-md-7 col-lg-7">
                     <div class="cta-content-wrap text-white mob-botom">
-                        <h3 class="text-white h2">Advanced Hosting Security. Protection at Every Layer.</h3>
+                        <h2 class="text-white h2">Protection for Your Website, Its Traffic and Your Visitors</h2>
                         <ul>
-                            <li><i class="fas fa-circle"></i>  <b>DDoS Protection:</b> Mitigate malicious traffic floods to help protect your website against service disruption.</li>
-                            <li><i class="fas fa-circle"></i>  <b>Free SSL/TLS Certificates:</b> Encrypt data exchanged between your website and visitors through secure HTTPS connections.</li>
-                            <li><i class="fas fa-circle"></i>  <b>Proactive Malware Scanning:</b> Detect suspicious files and malicious code to identify potential security threats.</li>
-                            <li><i class="fas fa-circle"></i>  <b>IP & Country Blocking:</b> Control access to your website by restricting traffic from selected IP addresses and locations.</li>
+                            <li><i class="fas fa-circle" aria-hidden="true"></i> <strong>DDoS protection:</strong> Mitigate malicious traffic floods that attempt to overwhelm your hosting and interrupt access.</li>
+                            <li><i class="fas fa-circle" aria-hidden="true"></i> <strong>Free SSL/TLS:</strong> Encrypt connections between your website and visitors, including login and contact-form traffic.</li>
+                            <li><i class="fas fa-circle" aria-hidden="true"></i> <strong>Automatic malware scanning:</strong> Identify suspicious files and malicious code so threats can be investigated.</li>
+                            <li><i class="fas fa-circle" aria-hidden="true"></i> <strong>IP and country blocking:</strong> Restrict traffic from selected addresses or locations through hosting access controls.</li>
                         </ul>
                     </div>
                 </div>
@@ -335,18 +288,14 @@
             </div>
         </div>
     </section>
-    <!--call to action end-->
 
-    <!--promo section start-->
     <section class="promo-section ptb-80 ">
         <div class="container">
             <div class="row justify-content-center">
                 <div class="col-md-10 col-lg-9">
                     <div class="section-heading text-center">
-                        <h2>Cloud Hosting Engineered for Speed and Scale</h2>
-                        <p>
-                            From NVMe SSD storage to intelligent traffic distribution, give your website the infrastructure it needs for responsive applications, faster content delivery and growing traffic.
-                        </p>
+                        <h2>The Technology Behind Faster Website Requests</h2>
+                        <p>Website performance depends on processing, storage and content delivery working together. Our shared cloud platform addresses each stage, from executing PHP to delivering cached files.</p>
                     </div>
                 </div>
             </div>
@@ -358,10 +307,8 @@
                                 <span class="fas fa-tools icon-size-lg color-primary"></span>
                             </div>
                             <div class="pt-2 pb-3">
-                                <h4 class="h5">High-Speed NVMe SSD Storage</h4>
-                                <p class="mb-0">
-                                    Reduce storage bottlenecks with NVMe SSD technology, delivering fast data access for website files, databases and content-heavy applications.
-                                </p>
+                                <h3 class="h5">CPU and RAM That Scale</h3>
+                                <p class="mb-0">Processing and memory capacity adjust as workloads change. Your shared cloud account can draw on multiple backend servers without fixed account-wide LVE CPU or RAM caps, giving concurrent website activity more room to run.</p>
                             </div>
                         </div>
                     </div>
@@ -373,10 +320,8 @@
                                 <span class="fas fa-headset icon-size-lg color-primary"></span>
                             </div>
                             <div class="pt-2 pb-3">
-                                <h4 class="h5">Autoscaling Cloud Resources</h4>
-                                <p class="mb-0">
-                                    Automatically scale cloud resources as traffic surges, helping protect your marketing investment from slow pages, frustrated visitors and lost sales.
-                                </p>
+                                <h3 class="h5">NVMe SSD Storage</h3>
+                                <p class="mb-0">NVMe supports parallel storage operations with low protocol overhead. Fast access to website files and database data helps reduce the time requests spend waiting on disk, including during content updates and busy browsing sessions.</p>
                             </div>
                         </div>
                     </div>
@@ -388,10 +333,8 @@
                                 <span class="fas fa-cloud-upload-alt icon-size-lg color-primary"></span>
                             </div>
                             <div class="pt-2 pb-3">
-                                <h4 class="h5">Intelligent Load Balancing</h4>
-                                <p class="mb-0">
-                                    Distribute incoming requests across multiple web servers to reduce congestion and maintain consistent performance as visitor numbers increase.
-                                </p>
+                                <h3 class="h5">Load-Balanced Web Servers</h3>
+                                <p class="mb-0">Incoming HTTP and HTTPS requests are distributed across available backend servers. Sharing the workload helps reduce processing queues when more visitors browse, search or interact with your website at the same time.</p>
                             </div>
                         </div>
                     </div>
@@ -403,10 +346,8 @@
                                 <span class="fas fa-lock icon-size-lg color-primary"></span>
                             </div>
                             <div class="pt-2 pb-3">
-                                <h4 class="h5">Global CDN & Edge Caching</h4>
-                                <p class="mb-0">
-                                    Serve cached content from locations closer to your visitors, reducing latency and accelerating delivery for audiences around the world.
-                                </p>
+                                <h3 class="h5">PHP-FPM and OPcache</h3>
+                                <p class="mb-0">PHP-FPM manages the workers that execute your application. OPcache stores compiled PHP bytecode in memory for reuse, reducing repeated compilation work when WordPress and other PHP applications handle new requests.</p>
                             </div>
                         </div>
                     </div>
@@ -418,10 +359,8 @@
                                 <span class="fas fa-money-check-alt icon-size-lg color-primary"></span>
                             </div>
                             <div class="pt-2 pb-3">
-                                <h4 class="h5">Optimised PHP Performance</h4>
-                                <p class="mb-0">
-                                    Process dynamic requests efficiently with PHP-FPM and OPcache, reducing repeated script compilation to support faster WordPress websites and PHP applications.
-                                </p>
+                                <h3 class="h5">Global CDN and Edge Caching</h3>
+                                <p class="mb-0">Deliver eligible cached pages and assets from edge locations closer to visitors. This reduces the distance content travels and the number of repeat requests that need to reach your origin hosting.</p>
                             </div>
                         </div>
                     </div>
@@ -433,10 +372,8 @@
                                 <span class="fas fa-hand-holding-usd icon-size-lg color-primary"></span>
                             </div>
                             <div class="pt-2 pb-3">
-                                <h4 class="h5">Built-In Website Acceleration</h4>
-                                <p class="mb-0">
-                                    Optimise images, minify JavaScript and streamline CSS with integrated performance tools that reduce page weight and improve loading times.
-                                </p>
+                                <h3 class="h5">Website Acceleration Tools</h3>
+                                <p class="mb-0">Reduce the amount of data visitors need to download with image optimisation and CSS/JavaScript minification tools. A lighter page complements fast server processing by shortening the work required to load its assets.</p>
                             </div>
                         </div>
                     </div>
@@ -444,24 +381,16 @@
             </div>
         </div>
     </section>
-    <!--promo section end-->		
 
-    
-
-    <!--features section start-->
     <div class="feature-section ptb-100 gray-light-bg">
         <div class="container">
             <div class="row align-items-center justify-content-between pb-40">
                 <div class="col-md-7 col-lg-5">
                     <div class="feature-content-wrap">
-                        <h2>One-Click App Installation. A Faster Start for Your Website.</h2>
-                        <p>Deploy WordPress, Joomla, Drupal and other popular applications directly from your hosting control panel. Automated installation handles application files and database configuration, giving your website a working foundation in minutes. </p>
-                        <p>
-                            Bring your next business website, blog or online store closer to launch. Spend more time creating content, showcasing products and winning customers with a simpler setup process that works for beginners and experienced developers alike.
-                        </p>
-                        
-<!--                             <a href="about-us.html" class="read-more-link">Know more about us <i
-                    class="fas fa-arrow-right ms-2"></i></a> -->
+                        <h2>Start Building with One-Click App Installation</h2>
+                        <p>Install WordPress, Joomla, Drupal and other supported applications from your hosting control panel. The installer prepares the application files and database connection, so you can move straight into building your website.</p>
+                        <p>Launch a business site, publish your first article or begin setting up your store with hosting, email and databases managed in one place.</p>
+
                     </div>
                 </div>
                 <div class="col-md-5 col-lg-6 d-none d-md-block d-lg-block">
@@ -478,42 +407,31 @@
                 </div>
                 <div class="col-md-7 col-lg-5">
                     <div class="feature-content-wrap">
-                        <h2>Intelligent Load Balancing for Faster, More Reliable Hosting</h2>
-                        <p>Incoming HTTP/HTTPS requests pass through a load balancer, which distributes them across multiple backend web servers. Sharing the processing workload helps reduce server congestion and the request queues that slow down your website. </p>
-                        <p>
-                            The platform monitors server load and availability to manage traffic distribution. If a web server becomes unavailable, failover redirects requests to healthy servers, helping reduce disruption and maintain website access. 
-                        </p>
-                        <p>
-                            As traffic grows, autoscaling provides additional processing capacity while load balancing distributes requests across the available servers. Together, they support consistent performance when promotions, product launches or growing demand bring more visitors to your website.
-                        </p>
-<!--                             <a href="about-us.html" class="read-more-link">Know more about us<i
-                    class="fas fa-arrow-right ms-2"></i></a> -->
+                        <h2>More Traffic. More Processing Power.</h2>
+                        <p>A successful campaign brings more visitors, product searches and checkout requests. Each uncached request needs CPU time and memory. Our shared cloud platform responds by scaling CPU and RAM capacity across multiple backend web servers.</p>
+                        <p>Load balancing distributes incoming HTTP and HTTPS requests across the available servers, helping reduce processing queues. Autoscaling supplies additional capacity; load balancing puts that capacity to work. Together, they give your website room to handle more simultaneous activity without fixed account-wide CloudLinux LVE CPU or RAM caps.</p>
+                        <p>Server availability is monitored alongside traffic load. If a backend web server becomes unavailable, requests can be directed to healthy servers, adding resilience to the same architecture that handles growing demand.</p>
+                        <a href="<?php echo esc_url( home_url( '/shared-web-hosting/' ) ); ?>" class="btn btn-primary mt-3">Explore Shared Cloud Hosting</a>
+
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!--features section end-->
-    
-    <!--call to action start-->
     <section class="ptb-60 primary-bg">
         <div class="container">
             <div class="row align-items-center justify-content-between">
                 <div class="col-12 col-lg-6">
                     <div class="cta-content-wrap text-white">
-                        <h3 class="text-white h2">
-                            Customer-Centric Web Hosting Solutions
-                        </h3>
-                        <p>
-                            No matter what your web hosting needs are, we are available around the clock. Contact us today via the provided number or email to get affordable web hosting solutions tailored to your requirements.
-                        </p>
+                        <h2 class="text-white h2">Talk Hosting with People Who Understand Your Website</h2>
+                        <p>Planning a launch, choosing a platform or moving an existing site? Tell our team what you run and where you want to take it. Get help with hosting selection, migration and technical setup.</p>
                     </div>
                     <div class="support-action d-inline-flex flex-wrap">
                         <a href="mailto:support@mwhoster.com" class="me-3 text-info"><i class="fas fa-envelope me-1 text-tertiary"></i>
-                            <span style="color:#fff">support@mwhoster.com</span></a>
+                        <span style="color:#fff">support@mwhoster.com</span></a>
                         <a href="tel:+923180049011" class="mb-0 text-info"><i class="fas fa-phone-alt me-1 text-tertiary"></i>
-                            <span style="color:#fff">+92 318 0049011</span></a>
+                        <span style="color:#fff">+92 318 0049011</span></a>
                     </div>
                 </div>
                 <div class="col-md-6 col-lg-4 d-none d-lg-block">
@@ -524,18 +442,14 @@
             </div>
         </div>
     </section>
-    <!--call to action end-->
-    
-        <!--services section start-->
+
     <section class="service-section-wrap pt-80">
         <div class="container">
             <div class="row justify-content-center">
                 <div class="col-md-10 col-lg-6">
                     <div class="section-heading text-center mb-5">
-                        <h2>Elevate Your Website Building Experience with Our Advanced Tools And Services</h2>
-                        <p>
-                            As a premier web hosting company, we offer comprehensive solutions for an enhanced website-building experience.
-                        </p>
+                        <h2>Manage Your Website. Keep Control of the Details.</h2>
+                        <p>Everyday hosting tasks belong in one accessible dashboard, with technical help available when you need it.</p>
                     </div>
                 </div>
             </div>
@@ -543,80 +457,55 @@
                 <div class="col-md-6 col-lg-6">
                     <div class="single-service p-5 rounded border gray-light-bg">
                         <div class="service-header d-flex align-items-center justify-content-between">
-                            <h4>
-                                <span class="h5 text-uppercase">Easy & First</span>
-                                <br />
-            Easy to Manage cPanel
-                            </h4>
-<!--                                 <span class="fas fa-code fa-3x color-primary"></span> -->
+                            <h3 class="h4">Hosting Control Panel</h3>
+
                         </div>
-                        <p>
-                            Easily control your website settings and resources through our intuitive cPanel interface, simplifying the management process for users of all levels.
-                        </p>
-<!--                             <a href="#" class="btn btn-outline-primary mt-3">View more details</a> -->
+                        <p>Manage website files, email accounts, MySQL databases and application installations from one place. Handle routine changes without administering the underlying servers.</p>
+
                     </div>
                 </div>
                 <div class="col-md-6 col-lg-6">
                     <div class="single-service p-5 rounded border gray-light-bg">
                         <div class="service-header d-flex align-items-center justify-content-between">
-                            <h4>
-                                <span class="h5 text-uppercase">Suitable For All Users</span>
-                                <br />
-            Managed WordPress
-                            </h4>
-<!--                                 <span class="fab fa-wordpress fa-3x color-primary"></span> -->
+                            <h3 class="h4">WordPress Setup</h3>
+
                         </div>
-                        <p>
-    Enjoy seamless WordPress hosting with our managed services, ensuring top-tier performance, security, and regular updates for your WordPress website.
-                        </p>
-<!--                             <a href="#" class="btn btn-outline-primary mt-3">View more details</a> -->
+                        <p>Install WordPress through the application installer and connect it to your domain. Start shaping your content and design with hosting essentials already in place.</p>
+
                     </div>
                 </div>
                 <div class="col-md-6 col-lg-6">
                     <div class="single-service p-5 rounded border gray-light-bg">
                         <div class="service-header d-flex align-items-center justify-content-between">
-                            <h4>
-                                <span class="h5 text-uppercase">Commitment To</span>
-                                <br />
-                Faster Website Speeds
-                            </h4>
-<!--                                 <span class="fa-solid fa-rocket fa-3x color-primary"></span> -->
+                            <h3 class="h4">Performance Controls</h3>
+
                         </div>
-                        <p>
-Boost your website loading times with our high-speed servers and optimization techniques, providing visitors with a seamless browsing experience every time.
-                        </p>
-<!--                             <a href="#" class="btn btn-outline-primary mt-3">View more details</a> -->
+                        <p>Use the available caching and optimisation tools to manage content delivery and page weight. Adjust how your website's assets are served as you develop and update it.</p>
+
                     </div>
                 </div>
                 <div class="col-md-6 col-lg-6">
                     <div class="single-service p-5 rounded border gray-light-bg">
                         <div class="service-header d-flex align-items-center justify-content-between">
-                            <h4>
-                                <span class="h5 text-uppercase">Easy & Smooth</span>
-                                <br />
-            Website Transfer
-                            </h4>
-<!--                                 <span class="fas fa-paper-plane fa-3x color-primary"></span> -->
+                            <h3 class="h4">Free Migration Assistance</h3>
+
                         </div>
-                        <p>
-Make the transition to MWHoster stress-free with our exceptional website transfer services, ensuring a seamless transfer process without any downtime.
-                        </p>
-<!--                             <a href="#" class="btn btn-outline-primary mt-3">View more details</a> -->
+                        <p>Move with help transferring website files, databases and email. Our team guides the transition from your existing provider and helps you connect the transferred website to your domain.</p>
+
                     </div>
                 </div>
             </div>
         </div>
     </section>
-    <!--services section end-->	
-    
-    <!--network map section start-->
+
     <section class="network-map-section pt-80 ">
         <div class="container">
             <div class="row justify-content-center">
                 <div class="col-md-9 col-lg-6">
                     <div class="section-heading text-center mb-3">
-                        <h3 class="h2">Our Data centers Location</h3>
-                        <p>Our worldwide data centers and CDN nodes ensure blazing-fast speeds wherever your traffic is coming from.</p>
+                        <h2 class="h2">Deliver Cached Content Closer to Your Audience</h2>
+                        <p>Your visitors can be anywhere. Our global CDN serves eligible cached content from edge locations closer to them, reducing the distance images, stylesheets, scripts and cached pages need to travel.</p>
+                        <p>Your hosting origin runs the application and processes dynamic requests. CDN edge locations handle cached delivery, giving each part of the infrastructure a clear role.</p>
                     </div>
                 </div>
             </div>
@@ -624,12 +513,12 @@ Make the transition to MWHoster stress-free with our exceptional website transfe
                 <div class="col-md-12">
                     <div class="network-map-wrap">
                         <img src="/wp-content/uploads/2024/03/map-location.png" srcset="/wp-content/uploads/2024/03/map-location-300x183.png 300w, /wp-content/uploads/2024/03/map-location-768x467.png 768w, /wp-content/uploads/2024/03/map-location-1024x623.png 1024w, /wp-content/uploads/2024/03/map-location.png 1218w" sizes="(min-width: 1280px) 1218px, calc(100vw - 30px)" alt="MW Hoster Map" class="img-fluid" width="1218" height="741" />
+                        <p class="text-center">Global CDN coverage supports content delivery; edge locations are separate from your website's hosting origin.</p>
                     </div>
                 </div>
             </div>
         </div>
     </section>
-    <!--network map section end-->
 
     <!--testimonial section start
     <section class="review-section pt-60 pb-100">
@@ -659,7 +548,7 @@ Make the transition to MWHoster stress-free with our exceptional website transfe
                         </div>
                         <div class="item">
                             <div class="border single-review-wrap bg-white p-4 m-3">
-                                <div class="review-body">    
+                                <div class="review-body">
                                     <p>I've tried many web hosting providers, but MWHoster exceeds them all. Their consistency and affordability make them the best choice for me. Not only do they provide web hosting solutions, but their pricing is remarkably reasonable. Choosing them for my website hosting was the perfect decision I made. I highly recommend this platform.</p>
                                 </div>
                                 <div class="review-author d-flex align-items-center">
@@ -689,7 +578,7 @@ In recent days, I've engaged in live chat multiple times and have consistently f
                                 </div>
                                 <div class="review-author d-flex align-items-center">
                                     <div class="review-info">
-                                        <h6 class="mb-0">Ethan</h6>                                   
+                                        <h6 class="mb-0">Ethan</h6>
                                     </div>
                                 </div>
                             </div>
@@ -742,7 +631,7 @@ Their services are of the highest quality, achieving an ideal harmony between ex
                                     </div>
                                 </div>
                             </div>
-                        </div> 
+                        </div>
                     </div>
                 </div>
             </div>
@@ -750,133 +639,78 @@ Their services are of the highest quality, achieving an ideal harmony between ex
     </section>
     testimonial section end-->
 
-    <!-- content sec -->
     <section class="client-section  pt-80 pb-40 gray-light-bg">
         <div class="container">
             <div class="row justify-content-center">
                 <div class="col-md-12">
                     <div class="section-heading  mb-5">
-                        <h2 class="text-center mb-4">Affordable Web Hosting. Powerful NVMe Cloud Performance.</h2>
-<p>MWHoster provides affordable cloud hosting for business websites, blogs, portfolios and online stores. Our cheap web hosting plans combine NVMe SSD storage, free SSL certificates and 24/7 technical support, giving you the essentials to launch and grow your website.</p>
-
-<p>Fast websites start with capable infrastructure. NVMe SSD storage supports rapid file and database access, while intelligent load balancing distributes incoming requests across multiple web servers. Autoscaling cloud resources help accommodate traffic surges and reduce processing bottlenecks as demand increases.</p>
-
-<p>Choose the <a href="/shared-web-hosting/">best web hosting</a> for your project by matching the platform to your requirements. Explore shared hosting for general websites, optimised <a href="/wordpress-web-hosting/">WordPress hosting</a> for WordPress projects, or Windows hosting for applications that require a Windows server environment.</p>
-
-<p>Protect your website with DDoS protection, proactive malware scanning and SSL encryption. Manage website files, databases, email and one-click application installations through your hosting control panel, with technical assistance available when you need it.</p>
-
-<p>Start with the resources your website needs today. Upgrade your hosting plan as your storage, bandwidth or website requirements expand, keeping your hosting aligned with your business.</p>
+                        <h2 class="text-center mb-4">Launch with Confidence. Grow on Autoscaling Cloud Hosting.</h2>
+                        <p>Give your next website a technical foundation for real visitors and real transactions: NVMe SSD storage, scalable CPU and RAM, free SSL and technical support. Choose a shared cloud plan for a new project, or bring your existing website over with free migration assistance.</p>
+                        <div class="action-btns mt-4"><a href="<?php echo esc_url( home_url( '/#pricing' ) ); ?>" class="btn btn-primary">Compare Hosting Plans</a> <a href="<?php echo esc_url( home_url( '/contact/' ) ); ?>" class="btn btn-outline-primary">Move My Website</a></div>
                     </div>
                 </div>
-        <div class="col-md-12">
-                    <!-- <div class="section-heading  mb-5">
-                        <h2 class="text-center mb-4">What Makes MWHoster Exceptional?</h2>
-                        <p>With a track record of years and plenty of satisfied customers, MWHoster has become a perfect choice for entrepreneurs,freelancers and businesses to businesses succeed online.</p>
 
-                        <p>Our secure, fastest, and cheapest web hosting solutions are beneficial for clients worldwide, offering professional services and reliability. We are known as the best web hosters globally, as we ensure to provide unparalleled support and assistance, ensuring your business's online presence thrives.</p>
-
-                        <p>Choose MWHoster, the best web hosting company in Pakistan, as your reliable hosting partner and take your business success to the next level. With our comprehensive hosting packages, expert support, and commitment to excellence, we are a one-stop solution for all your web hosting needs!</p>
-
-                    </div> -->
-    </div>
             </div>
         </div>
     </section>
-<section id="faq" class="ptb-80 ">
+    <section id="faq" class="ptb-80">
         <div class="container">
             <div class="row justify-content-center">
-                <div class="col-md-9 col-lg-6">
+                <div class="col-md-9 col-lg-9">
                     <div class="section-heading text-center mb-5">
-                        <h3 class="h2">Frequently Asked Queries</h3>
+                        <h2>Web Hosting Questions, Answered</h2>
                     </div>
                 </div>
             </div>
-            <div class="row align-items-center">
-                <div class="col-md-12 col-lg-12">
+            <div class="row">
+                <div class="col-12">
                     <div class="accordion faq-wrap" id="accordionExample">
-
-                        <!-- Item -->
                         <div class="accordion-item">
-                            <h2 class="accordion-header" id="headingOne">
-                                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">Which hosting service should I choose? </button>
-                            </h2>
-                            <div class="accordion-collapse collapse show" id="collapseOne" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
-                                <div class="accordion-body">Choose shared hosting for general websites, WordPress hosting for WordPress projects, or Windows hosting for applications requiring a Windows environment. Compare storage, bandwidth and website limits before selecting your plan.</div>
+                            <h3 class="accordion-header" id="homeHeading0"><button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#homeAnswer0" aria-expanded="true" aria-controls="homeAnswer0">Which MWHoster hosting service should I choose?</button></h3>
+                            <div class="accordion-collapse collapse show" id="homeAnswer0" aria-labelledby="homeHeading0" data-bs-parent="#accordionExample">
+                                <div class="accordion-body">Choose <a href="<?php echo esc_url( home_url( '/shared-web-hosting/' ) ); ?>">shared cloud hosting</a> for business websites, portfolios, blogs and PHP/MySQL projects. Explore our <a href="<?php echo esc_url( home_url( '/wordpress-web-hosting/' ) ); ?>">WordPress hosting</a> range for WordPress-focused requirements, or <a href="<?php echo esc_url( home_url( '/windows-web-hosting/' ) ); ?>">Windows hosting</a> for applications that need a Windows server environment. Each product page shows its available plans.</div>
                             </div>
                         </div>
-
-                        <!-- Item -->
                         <div class="accordion-item">
-                            <h2 class="accordion-header" id="headingTwo">
-                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">What is the process for transferring domain to MWHoster?</button>
-                            </h2>
-                            <div class="accordion-collapse collapse" id="collapseTwo" aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
-                                <div class="accordion-body">In order to transfer your domain to MWHoster, you must first unlock it at your current registrar, get a transfer EPP code, and then use your MWHoster account to submit a domain transfer request.</div>
+                            <h3 class="accordion-header" id="homeHeading1"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#homeAnswer1" aria-expanded="false" aria-controls="homeAnswer1">What makes your shared cloud hosting scalable?</button></h3>
+                            <div class="accordion-collapse collapse" id="homeAnswer1" aria-labelledby="homeHeading1" data-bs-parent="#accordionExample">
+                                <div class="accordion-body">CPU and RAM capacity scale with demand across multiple backend web servers. Load balancing distributes incoming requests across that capacity. Your shared cloud account is not assigned a fixed CPU or RAM quota through CloudLinux LVE, the system some hosts use to set account resource limits.</div>
                             </div>
                         </div>
-
-                        <!-- Item -->
                         <div class="accordion-item">
-                            <h2 class="accordion-header" id="headingThree">
-                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">Is a hosting control panel included?</button>
-                            </h2>
-                            <div class="accordion-collapse collapse" id="collapseThree" aria-labelledby="headingThree" data-bs-parent="#accordionExample">
-                                <div class="accordion-body">Yes. Shared hosting includes a control panel for managing website files, databases, email accounts and application installations from one dashboard.</div>
+                            <h3 class="accordion-header" id="homeHeading2"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#homeAnswer2" aria-expanded="false" aria-controls="homeAnswer2">Is NVMe SSD storage included?</button></h3>
+                            <div class="accordion-collapse collapse" id="homeAnswer2" aria-labelledby="homeHeading2" data-bs-parent="#accordionExample">
+                                <div class="accordion-body">Yes. Our hosting plans use NVMe SSD storage. NVMe is designed for fast, parallel storage operations; the plan you choose determines how much storage space is included.</div>
                             </div>
                         </div>
-
-                        <!-- Item -->
                         <div class="accordion-item">
-                            <h2 class="accordion-header" id="headingFour">
-                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">Can I install WordPress without technical experience?</button>
-                            </h2>
-                            <div class="accordion-collapse collapse" id="collapseFour" aria-labelledby="headingFour" data-bs-parent="#accordionExample">
-                                <div class="accordion-body">Yes. The one-click installer sets up WordPress through your hosting control panel, automating application installation and database configuration so you can begin building your website.</div>
+                            <h3 class="accordion-header" id="homeHeading3"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#homeAnswer3" aria-expanded="false" aria-controls="homeAnswer3">Can you help me move from another hosting provider?</button></h3>
+                            <div class="accordion-collapse collapse" id="homeAnswer3" aria-labelledby="homeHeading3" data-bs-parent="#accordionExample">
+                                <div class="accordion-body">Yes. Free migration assistance covers help transferring website files, databases and email. Our team can guide a move from cPanel, Plesk or DirectAdmin hosting and review other environments with you. <a href="<?php echo esc_url( home_url( '/contact/' ) ); ?>">Contact us</a> to start planning your transfer.</div>
                             </div>
                         </div>
-                            <!-- Item -->
                         <div class="accordion-item">
-                            <h2 class="accordion-header" id="headingFive">
-                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFive" aria-expanded="false" aria-controls="collapseFive">How can I contact technical support?</button>
-                            </h2>
-                            <div class="accordion-collapse collapse" id="collapseFive" aria-labelledby="headingFive" data-bs-parent="#accordionExample">
-                                <div class="accordion-body">Technical support is available 24/7. Contact our team through a support ticket, WhatsApp or support@mwhoster.com for help with your hosting account.</div>
+                            <h3 class="accordion-header" id="homeHeading4"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#homeAnswer4" aria-expanded="false" aria-controls="homeAnswer4">Can I install WordPress and manage hosting myself?</button></h3>
+                            <div class="accordion-collapse collapse" id="homeAnswer4" aria-labelledby="homeHeading4" data-bs-parent="#accordionExample">
+                                <div class="accordion-body">Yes. The hosting control panel includes an application installer for WordPress and other supported applications. You can also manage website files, MySQL databases and email accounts from the dashboard, without managing the servers.</div>
                             </div>
                         </div>
-                        <!-- Item -->
                         <div class="accordion-item">
-                            <h2 class="accordion-header" id="headingSix">
-                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSix" aria-expanded="false" aria-controls="collapseSix">How to Purchase a Hosting Plan?</button>
-                            </h2>
-                            <div class="accordion-collapse collapse" id="collapseSix" aria-labelledby="headingSix" data-bs-parent="#accordionExample">
-                                <div class="accordion-body">Buying a web hosting plan is simple – visit the pricing options, pick the one that suits your business, and hit "Add to Cart".
-<br>
-Next, you'll head to the checkout page to select how long you want the subscription to last.
-<br>
-Then, either set up a new MWHoster account or sign in to your current one and finish the registration.
-<br>
-Once payment is complete, you'll get login information sent to your email. 
-</div>
+                            <h3 class="accordion-header" id="homeHeading5"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#homeAnswer5" aria-expanded="false" aria-controls="homeAnswer5">How do I contact technical support?</button></h3>
+                            <div class="accordion-collapse collapse" id="homeAnswer5" aria-labelledby="homeHeading5" data-bs-parent="#accordionExample">
+                                <div class="accordion-body">Contact our support team through a ticket, WhatsApp or <a href="mailto:support@mwhoster.com">support@mwhoster.com</a>. Technical support is available 24/7 for hosting setup, account questions and troubleshooting.</div>
                             </div>
                         </div>
-                    <!-- Item -->
                         <div class="accordion-item">
-                            <h2 class="accordion-header" id="headingSeven">
-                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSeven" aria-expanded="false" aria-controls="collapseSeven">Is it necessary to submit a screenshot of the payment?</button>
-                            </h2>
-                            <div class="accordion-collapse collapse" id="collapseSeven" aria-labelledby="headingSeven" data-bs-parent="#accordionExample">
-                                <div class="accordion-body">Yes, it is necessary to submit a payment verification screenshot through WhatsApp chat support or tickets. If you don't submit it, your purchase will not be activated.
-</div>
+                            <h3 class="accordion-header" id="homeHeading6"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#homeAnswer6" aria-expanded="false" aria-controls="homeAnswer6">How do I order and activate my hosting?</button></h3>
+                            <div class="accordion-collapse collapse" id="homeAnswer6" aria-labelledby="homeHeading6" data-bs-parent="#accordionExample">
+                                <div class="accordion-body">Choose a plan, complete checkout and follow the payment-verification instructions. The current process requires a payment screenshot through WhatsApp support or a ticket. Hosting is activated after payment verification, and access details are sent by email.</div>
                             </div>
                         </div>
-                        <!-- Item -->
                         <div class="accordion-item">
-                            <h2 class="accordion-header" id="headingEight">
-                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseEight" aria-expanded="false" aria-controls="collapseEight">Can I Easily Upgrade My Hosting Plan with MWHoster as My Website Grows?</button>
-                            </h2>
-                            <div class="accordion-collapse collapse" id="collapseEight" aria-labelledby="headingEight" data-bs-parent="#accordionExample">
-                                <div class="accordion-body">Yes, MWHoster offers flexible hosting plans that allow for easy upgrades as your website traffic and resource needs increase. Simply contact our support team, and we'll assist you in upgrading your plan seamlessly.
-</div>
+                            <h3 class="accordion-header" id="homeHeading7"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#homeAnswer7" aria-expanded="false" aria-controls="homeAnswer7">When would I need to upgrade my plan?</button></h3>
+                            <div class="accordion-collapse collapse" id="homeAnswer7" aria-labelledby="homeHeading7" data-bs-parent="#accordionExample">
+                                <div class="accordion-body">Upgrade when you need more storage, websites, email accounts, databases or data transfer than your current package includes. CPU and RAM autoscaling are part of the shared cloud platform; the plan cards show the commercial allocations available at each level.</div>
                             </div>
                         </div>
                     </div>
@@ -885,7 +719,6 @@ Once payment is complete, you'll get login information sent to your email.
         </div>
     </section>
 
-    
 </div>
 
 <?php get_footer(); ?>
