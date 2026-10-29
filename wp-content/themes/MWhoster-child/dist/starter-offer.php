@@ -1,45 +1,10 @@
-<!--
-MW HOSTER / STARTER CLOUD / GOSTARTER — integration fragment, revised 29 October 2026.
+<?php
+/* Template Name: Starter Offer
+ * Template Post Type: post, page
+ */
+?>
+<?php get_header(); ?>
 
-INTEGRATION
-Paste this complete fragment into one HTML widget in a full-width, zero-padding
-WordPress/Elementor content container. Retain your website's own header/footer.
-This file intentionally has no html, head, body, header, footer or main element.
-All CSS and script behavior are scoped to #mw-starter-offer. No dependencies,
-external fonts, tracking pixels, or fabricated ecommerce events are included.
-Your page template must provide the standard responsive viewport meta tag.
-
-BEFORE LAUNCH
-Activate GOSTARTER in WHMCS for Starter Cloud annual billing: PKR 1,000 first
-payment, PKR 2,999 annual renewal. Use a one-time discount, not recurring.
-The live cart returned "The promotion code entered does not exist" during QA.
-The buttons use the existing Starter Cloud product route plus the documented
-WHMCS billingcycle and promocode parameters. Confirm the final PKR total and
-coupon persistence in a fresh Pakistani customer session before buying traffic.
-SIX-DAY COUNTDOWN SETUP
-One fixed start timestamp controls the countdown for every visitor:
-  data-mw-offer-start="2026-10-29T14:59:40+05:00" on #mw-starter-offer.
-Change that timestamp to your real launch time before publishing. The script
-calculates the deadline exactly six days later, in absolute time; refreshes do
-not restart it. Current deadline: 4 Nov 2026, 02:59 PM PKT.
-Set the matching expiry in WHMCS too: this HTML only controls the displayed
-countdown and promotional buttons; WHMCS must enforce coupon eligibility.
-At expiry the timer stops at zero, the page announces the offer has ended and
-promotional purchase/copy controls are disabled. Regular plans remain accessible.
-If you disable JavaScript, update the static <time> fallback when changing dates.
-The first-year offer is 12 months; no extra two-month offer is stacked here.
-
-FACT CHECK
-Plan/platform: https://www.mwhoster.com/shared-web-hosting/
-Refund conditions: https://www.mwhoster.com/terms-conditions/
-Application requirements: https://wordpress.org/about/requirements/
-https://laravel.com/docs/deployment
-https://experienceleague.adobe.com/en/docs/commerce-operations/installation-guide/system-requirements
-Linux CMS/installer source: https://docs.20i.com/web-hosting/one-click-installs
-Laravel/Magento requirements remain qualified. Urgency uses the fixed campaign
-deadline and actual PKR 1,999 price difference; no invented remaining stock.
-The prior start timestamp and six-day campaign duration are unchanged.
--->
 <style>
 #mw-starter-offer{--mw-ink:#101d39;--mw-muted:#58657b;--mw-blue:#155dff;--mw-navy:#061d4e;--mw-orange:#ff9b38;--mw-line:#dfe6f0;--mw-soft:#f3f6fb;--mw-white:#fff;font-family:Inter,"Segoe UI",Arial,sans-serif;font-size:16px;line-height:1.6;color:var(--mw-ink);background:#fff;text-align:left;isolation:isolate;width:100%;overflow:clip;-webkit-font-smoothing:antialiased}
 #mw-starter-offer *,#mw-starter-offer *::before,#mw-starter-offer *::after{box-sizing:border-box}
@@ -556,3 +521,4 @@ The prior start timestamp and six-day campaign duration are unchanged.
   });
 })();
 </script>
+<?php get_footer(); ?>  
