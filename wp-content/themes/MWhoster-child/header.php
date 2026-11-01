@@ -381,7 +381,7 @@ $skip_link_url = apply_filters( 'hello_elementor_skip_link_url', '#content' );
                                                             <span
                               class="fas fa-check-circle text-success me-2"
                             ></span>
-                                                            <strong>45-Day</strong>
+                                                            <strong>30 Days</strong>
                                                             Money-Back Guarantee
                                                         </small>
                                                     </li>
@@ -598,7 +598,7 @@ $skip_link_url = apply_filters( 'hello_elementor_skip_link_url', '#content' );
                                                     <span
                           class="fas fa-check-circle text-success me-2"
                         ></span>
-                                                    <strong>45-Day</strong>
+                                                    <strong>30 Days</strong>
                                                     Money-Back Guarantee
                                                 </small>
                                             </li>

@@ -834,7 +834,7 @@
                             <span
                               class="fas fa-check-circle text-success me-2"
                             ></span>
-                            <strong>45-Day</strong>
+                            <strong>30 Days</strong>
                             Money-Back Guarantee
                           </small>
                         </li>
@@ -1635,7 +1635,7 @@
                         <span
                           class="fas fa-check-circle text-success me-2"
                         ></span>
-                        <strong>45-Day</strong>
+                        <strong>30 Days</strong>
                         Money-Back Guarantee
                       </small>
                     </li>
