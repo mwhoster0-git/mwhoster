@@ -520,6 +520,11 @@ $skip_link_url = apply_filters( 'hello_elementor_skip_link_url', '#content' );
                             </div>
                         </div>
                     </li>
+                    <li class="nav-item custom-nav-item">
+                        <a class="nav-link custom-nav-link web-hosting-offer" href="/starter-offer">
+                            Web Hosting Offer
+                        </a>
+                    </li>
                     <!--hosting item end-->
 
                     <!--domain item start-->
