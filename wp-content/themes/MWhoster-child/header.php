@@ -303,6 +303,12 @@ $skip_link_url = apply_filters( 'hello_elementor_skip_link_url', '#content' );
                                 </div>
                                 <!-- End Demos - Mega Menu -->
                             </li>
+                            <li class="nav-item custom-nav-item">
+                                <a class="nav-link custom-nav-link web-hosting-offer" href="/starter-offer">
+                                    Hosting Offer
+                                    <span class="sale-badge">SALE</span>
+                                </a>
+                            </li>
                             <!--hosting end-->
                             <!--domain start-->
                             <li class="nav-item hs-has-mega-menu custom-nav-item position-relative" data-position="center">
@@ -522,7 +528,8 @@ $skip_link_url = apply_filters( 'hello_elementor_skip_link_url', '#content' );
                     </li>
                     <li class="nav-item custom-nav-item">
                         <a class="nav-link custom-nav-link web-hosting-offer" href="/starter-offer">
-                            Web Hosting Offer
+                            Hosting Offer
+                            <span class="sale-badge">SALE</span>
                         </a>
                     </li>
                     <!--hosting item end-->
