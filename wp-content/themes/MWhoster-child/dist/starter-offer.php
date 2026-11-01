@@ -282,7 +282,7 @@
       <div class="mw-hero-grid">
         <div>
           <div class="mw-hero-positioning"><span class="mw-wordpress-badge"><svg class="mw-brand-logo" aria-hidden="true"><use href="#mw-brand-wordpress"/></svg>Best for WordPress</span><span class="mw-linux-label">Linux Cloud Hosting</span></div>
-          <h1 id="mw-offer-title">Big Cloud Power.<br><em>Small First-Year Price.</em></h1>
+          <h1 id="mw-offer-title">Big Cloud Power.<br><em>Affordable Pricing.</em></h1>
           <p class="mw-hero-copy">Give your WordPress website room to grow with autoscaling CPU &amp; RAM, fast NVMe storage and free SSL. Launch your first site or bring your existing website with free migration assistance.</p>
           <p class="mw-offer-label"><span aria-hidden="true"></span>6-day hosting offer</p>
           <div class="mw-price-row">
@@ -292,7 +292,7 @@
           <p class="mw-save">Regular annual price <s>PKR 2,999</s><span>Save PKR 2000</span></p>
           <div class="mw-coupon"><span>Use coupon</span><button class="mw-copy" type="button" data-mw-copy aria-label="Copy coupon GOSTARTER"><strong>GOSTARTER</strong><svg class="mw-icon" aria-hidden="true"><use href="#mw-i-copy"/></svg><span class="mw-copy-label">Copy</span></button></div>
           <div class="mw-countdown" aria-label="Six-day hosting offer countdown">
-            <div class="mw-clock-top"><span class="mw-clock-heading" data-mw-clock-heading>Your saving ends in</span><span class="mw-clock-duration">6 DAYS ONLY</span></div>
+            <div class="mw-clock-top"><span class="mw-clock-heading" data-mw-clock-heading>Your saving ends in</span></div>
             <div class="mw-clock" data-mw-clock role="timer" aria-live="off" aria-label="Time remaining in days, hours, minutes and seconds" hidden>
               <div class="mw-clock-unit"><strong data-mw-days>00</strong><span>days</span></div>
               <div class="mw-clock-unit"><strong data-mw-hours>00</strong><span>hrs</span></div>
@@ -445,7 +445,7 @@
     <details class="mw-faq-item"><summary>Can I upgrade when I need more space?</summary><p>Yes. Contact support when you need more storage, websites, mailboxes, databases or bandwidth. CPU and RAM autoscaling is already part of the shared cloud platform; your package’s other allocations still apply.</p></details>
   </div></div></section>
 
-  <section class="mw-closing" aria-labelledby="mw-ready-title"><div class="mw-wrap"><div class="mw-closing-box"><div><span class="mw-eyebrow" style="color:#a3c5ff">A six-day window. A full year of hosting.</span><h2 id="mw-ready-title">Don’t miss your PKR 2000<br>Affordable Pricing</h2><p>Claim Starter Cloud for <b>PKR 999</b> with <b>GOSTARTER</b> before the offer closes.</p></div><div class="mw-closing-action"><a class="mw-btn mw-order" href="https://www.mwhoster.com/clientarea/index.php/store/shared-linux-hosting/shared-starter?currency=2&billingcycle=annually&promocode=GOSTARTER">Claim Starter Cloud <svg class="mw-icon" aria-hidden="true"><use href="#mw-i-arrow"/></svg></a><p>Then PKR 2,999/year on renewal.</p></div></div><p class="mw-offer-terms">Offer applies to the first 12 months of Starter Cloud annual hosting with GOSTARTER. Domain registration and additional services are separate. Plan allowances and acceptable-use conditions apply. *30-day hosting money-back guarantee subject to <a href="https://www.mwhoster.com/terms-conditions/">terms and conditions</a>.</p></div></section>
+  <section class="mw-closing" aria-labelledby="mw-ready-title"><div class="mw-wrap"><div class="mw-closing-box"><div><span class="mw-eyebrow" style="color:#a3c5ff">A six-day window. A full year of hosting.</span><h2 id="mw-ready-title">Don’t miss your PKR 2000<br>first-year saving.</h2><p>Claim Starter Cloud for <b>PKR 999</b> with <b>GOSTARTER</b> before the offer closes.</p></div><div class="mw-closing-action"><a class="mw-btn mw-order" href="https://www.mwhoster.com/clientarea/index.php/store/shared-linux-hosting/shared-starter?currency=2&billingcycle=annually&promocode=GOSTARTER">Claim Starter Cloud <svg class="mw-icon" aria-hidden="true"><use href="#mw-i-arrow"/></svg></a><p>Then PKR 2,999/year on renewal.</p></div></div><p class="mw-offer-terms">Offer applies to the first 12 months of Starter Cloud annual hosting with GOSTARTER. Domain registration and additional services are separate. Plan allowances and acceptable-use conditions apply. *30-day hosting money-back guarantee subject to <a href="https://www.mwhoster.com/terms-conditions/">terms and conditions</a>.</p></div></section>
   <span class="mw-sr" data-mw-copy-status role="status" aria-live="polite"></span>
 </div>
 
