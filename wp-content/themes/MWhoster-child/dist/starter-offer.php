@@ -282,7 +282,7 @@
       <div class="mw-hero-grid">
         <div>
           <div class="mw-hero-positioning"><span class="mw-wordpress-badge"><svg class="mw-brand-logo" aria-hidden="true"><use href="#mw-brand-wordpress"/></svg>Best for WordPress</span><span class="mw-linux-label">Linux Cloud Hosting</span></div>
-          <h1 id="mw-offer-title">Big Cloud Power.<br><em>Affordable Pricing.</em></h1>
+          <h1 id="mw-offer-title">Enterprise Cloud Power.<br><em>Affordable Pricing.</em></h1>
           <p class="mw-hero-copy">Give your WordPress website room to grow with autoscaling CPU &amp; RAM, fast NVMe storage and free SSL. Launch your first site or bring your existing website with free migration assistance.</p>
           <p class="mw-offer-label"><span aria-hidden="true"></span>6-day hosting offer</p>
           <div class="mw-price-row">
