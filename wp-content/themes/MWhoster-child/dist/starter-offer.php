@@ -244,7 +244,7 @@
 @media(max-width:360px){#mw-starter-offer .mw-hero .mw-btn{font-size:14px;padding-inline:16px;gap:12px}#mw-starter-offer .mw-clock-heading{font-size:9px;letter-spacing:.07em}#mw-starter-offer .mw-clock-duration{font-size:8px;padding:2px 4px}#mw-starter-offer .mw-hero .mw-save span{display:block;margin:3px 0 0}}
 </style>
 
-<div id="mw-starter-offer" data-mw-offer-start="2026-10-29T14:59:40+05:00">
+<div id="mw-starter-offer" data-mw-offer-start="2026-11-02T14:59:40+05:00">
   <svg width="0" height="0" aria-hidden="true" style="position:absolute;overflow:hidden"><defs>
     <symbol id="mw-i-arrow" viewBox="0 0 24 24"><path d="M4 12h15M13 5l7 7-7 7"/></symbol>
     <symbol id="mw-i-check" viewBox="0 0 24 24"><path d="m5 12 4 4 10-10"/></symbol>
