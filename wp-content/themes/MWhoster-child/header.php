@@ -108,6 +108,9 @@ $skip_link_url = apply_filters( 'hello_elementor_skip_link_url', '#content' );
 	
 	    <!--header section start-->
     <header id="header" class="header-main">
+        <div class="mw-sale-announcement">
+            <p>Web hosting sale for <strong>PKR 999</strong>/ Year <a href="/web-hosting-offer/"> Buy Now</a></p>
+        </div>
         <!--main header menu start-->
         <div id="logoAndNav" class="main-header-menu-wrap bg-transparent1 fixed-top1">
             <div class="container">

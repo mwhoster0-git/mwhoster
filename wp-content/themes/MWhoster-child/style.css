@@ -245,3 +245,38 @@ a.nav-link.custom-nav-link {
     
     }
 }
+#header .mw-sale-announcement {
+  padding: 8px 16px;
+  background-color: #0948b3;
+  color: #fff;
+  text-align: center;
+}
+
+#header .mw-sale-announcement p {
+  margin: 0;
+  color: inherit;
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1.5;
+}
+#header .mw-sale-announcement p a{
+    background-color: #ff7229;
+    color: #fff;
+    padding: 2px 7px 3px 7px;
+    border-radius: 10px;
+    margin-left: 5px;
+    margin-top: -7px !important;
+}
+#header .mw-sale-announcement strong {
+  font-weight: 700;
+}
+
+@media (max-width: 767.98px) {
+  #header .mw-sale-announcement {
+    padding: 8px 12px;
+  }
+
+  #header .mw-sale-announcement p {
+    font-size: 14px;
+  }
+}
